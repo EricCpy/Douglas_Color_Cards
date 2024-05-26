@@ -4,13 +4,13 @@ library(colorspace)
 library(grDevices)
 library(tidyr)
 
-lab_colors <- read.csv2("LabMeasurements-Color-Card.csv")
+lab_colors <- read.csv2("data/LabMeasurements-Color-Card.csv")
 # every observation is one color card
 # 13 big color sheets that means ROW 1 COL 1 in idx 1 = first color card of first color sheet  
 # ROW 2 COL 1 in idx 14 = second color card of first color sheet and so on
 lab_colors$Sheet <- rep(1:13) # for better usage give color sheet idx
 
-master_colors <- read.csv2("MasterColorCard.csv")
+master_colors <- read.csv2("data/MasterColorCard.csv")
 master_colors <- master_colors %>%
   rename(
     C = p1,
