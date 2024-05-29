@@ -1,37 +1,56 @@
-master_colors[, c("L", "a", "b")]
-DeltaE(as.matrix(master_colors[1, c("L", "a", "b")]), as.matrix(master_colors[2, c("L", "a", "b")]), metric = 2000)
+source("code/setup.R")
 
-# does the order/direction of the squares corresponds into those of the cards?
+#### DeltaE for single Card ####
+
+lab_colors_master_shape_sheet_1_row_1_col_1 <- lab_colors_master_shape %>% 
+  filter(Sheet == 1, Row == 1, Column == 1)
+
 dE(
   master_colors[, c("L", "a", "b")], 
-  lab_colors_master_shape %>% filter(Sheet == 1, Row == 1, Column == 1) %>% select("L", "a", "b")
+  lab_colors_master_shape_sheet_1_row_1_col_1 %>% select("L", "a", "b"),
+  metric = 2000
   ) %>% 
   data.frame(Difference = .) %>% 
-  bind_cols(master_colors) %>% 
-  ggplot() +
-  geom_tile(aes(fill = Difference, x = Crow, y = Ccol)) 
-
-lab_colors_master_shape_sheet_1 <- lab_colors_master_shape %>% 
-  filter(Sheet == 3)
-
-#### not clean ####
-add_day <- function(day, df) {
-  df$day <- day
-  df
-}
-
-day_df <- purrr::map_dfr(
-  1:(max(lab_colors$Row)*max(lab_colors$Column)),
-  add_day,
-  df = master_colors
-)
-
-dE(
-  day_df[, c("L", "a", "b")], 
-  lab_colors_master_shape_sheet_1 %>% select("L", "a", "b")
-) %>% 
-  data.frame(Difference = .) %>% 
-  bind_cols(lab_colors_master_shape_sheet_1) %>% 
+  bind_cols(lab_colors_master_shape_sheet_1_row_1_col_1) %>% rowwise() %>% 
+  mutate(Color = lab_to_rgb(L, a, b)) %>% 
   ggplot() +
   geom_tile(aes(fill = Difference, x = Crow, y = Ccol)) +
-  facet_grid(Row ~ Column)
+  geom_point(aes(x = Crow+0.25, y = Ccol, color = Color), size = 12) +
+  scale_color_identity() +
+  geom_point(
+    data = master_colors %>% rowwise() %>% mutate(Color = lab_to_rgb(L, a, b)),
+    aes(x = Crow-0.25, y = Ccol, color = Color), size = 12
+    ) +
+  coord_fixed()
+
+#### DeltaE for a Sheet ####
+
+lab_colors_master_shape_sheet_1 <- lab_colors_master_shape %>% 
+  filter(Sheet == 1)
+
+DeltaE_map_for_sheet <- function(data) {
+  dE(
+    master_colors %>% attach_replicas_to_df_by_rows(cards_per_sheet) %>% select("L", "a", "b"), 
+    data %>% select("L", "a", "b")
+  ) %>% 
+    data.frame(Difference = .) %>% 
+    bind_cols(data) %>% 
+    ggplot() +
+    geom_tile(aes(fill = Difference, x = Crow, y = Ccol)) +
+    coord_fixed() +
+    facet_grid(Row ~ Column)
+}
+
+DeltaE_map_for_sheet(lab_colors_master_shape_sheet_1)
+
+#### DeltaE for all Sheets ####
+
+DeltaE_by_sheet <- list()
+
+for (i in 1:max(lab_colors$Sheet)) {
+  DeltaE_by_sheet[[i]] <- lab_colors_master_shape %>% 
+    filter(Sheet == i) %>% 
+    DeltaE_map_for_sheet()
+}
+
+do.call(grid.arrange, c(DeltaE_by_sheet, ncol = 4))

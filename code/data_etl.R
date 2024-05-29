@@ -19,6 +19,8 @@ lab_colors_master_shape <- lab_colors %>%
     Field = (Crow-1)*8+Ccol
   )
 
+cards_per_sheet <- max(lab_colors_master_shape$Row)*max(lab_colors_master_shape$Column)
+
 #### master color data ####
 
 master_colors <- read.csv2("data/MasterColorCard.csv")

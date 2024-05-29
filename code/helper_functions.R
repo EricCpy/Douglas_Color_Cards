@@ -19,3 +19,16 @@ lab_to_rgb <- function(l, a, b) {
 dE <- function(colors1, colors2, metric = 2000) {
   DeltaE(as.matrix(colors1), as.matrix(colors2), metric = metric)
 }
+
+attach_replicas_to_df_by_rows <- function(data, n_rep) {
+  add_rep_id <- function(id, df) {
+    df$reP_id <- id
+    df
+  }
+  
+  purrr::map_dfr(
+    1:n_rep,
+    add_rep_id,
+    df = data
+  )
+}
