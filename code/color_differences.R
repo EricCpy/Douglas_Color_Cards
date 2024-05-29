@@ -33,7 +33,9 @@ DeltaE_by_sheet <- list()
 for (i in 1:n_sheets) {
   DeltaE_by_sheet[[i]] <- color_differences %>% 
     filter(Sheet == i) %>% 
-    DeltaE_map_for_sheet()
+    DeltaE_map_for_sheet() + 
+    guides(fill = "none") +
+    theme_void()
 }
 
-do.call(grid.arrange, c(DeltaE_by_sheet, ncol = 4))
+do.call(grid.arrange, c(DeltaE_by_sheet, ncol = 5))
