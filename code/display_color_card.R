@@ -37,7 +37,7 @@ display_color_sheet <- function(df, color_sheet_idx = 1) {
     tiles <- data.frame()
     for (r in 1:8) {
       for (c in 1:8) {
-        lab <- as.numeric(unlist(row[paste0(c("L", "a", "b"), r, c)]))
+        lab <- as.numeric(row[paste0(c("L", "a", "b"), r, c)])
         tiles <- rbind(tiles, data.frame(Row = r, Col = c, L = lab[1], a = lab[2], b = lab[3]))
       }
     }
@@ -45,4 +45,19 @@ display_color_sheet <- function(df, color_sheet_idx = 1) {
   }
   
   do.call(grid.arrange, c(plots, ncol = 6))
+}
+
+plot_card_vs_master <- function(card_colors, master_colors, channels = c("L", "a", "b")) {
+  par(mfrow = c(length(channels), 1))
+  for(channel in channels) {
+    plot(
+      master_colors[, channel], type = "o", cex=1.5, lwd= 2, col = "darkblue", pch=17, xlab="Colorspot", ylab = paste0(channel, "-value"), main = paste0(" Master vs. Card: Channel ", channel))
+      lines(card_colors[, channel], type = "o", cex=1.5, lwd= 2, col = "lightblue", pch=19)
+      legend("topleft", 
+           legend = c("Master", "Measurement"), 
+           col = c("darkblue", "lightblue"),
+           pch = c(17, 19),
+           pt.cex = 1.5
+    ) 
+  }
 }

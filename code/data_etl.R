@@ -22,15 +22,6 @@ lab_colors_master_shape <- lab_colors %>%
 cards_per_sheet <- max(lab_colors_master_shape$Row)*max(lab_colors_master_shape$Column)
 n_sheets <- max(lab_colors$Sheet)
 
-color_differences <- dE(
-    master_colors %>% attach_replicas_to_df_by_rows(cards_per_sheet*n_sheets) %>% select("L", "a", "b"), 
-    lab_colors_master_shape %>% select("L", "a", "b")
-  ) %>% 
-  data.frame(Difference = .) %>% 
-  bind_cols(lab_colors_master_shape) %>% 
-  rowwise() %>% 
-  mutate(Color = lab_to_rgb(L, a, b))
-
 #### master color data ####
 
 master_colors <- read.csv2("data/MasterColorCard.csv")
@@ -42,3 +33,14 @@ master_colors <- master_colors %>%
     K = p4,
     S = p5
   )
+
+color_differences <- dE(
+    master_colors %>% attach_replicas_to_df_by_rows(cards_per_sheet*n_sheets) %>% select("L", "a", "b"), 
+    lab_colors_master_shape %>% select("L", "a", "b")
+  ) %>% 
+  data.frame(Difference = .) %>% 
+  bind_cols(lab_colors_master_shape) %>% 
+  rowwise() %>% 
+  mutate(Color = lab_to_rgb(L, a, b))
+
+
