@@ -61,3 +61,14 @@ plot_card_vs_master <- function(card_colors, master_colors, channels = c("L", "a
     ) 
   }
 }
+
+plot_density_vs_master <- function(card_colors, master_colors, channels = c("L", "a", "b")) {
+  for(channel in channels) {
+    p <- ggplot() +
+      geom_density(data = card_colors, aes_string(x = channel), color = "red", size = 1) +
+      geom_density(data = master_colors, aes_string(x = channel), color = "blue", size = 1) +
+      labs(title = paste0("Density Plot of ", channel, "-value"), x = paste0(channel, "-value"), y = "Density") +
+      theme_minimal()
+    print(p)
+  }
+}
