@@ -21,8 +21,10 @@ color_differences %>% group_by(Row, Column, Sheet, Field) %>%
 
 color_regression_linear <- lm(data = master_colors, cbind(L, a, b) ~ C + M + Y + K + S)
 color_regression_poly <- lm(data = master_colors, cbind(L, a, b) ~ poly(C, 2) + poly(M, 2) + poly(Y, 2) + poly(K, 2) + poly(S, 2))
-color_regression_interaction <- lm(data = master_colors, cbind(L, a, b) ~ C * M * Y * K * S)
+# color_regression_interaction <- lm(data = master_colors, cbind(L, a, b) ~ C * M * Y * K * S)
+color_regression_interaction_3terms <- lm(data = master_colors %>% select(C, M, Y, K, S, L, a, b), cbind(L, a, b) ~ .^3)
 # mean-delta-E?
+color_regression <- color_regression_interaction_3terms
 color_differences_regression <- dE(predict(color_regression), master_colors %>% select("L", "a", "b")) %>% 
   data.frame(Difference = .)
 
