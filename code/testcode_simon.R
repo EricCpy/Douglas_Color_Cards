@@ -1,15 +1,47 @@
-color_differences %>% group_by(Row, Column, Sheet, Field) %>% 
-  summarise(median_dE = median(Difference)) %>% 
-  # arrange(desc(median_dE)) %>% 
-  ggplot() +
-  geom_boxplot(aes(group = Field, y = median_dE))
+# color_dispersion_over_sheets <- color_differences %>% group_by(Sheet, Field) %>% 
+#   summarise(median_dE = median(Difference)) %>% mutate(Aggregated_by = "Sheet") %>% 
+#   ungroup()
+# color_dispersion_over_targets <- color_differences %>% group_by(Row, Column, Field) %>% 
+#   summarise(median_dE = median(Difference)) %>% mutate(Aggregated_by = "Target") %>% 
+#   ungroup()
+# 
+# # zu erwarten (Mittelwertstreuung)
+# color_dispersion_over_sheets %>% select(-Sheet) %>% bind_rows(
+#   color_dispersion_over_targets %>% select(-Row, -Column)
+# ) %>% ggplot() +
+#   geom_boxplot(aes(x = Aggregated_by, y = median_dE)) +
+#   facet_wrap(Field ~ .) +
+#   coord_cartesian(ylim = c(0, 6))
 
-color_differences %>% group_by(Row, Column, Sheet, Field) %>% 
-  summarise(median_dE = median(Difference)) %>% 
-  # arrange(desc(median_dE)) %>% 
-  ggplot() +
-  geom_boxplot(aes(group = Sheet, y = median_dE)) +
-  facet_wrap(facets = Field ~ ., scales = "free")
+color_dispersion_on_sheet1 <- color_differences %>% group_by(Sheet, Row, Column, Field) %>% 
+  filter(Sheet == 1) %>% 
+  summarise(median_dE = median(Difference)) %>% mutate(Aggregated_by = "Sheet") %>% 
+  ungroup()
+
+color_dispersion_on_target1_1 <- color_differences %>% group_by(Sheet, Row, Column, Field) %>% 
+  filter(Row == 1, Column == 1) %>% 
+  summarise(median_dE = median(Difference)) %>% mutate(Aggregated_by = "Target") %>% 
+  ungroup()
+
+color_dispersion_on_sheet1 %>% bind_rows(
+  color_dispersion_over_targets
+) %>% ggplot() +
+  geom_boxplot(aes(x = Aggregated_by, y = median_dE)) +
+  facet_wrap(Field ~ .) +
+  coord_cartesian(ylim = c(0, 6))
+
+# color_differences %>% group_by(Row, Column, Sheet, Field) %>% 
+#   summarise(median_dE = median(Difference)) %>% 
+#   # arrange(desc(median_dE)) %>% 
+#   ggplot() +
+#   geom_boxplot(aes(group = Field, y = median_dE))
+# 
+# color_differences %>% group_by(Row, Column, Sheet, Field) %>% 
+#   summarise(median_dE = median(Difference)) %>% 
+#   # arrange(desc(median_dE)) %>% 
+#   ggplot() +
+#   geom_boxplot(aes(group = Sheet, y = median_dE)) +
+#   facet_wrap(facets = Field ~ ., scales = "free")
 
 # Questions:
 # Is the color difference greater within a sheet (among positions) or across sheets?
