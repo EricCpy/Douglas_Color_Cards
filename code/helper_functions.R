@@ -3,6 +3,7 @@ cmyk_to_srgb <- function(c, m, y, k) {
   m <- m / 100
   y <- y / 100
   k <- k / 100
+  s <- s / 100
   
   r <- (1 - c) * (1 - k)
   g <- (1 - m) * (1 - k)
@@ -11,8 +12,8 @@ cmyk_to_srgb <- function(c, m, y, k) {
 }
 
 cmyk_to_rgb <- function(c, m, y, k) {
-  rgb <- cmyk_to_srgb(c, m, y, k)
-  rgb(rgb[0], rgb[1], rgb[2])
+  rgb <- cmyk_to_srgb(c, m, y, k, s)
+  rgb(rgb[1], rgb[2], rgb[3])
 }
 
 cmyk_to_lab <- function(c, m, y, k) {

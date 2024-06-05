@@ -4,7 +4,7 @@ display_color_card <- function(df, row_name = "Row", col_name = "Col", color_spa
   }
   
   if(color_space != "Lab" && all(c("C", "M", "Y", "K") %in% colnames(df))) {
-    df$Color <- mapply(cmyk_to_rgb, df$C, df$M, df$Y, df$K)
+    df$Color <- mapply(cmyk_to_rgb, df$C, df$M, df$Y, df$K, df$S)
   } else if (color_space != "CYMK" && all(c("L", "a", "b") %in% colnames(df))) {
     df$Color <- mapply(lab_to_rgb, df$L, df$a, df$b)
   } else {
