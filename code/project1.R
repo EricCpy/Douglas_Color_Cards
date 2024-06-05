@@ -1,6 +1,5 @@
 source("code/setup.R")
 
-
 display_color_card(master_colors, "Crow", "Ccol", "CMYK", 2)
 display_color_card(master_colors, "Crow", "Ccol", "Lab", 2)
 
