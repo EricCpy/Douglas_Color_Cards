@@ -50,12 +50,13 @@ display_color_sheet <- function(df, color_sheet_idx = 1) {
 plot_card_vs_master <- function(card_colors, master_colors, channels = c("L", "a", "b")) {
   par(mfrow = c(length(channels), 1))
   for(channel in channels) {
+    # Don't add dispersion since it doesn't significantly affect the visualization and can make the plot visually cluttered.
     plot(
-      master_colors[, channel], type = "o", cex=1.5, lwd= 2, col = "darkblue", pch=17, xlab="Colorspot", ylab = paste0(channel, "-value"), main = paste0(" Master vs. Card: Channel ", channel))
-      lines(card_colors[, channel], type = "o", cex=1.5, lwd= 2, col = "lightblue", pch=19)
+      master_colors[, channel], type = "o", cex=1.5, lwd= 2, col = "red", pch=17, xlab="Colorspot", ylab = paste0(channel, "-value"), main = paste0(" Master vs. Card: Channel ", channel))
+      lines(card_colors[, channel], type = "o", cex=1.5, lwd= 2, col = "blue", pch=19)
       legend("topleft", 
            legend = c("Master", "Measurement"), 
-           col = c("darkblue", "lightblue"),
+           col = c("red", "blue"),
            pch = c(17, 19),
            pt.cex = 1.5
     ) 
@@ -64,11 +65,22 @@ plot_card_vs_master <- function(card_colors, master_colors, channels = c("L", "a
 
 plot_density_vs_master <- function(card_colors, master_colors, channels = c("L", "a", "b")) {
   for(channel in channels) {
+    sd_val <- card_colors[, paste0(channel,"_sd")]
+    bounds_data <- data.frame(
+      upper_sd = card_colors[, channel] + sd_val,
+      lower_sd = card_colors[, channel] - sd_val
+    )
+    
     p <- ggplot() +
-      geom_density(data = card_colors, aes_string(x = channel), color = "red", size = 1) +
-      geom_density(data = master_colors, aes_string(x = channel), color = "blue", size = 1) +
+      geom_density(data = master_colors, aes_string(x = channel, color = "'Master'"), size = 1) +
+      geom_density(data = card_colors, aes_string(x = channel, color = "'Card'"), size = 1) +
+      geom_density(data = bounds_data, aes_string(x = "upper_sd", color = "'Card Upper SD'"), linetype = "dashed") +
+      geom_density(data = bounds_data, aes_string(x = "lower_sd", color = "'Card Lower SD'"), linetype = "dotted") +
+      scale_color_manual(name = "",
+                         values = c("Master" = "red", "Card" = "blue", "Card Upper SD" = "blue", "Card Lower SD" = "blue")) +
       labs(title = paste0("Density Plot of ", channel, "-value"), x = paste0(channel, "-value"), y = "Density") +
-      theme_minimal()
+      theme_minimal() +
+      guides(color = guide_legend(override.aes = list(size = 6)))
     print(p)
   }
 }

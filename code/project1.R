@@ -9,11 +9,8 @@ display_color_sheet(lab_colors, color_sheet_idx = 13)
 
 mean_lab_color_card <- mean_lab_colors_for_sheets(lab_colors, 1:13)
 plot_card_vs_master(mean_lab_color_card, master_colors)
-
-# plot_card_vs_master mit Standard Deviation
-# how does the column S in master influence CMYK values
-# correlation between S and deltaE bei CMYK  
-
-# add dispersion here also
-# plot_card_vs_master mit Standard Deviation
 plot_density_vs_master(mean_lab_color_card, master_colors)
+
+# add deltaE difference plot cmyk, lab
+
+# add correlation 

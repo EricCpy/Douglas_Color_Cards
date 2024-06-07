@@ -3,7 +3,6 @@ cmyk_to_srgb <- function(c, m, y, k) {
   m <- m / 100
   y <- y / 100
   k <- k / 100
-  s <- s / 100
   
   r <- (1 - c) * (1 - k)
   g <- (1 - m) * (1 - k)
@@ -12,7 +11,7 @@ cmyk_to_srgb <- function(c, m, y, k) {
 }
 
 cmyk_to_rgb <- function(c, m, y, k) {
-  rgb <- cmyk_to_srgb(c, m, y, k, s)
+  rgb <- cmyk_to_srgb(c, m, y, k)
   rgb(rgb[1], rgb[2], rgb[3])
 }
 
@@ -45,11 +44,22 @@ attach_replicas_to_df_by_rows <- function(data, n_rep) {
 mean_lab_colors_for_sheets <- function(lab_colors_df, sheets) {
   filtered_lab_colors <- lab_colors %>% filter(Sheet %in% sheets)
   mean_lab_colors <- colMeans(filtered_lab_colors)
+  sd_lab_colors <- sapply(filtered_lab_colors, sd)
   mean_cols_vertical <- data.frame()
   for (r in 1:8) {
     for (c in 1:8) {
-      lab <- as.numeric(mean_lab_colors[paste0(c("L", "a", "b"), r, c)])
-      mean_cols_vertical <- rbind(mean_cols_vertical, data.frame(Row = r, Col = c, L = lab[1], a = lab[2], b = lab[3]))
+      lab_mean <- as.numeric(mean_lab_colors[paste0(c("L", "a", "b"), r, c)])
+      lab_sd <- as.numeric(sd_lab_colors[paste0(c("L", "a", "b"), r, c)])
+      lab_min <- as.numeric(min_lab_colors[paste0(c("L", "a", "b"), r, c)])
+      lab_max <- as.numeric(max_lab_colors[paste0(c("L", "a", "b"), r, c)])
+      mean_cols_vertical <- rbind(mean_cols_vertical, data.frame(Row = r,
+                                                                 Col = c, 
+                                                                 L = lab_mean[1], 
+                                                                 a = lab_mean[2], 
+                                                                 b = lab_mean[3],
+                                                                 L_sd = lab_sd[1],
+                                                                 a_sd = lab_sd[2],
+                                                                 b_sd = lab_sd[3]))
     }
   }
   mean_cols_vertical
