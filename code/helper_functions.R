@@ -41,6 +41,20 @@ attach_replicas_to_df_by_rows <- function(data, n_rep) {
   )
 }
 
+generate_color_difference_df <- function(master_colors, lab_colors) {
+  color_difference <- dE(
+    master_colors %>% select("L", "a", "b"),
+    lab_colors %>% select("L", "a", "b"),
+  )  %>% 
+    data.frame(Difference = .) %>% 
+    bind_cols(lab_colors) %>% 
+    rowwise() %>% 
+    mutate(Color = lab_to_rgb(L, a, b))
+  
+  color_difference
+}
+
+
 mean_lab_colors_for_sheets <- function(lab_colors_df, sheets) {
   filtered_lab_colors <- lab_colors %>% filter(Sheet %in% sheets)
   mean_lab_colors <- colMeans(filtered_lab_colors)

@@ -4,7 +4,7 @@ display_color_card <- function(df, row_name = "Row", col_name = "Col", color_spa
   }
   
   if(color_space != "Lab" && all(c("C", "M", "Y", "K") %in% colnames(df))) {
-    df$Color <- mapply(cmyk_to_rgb, df$C, df$M, df$Y, df$K, df$S)
+    df$Color <- mapply(cmyk_to_rgb, df$C, df$M, df$Y, df$K)
   } else if (color_space != "CYMK" && all(c("L", "a", "b") %in% colnames(df))) {
     df$Color <- mapply(lab_to_rgb, df$L, df$a, df$b)
   } else {
@@ -84,3 +84,14 @@ plot_density_vs_master <- function(card_colors, master_colors, channels = c("L",
     print(p)
   }
 }
+
+plot_card_differences_to_master <- function(card_colors, master_colors) {
+  card_colors %>% 
+    ggplot() +
+    geom_tile(aes(fill = Difference, x = Col, y = Row)) +
+    geom_point(aes(x = Col+0.25, y = Row, color = Color), size = 12) +
+    scale_color_identity() +
+    geom_point(data = master_colors, aes(x = Ccol-0.25, y = Crow, color = Color), size = 12) +
+    coord_fixed()
+}
+

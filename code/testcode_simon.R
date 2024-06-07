@@ -1,9 +1,9 @@
 # color_dispersion_over_sheets <- color_differences %>% group_by(Sheet, Field) %>% 
 #   summarise(median_dE = median(Difference)) %>% mutate(Aggregated_by = "Sheet") %>% 
 #   ungroup()
-# color_dispersion_over_targets <- color_differences %>% group_by(Row, Column, Field) %>% 
-#   summarise(median_dE = median(Difference)) %>% mutate(Aggregated_by = "Target") %>% 
-#   ungroup()
+ color_dispersion_over_targets <- color_differences %>% group_by(Row, Column, Field) %>% 
+   summarise(median_dE = median(Difference)) %>% mutate(Aggregated_by = "Target") %>% 
+   ungroup()
 # 
 # # zu erwarten (Mittelwertstreuung)
 # color_dispersion_over_sheets %>% select(-Sheet) %>% bind_rows(
@@ -13,10 +13,10 @@
 #   facet_wrap(Field ~ .) +
 #   coord_cartesian(ylim = c(0, 6))
 
-color_dispersion_on_sheet1 <- color_differences %>% group_by(Sheet, Row, Column, Field) %>% 
-  filter(Sheet == 1) %>% 
-  summarise(median_dE = median(Difference)) %>% mutate(Aggregated_by = "Sheet") %>% 
-  ungroup()
+#color_dispersion_on_sheet1 <- color_differences %>% group_by(Sheet, Row, Column, Field) %>% 
+#  filter(Sheet == 1) %>% 
+#  summarise(median_dE = median(Difference)) %>% mutate(Aggregated_by = "Sheet") %>% 
+#  ungroup()
 
 color_dispersion_on_target1_1 <- color_differences %>% group_by(Sheet, Row, Column, Field) %>% 
   filter(Row == 1, Column == 1) %>% 
