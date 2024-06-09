@@ -7,9 +7,35 @@ output: bookdown::gitbook
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+
+source("code/setup.R")
 ```
 
-# Questions
+# Douglas color cards
+
+The Douglas color cards are used to determine someones skin color to find the most appropriate cosmetics products - e.g. the perfect foundation. They show 64 squares of various colors. The center four squares get punched out.
+
+```{r colorcard, echo=FALSE, warning=FALSE}
+display_color_card(master_colors, "Crow", "Ccol", "Lab", 2)
+```
+
+The color cards are placed in front of ones facial skin and a photo is taken. The visual information about the skin color (visible at the four center squares) and the reference color squares is evaluated by an app and the closest skin color type is calculated.
+
+While production 42 color cards are printed on each single sheet. On each color card is a QR code that is used by the app to determine where on a sheet the color card was printed.
+
+## Quality assurance
+
+To assure the best skin color typification it is crucial to assure a consistent production of the color cards. Especially the reference color squares colors variance should be as low as possible.
+
+The existence of QR codes indicating the position on a sheet reduces the requirements to meet because thus only the variance of reference color squares at the same position of the sheets have to be as low as possible. Differnces between reference color squares among different positions on a sheet can be taken care of in the app once the positional information is evaluated from the QR code.
+
+## Data description
+
+The data given consists of two files. One file holds the master color information given in the Lab colorspace as well as in the CMYKS color space. In the latter S stands for special and might be some kind of skin color pigment.
+
+The second file holds color information obtained from 13 printed sheets. Thus we find the Lab color information for all 64 squares for 42 color cards for 13 sheets resulting in `r format(64*42*13*3, scientific=FALSE)` numeric values.
+
+## Questions
 
 1. Is the color difference greater within a sheet (among positions) or across sheets?  (Simon Schäfer)
 1. Is there a difference in dE regardin skin or non skin color?  (Simon Schäfer)
@@ -22,25 +48,3 @@ knitr::opts_chunk$set(echo = TRUE)
 1. Are there colors that are very far off the master target? <- Field 18 (Why; see Lab values)
 1. Are findings on L, a or b also there in dE? (On the subjective meaning)?
 1. Can colors on cards be differntiated visually?
-
-# Demo stuff
-
-## R Markdown
-
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
-
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
-
-```{r cars}
-summary(cars)
-```
-
-## Including Plots
-
-You can also embed plots, for example:
-
-```{r pressure, echo=FALSE}
-plot(pressure)
-```
-
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
