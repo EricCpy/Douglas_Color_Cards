@@ -1,13 +1,12 @@
 ---
 title: "Douglas color cards"
-author: "Simon Schäfer"
+author: "Nicolas Hahn, Eric Jonas, Pavlo Kravets, Simon Schäfer"
 date: "2024-06-05"
 output: bookdown::gitbook
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-
 source("code/setup.R")
 ```
 
@@ -35,10 +34,66 @@ The data given consists of two files. One file holds the master color informatio
 
 The second file holds color information obtained from 13 printed sheets. Thus we find the Lab color information for all 64 squares for 42 color cards for 13 sheets resulting in `r format(64*42*13*3, scientific=FALSE)` numeric values.
 
+## Objectives
+
+* Analyse where variance or difference in color is noteworthy high / low
+* Visualize variance and differences in colors
+* Use the CMYKS color information to match the Lab color values
+
+## Color spaces
+
+Lab, CMYK, rgb, CMYKS?
+
+## Color difference
+
+One can analyse difference in color in at least three ways:
+
+1. Qualitative: Looking at them - but this takes a while if thee are many colors
+1. Quantitative: Compare the numeric values of each color space dimension
+1. Quantitative: Compare all color space dimensions at once with a proper function (i. e. \( \Delta \) E)
+
+### Comparing color space dimensions one by one
+
+blub
+
+### Compaing colors with distance function
+
+A function to compare two colors given in Lab color space is \( \Delta \) E - also called dE in this report. Actually there are multiple versions of [Delta E](https://zschuessler.github.io/DeltaE/learn/). The first was given 1976 and just calculates the Euklidean distance in the Lab color space:
+
+\[\Delta E_{ab}=\sqrt{(L_2-L_1)^2+(a_2-a_1)^2+(b_2-b_1)^2}\]
+
+In this report we use the most recent \( \Delta \) E formula from 2000. It is much more complex but solves problems when calculating color difference for colors with high lightness value.
+
+The aim of dE is that the calculated distance value can be interpreted in a meaningful way for humans. The following table can be a taken as a guide but there exceptions are possible.
+
+| Delta E   |	Perception                                |
+|-----------|-------------------------------------------|
+| <= 1.0    | Not perceptible by human eyes.            |
+| 1 - 2     | Perceptible through close observation.    |
+| 2 - 10    | Perceptible at a glance.                  |
+| 11 - 49   | Colors are more similar than opposite     |
+| 100       |	Colors are exact opposite                 |
+
+Comparing the first color cards colors with the master colors shows that there is one color that is pretty far from the master color (row 3, column 2)
+
+```{r dE_colorcard, echo=FALSE}
+color_differences %>% 
+  filter(Sheet == 1, Row == 1, Column == 1) %>% 
+  ggplot() +
+  geom_tile(aes(fill = Difference, x = Ccol, y = Crow)) +
+  geom_point(aes(x = Ccol+0.25, y = Crow, color = Color), size = 8) +
+  scale_color_identity() +
+  geom_point(
+    data = master_colors %>% rowwise() %>% mutate(Color = lab_to_rgb(L, a, b)),
+    aes(x = Ccol-0.25, y = Crow, color = Color), size = 8
+    ) +
+  coord_fixed()
+```
+
 ## Questions
 
 1. Is the color difference greater within a sheet (among positions) or across sheets?  (Simon Schäfer)
-1. Is there a difference in dE regardin skin or non skin color?  (Simon Schäfer)
+1. Is there a difference in dE regarding skin or non skin color?  (Simon Schäfer)
 1. How is the color special used (regression)?  (Simon Schäfer)
 1. What dE value can be seen on our screen? (Simon Schäfer)
 1. Color difference of mean over all cards to master target: is it in some uncertainty area? (Eric Jonas)

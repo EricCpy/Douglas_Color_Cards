@@ -20,7 +20,7 @@
   
   
 
-<meta name="author" content="Simon Schäfer" />
+<meta name="author" content="Nicolas Hahn, Eric Jonas, Pavlo Kravets, Simon Schäfer" />
 
 
 <meta name="date" content="2024-06-05" />
@@ -76,7 +76,14 @@
 <ul>
 <li class="chapter" data-level="1.1" data-path=""><a href="#quality-assurance"><i class="fa fa-check"></i><b>1.1</b> Quality assurance</a></li>
 <li class="chapter" data-level="1.2" data-path=""><a href="#data-description"><i class="fa fa-check"></i><b>1.2</b> Data description</a></li>
-<li class="chapter" data-level="1.3" data-path=""><a href="#questions"><i class="fa fa-check"></i><b>1.3</b> Questions</a></li>
+<li class="chapter" data-level="1.3" data-path=""><a href="#objectives"><i class="fa fa-check"></i><b>1.3</b> Objectives</a></li>
+<li class="chapter" data-level="1.4" data-path=""><a href="#color-spaces"><i class="fa fa-check"></i><b>1.4</b> Color spaces</a></li>
+<li class="chapter" data-level="1.5" data-path=""><a href="#color-difference"><i class="fa fa-check"></i><b>1.5</b> Color difference</a>
+<ul>
+<li class="chapter" data-level="1.5.1" data-path=""><a href="#comparing-color-space-dimensions-one-by-one"><i class="fa fa-check"></i><b>1.5.1</b> Comparing color space dimensions one by one</a></li>
+<li class="chapter" data-level="1.5.2" data-path=""><a href="#compaing-colors-with-distance-function"><i class="fa fa-check"></i><b>1.5.2</b> Compaing colors with distance function</a></li>
+</ul></li>
+<li class="chapter" data-level="1.6" data-path=""><a href="#questions"><i class="fa fa-check"></i><b>1.6</b> Questions</a></li>
 </ul></li>
 </ul>
 
@@ -97,7 +104,7 @@
             <section class="normal" id="section-">
 <div id="header">
 <h1 class="title">Douglas color cards</h1>
-<p class="author"><em>Simon Schäfer</em></p>
+<p class="author"><em>Nicolas Hahn, Eric Jonas, Pavlo Kravets, Simon Schäfer</em></p>
 <p class="date"><em>2024-06-05</em></p>
 </div>
 <div id="douglas-color-cards" class="section level1 hasAnchor" number="1">
@@ -116,11 +123,75 @@
 <p>The data given consists of two files. One file holds the master color information given in the Lab colorspace as well as in the CMYKS color space. In the latter S stands for special and might be some kind of skin color pigment.</p>
 <p>The second file holds color information obtained from 13 printed sheets. Thus we find the Lab color information for all 64 squares for 42 color cards for 13 sheets resulting in 104832 numeric values.</p>
 </div>
-<div id="questions" class="section level2 hasAnchor" number="1.3">
-<h2><span class="header-section-number">1.3</span> Questions<a href="#questions" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div id="objectives" class="section level2 hasAnchor" number="1.3">
+<h2><span class="header-section-number">1.3</span> Objectives<a href="#objectives" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<ul>
+<li>Analyse where variance or difference in color is noteworthy high / low</li>
+<li>Visualize variance and differences in colors</li>
+<li>Use the CMYKS color information to match the Lab color values</li>
+</ul>
+</div>
+<div id="color-spaces" class="section level2 hasAnchor" number="1.4">
+<h2><span class="header-section-number">1.4</span> Color spaces<a href="#color-spaces" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Lab, CMYK, rgb, CMYKS?</p>
+</div>
+<div id="color-difference" class="section level2 hasAnchor" number="1.5">
+<h2><span class="header-section-number">1.5</span> Color difference<a href="#color-difference" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>One can analyse difference in color in at least three ways:</p>
+<ol style="list-style-type: decimal">
+<li>Qualitative: Looking at them - but this takes a while if thee are many colors</li>
+<li>Quantitative: Compare the numeric values of each color space dimension</li>
+<li>Quantitative: Compare all color space dimensions at once with a proper function (i. e. <span class="math inline">\(\Delta\)</span> E)</li>
+</ol>
+<div id="comparing-color-space-dimensions-one-by-one" class="section level3 hasAnchor" number="1.5.1">
+<h3><span class="header-section-number">1.5.1</span> Comparing color space dimensions one by one<a href="#comparing-color-space-dimensions-one-by-one" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>blub</p>
+</div>
+<div id="compaing-colors-with-distance-function" class="section level3 hasAnchor" number="1.5.2">
+<h3><span class="header-section-number">1.5.2</span> Compaing colors with distance function<a href="#compaing-colors-with-distance-function" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>A function to compare two colors given in Lab color space is <span class="math inline">\(\Delta\)</span> E - also called dE in this report. Actually there are multiple versions of <a href="https://zschuessler.github.io/DeltaE/learn/">Delta E</a>. The first was given 1976 and just calculates the Euklidean distance in the Lab color space:</p>
+<p><span class="math display">\[\Delta E_{ab}=\sqrt{(L_2-L_1)^2+(a_2-a_1)^2+(b_2-b_1)^2}\]</span></p>
+<p>In this report we use the most recent <span class="math inline">\(\Delta\)</span> E formula from 2000. It is much more complex but solves problems when calculating color difference for colors with high lightness value.</p>
+<p>The aim of dE is that the calculated distance value can be interpreted in a meaningful way for humans. The following table can be a taken as a guide but there exceptions are possible.</p>
+<table>
+<thead>
+<tr class="header">
+<th>Delta E</th>
+<th>Perception</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>&lt;= 1.0</td>
+<td>Not perceptible by human eyes.</td>
+</tr>
+<tr class="even">
+<td>1 - 2</td>
+<td>Perceptible through close observation.</td>
+</tr>
+<tr class="odd">
+<td>2 - 10</td>
+<td>Perceptible at a glance.</td>
+</tr>
+<tr class="even">
+<td>11 - 49</td>
+<td>Colors are more similar than opposite</td>
+</tr>
+<tr class="odd">
+<td>100</td>
+<td>Colors are exact opposite</td>
+</tr>
+</tbody>
+</table>
+<p>Comparing the first color cards colors with the master colors shows that there is one color that is pretty far from the master color (row 3, column 2)</p>
+<p><img src="report_files/figure-html/dE_colorcard-1.png" width="672" /></p>
+</div>
+</div>
+<div id="questions" class="section level2 hasAnchor" number="1.6">
+<h2><span class="header-section-number">1.6</span> Questions<a href="#questions" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <ol style="list-style-type: decimal">
 <li>Is the color difference greater within a sheet (among positions) or across sheets? (Simon Schäfer)</li>
-<li>Is there a difference in dE regardin skin or non skin color? (Simon Schäfer)</li>
+<li>Is there a difference in dE regarding skin or non skin color? (Simon Schäfer)</li>
 <li>How is the color special used (regression)? (Simon Schäfer)</li>
 <li>What dE value can be seen on our screen? (Simon Schäfer)</li>
 <li>Color difference of mean over all cards to master target: is it in some uncertainty area? (Eric Jonas)</li>
@@ -190,6 +261,20 @@ gitbook.start({
 });
 </script>
 
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/latest.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
 </body>
 
 </html>

@@ -73,3 +73,14 @@ color_differences %>%
     aes(x = Crow-0.25, y = Ccol, color = Color), size = 12
   ) +
   coord_fixed()
+
+skin_color <- c(
+  F, F, F, F, F, F, F, F,
+  F, T, T, T, T, T, T, F,
+  F, T, T, T, T, T, T, F,
+  F, T, F, F, F, F, T, F,
+  F, T, T, F, F, T, T, F,
+  F, T, T, T, T, T, T, F,
+  F, F, T, T, T, T, F, F,
+  F, F, F, F, F, F, F, F
+  )
