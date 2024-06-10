@@ -5,12 +5,14 @@ source("code/setup.R")
 color_differences %>% 
   filter(Sheet == 1, Row == 1, Column == 1) %>% 
   ggplot() +
-  geom_tile(aes(fill = Difference, x = Ccol, y = Crow)) +
-  geom_point(aes(x = Ccol+0.25, y = Crow, color = Color), size = 12) +
+  geom_tile(aes(fill = Difference, x = Ccol, y = Crow, color = Difference > 2),
+            lwd = 1.5, linetype = 1, width=0.9, height=0.9) +
+  ggnewscale::new_scale_colour() +
+  geom_point(aes(x = Ccol+0.175, y = Crow, color = Color), size = 14) +
   scale_color_identity() +
   geom_point(
     data = master_colors %>% rowwise() %>% mutate(Color = lab_to_rgb(L, a, b)),
-    aes(x = Ccol-0.25, y = Crow, color = Color), size = 12
+    aes(x = Ccol-0.175, y = Crow, color = Color), size = 14
     ) +
   coord_fixed()
 

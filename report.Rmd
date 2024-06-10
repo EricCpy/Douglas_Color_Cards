@@ -74,20 +74,111 @@ The aim of dE is that the calculated distance value can be interpreted in a mean
 | 11 - 49   | Colors are more similar than opposite     |
 | 100       |	Colors are exact opposite                 |
 
-Comparing the first color cards colors with the master colors shows that there is one color that is pretty far from the master color (row 3, column 2)
+Comparing the first color cards colors with the master colors shows that there is one color that is pretty far from the master color (3rd row, 2nd column). There are some more fields where we spotted a difference at first glimpse:
 
-```{r dE_colorcard, echo=FALSE}
+* lilac: 8th row, 5th column
+* blue: 8th row, 7th column
+* dark grey: 7th row, 1st column
+
+```{r dE_colorcard, echo=FALSE, fig.width=8, fig.height=8}
 color_differences %>% 
   filter(Sheet == 1, Row == 1, Column == 1) %>% 
   ggplot() +
   geom_tile(aes(fill = Difference, x = Ccol, y = Crow)) +
-  geom_point(aes(x = Ccol+0.25, y = Crow, color = Color), size = 8) +
+  geom_point(aes(x = Ccol+0.25, y = Crow, color = Color), size = 11) +
   scale_color_identity() +
   geom_point(
     data = master_colors %>% rowwise() %>% mutate(Color = lab_to_rgb(L, a, b)),
-    aes(x = Ccol-0.25, y = Crow, color = Color), size = 8
+    aes(x = Ccol-0.25, y = Crow, color = Color), size = 11
     ) +
-  coord_fixed()
+  coord_fixed() +
+  labs(caption = "Left circle: master color; Right circle: sample color") +
+  xlab("Column") + ylab("Row") +
+  theme(
+    axis.text=element_text(size=12),
+    axis.title=element_text(size=14,face="bold"),
+    plot.caption = element_text(size=12, hjust = 0)
+    )
+```
+
+To spot the color difference it is very helpful to let the colors to compare overlap. Thus we can find more colors that are distinguishable by us on our screen. Almost all grey colors are separable from their master color. So are most of the brown colors. Most of the other colors seem to be equal. An exception is the red color (3rd row, 8th column).
+
+
+```{r dE_colorcard_2, echo=FALSE, fig.width=8, fig.height=8}
+color_differences %>% 
+  filter(Sheet == 1, Row == 1, Column == 1) %>% 
+  ggplot() +
+  geom_tile(aes(fill = Difference, x = Ccol, y = Crow)) +
+  geom_point(aes(x = Ccol+0.2, y = Crow, color = Color), size = 12) +
+  scale_color_identity() +
+  geom_point(
+    data = master_colors %>% rowwise() %>% mutate(Color = lab_to_rgb(L, a, b)),
+    aes(x = Ccol-0.2, y = Crow, color = Color), size = 12
+    ) +
+  coord_fixed() +
+  labs(caption = "Left circle: master color; Right circle: sample color") +
+  xlab("Column") + ylab("Row") +
+  theme(
+    axis.text=element_text(size=12),
+    axis.title=element_text(size=14,face="bold"),
+    plot.caption = element_text(size=12, hjust = 0)
+    )
+```
+
+In order to check if the cut off value of 2 holds for our example we show the same picture again but highlight which colors should be distinguishable in theory. It tells us that we sould be able to spot the difference for the following colors but we did not:
+
+* magenta: 4th row, 8th column
+* olive: 1st row, 2nd column
+* lavender: 1st row, 5th column
+
+```{r dE_colorcard_3, echo=FALSE, fig.width=8, fig.height=8}
+color_differences %>% 
+  filter(Sheet == 1, Row == 1, Column == 1) %>% 
+  ggplot() +
+  geom_tile(aes(fill = Difference, x = Ccol, y = Crow, color = Difference > 2),
+            lwd = 1.5, width=0.95, height=0.95) +
+  scale_color_manual(values = c("#FFFFFF00", "#88CC00")) +
+  ggnewscale::new_scale_colour() +
+  geom_point(aes(x = Ccol+0.2, y = Crow, color = Color), size = 12) +
+  scale_color_identity() +
+  geom_point(
+    data = master_colors %>% rowwise() %>% mutate(Color = lab_to_rgb(L, a, b)),
+    aes(x = Ccol-0.2, y = Crow, color = Color), size = 12
+    ) +
+  coord_fixed() +
+  labs(caption = "Left circle: master color; Right circle: sample color") +
+  xlab("Column") + ylab("Row") +
+  theme(
+    axis.text=element_text(size=12),
+    axis.title=element_text(size=14,face="bold"),
+    plot.caption = element_text(size=12, hjust = 0)
+    )
+```
+
+Finally we have a look at which color pairs should be no visible difference. Here we found no exception to the rule of thumb given.
+
+```{r dE_colorcard_4, echo=FALSE, fig.width=8, fig.height=8}
+color_differences %>% 
+  filter(Sheet == 1, Row == 1, Column == 1) %>% 
+  ggplot() +
+  geom_tile(aes(fill = Difference, x = Ccol, y = Crow, color = Difference < 1),
+            lwd = 1.5, width=0.95, height=0.95) +
+  scale_color_manual(values = c("#FFFFFF00", "#CC3333")) +
+  ggnewscale::new_scale_colour() +
+  geom_point(aes(x = Ccol+0.2, y = Crow, color = Color), size = 12) +
+  scale_color_identity() +
+  geom_point(
+    data = master_colors %>% rowwise() %>% mutate(Color = lab_to_rgb(L, a, b)),
+    aes(x = Ccol-0.2, y = Crow, color = Color), size = 12
+    ) +
+  coord_fixed() +
+  labs(caption = "Left circle: master color; Right circle: sample color") +
+  xlab("Column") + ylab("Row") +
+  theme(
+    axis.text=element_text(size=12),
+    axis.title=element_text(size=14,face="bold"),
+    plot.caption = element_text(size=12, hjust = 0)
+    )
 ```
 
 ## Questions
