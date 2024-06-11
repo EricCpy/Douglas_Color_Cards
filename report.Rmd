@@ -1,7 +1,7 @@
 ---
 title: "Douglas color cards"
 author: "Nicolas Hahn, Eric Jonas, Pavlo Kravets, Simon Schäfer"
-date: "2024-06-05"
+date: "`r Sys.Date()`"
 output: bookdown::gitbook
 ---
 
@@ -40,6 +40,20 @@ The second file holds color information obtained from 13 printed sheets. Thus we
 * Visualize variance and differences in colors
 * Use the CMYKS color information to match the Lab color values
 
+### Questions (formulated before exploration)
+
+1. Is the color difference greater within a sheet (among positions) or across sheets?  (Simon Schäfer)
+1. Is there a difference in dE regarding skin or non skin color?  (Simon Schäfer)
+1. How is the color special used (regression)?  (Simon Schäfer)
+1. What dE value can be seen on our screen? (Simon Schäfer)
+1. Color difference of mean over all cards to master target: is it in some uncertainty area? (Eric Jonas)
+1. Are some Lab values more often in master than in mean? (Eric Jonas)
+1. How close are CMYK and Lab value in rgb? (Eric Jonas)
+1. Is there a correlation between dE(CMYK colors, Lab colors) and S? (Eric Jonas)
+1. Are there colors that are very far off the master target? <- Field 18 (Why; see Lab values)
+1. Are findings on L, a or b also there in dE? (On the subjective meaning)?
+1. Can colors on cards be differntiated visually?
+
 ## Color spaces
 
 Lab, CMYK, rgb, CMYKS?
@@ -74,22 +88,30 @@ The aim of dE is that the calculated distance value can be interpreted in a mean
 | 11 - 49   | Colors are more similar than opposite     |
 | 100       |	Colors are exact opposite                 |
 
+#### Color difference on a single card
+
 Comparing the first color cards colors with the master colors shows that there is one color that is pretty far from the master color (3rd row, 2nd column). There are some more fields where we spotted a difference at first glimpse:
 
 * lilac: 8th row, 5th column
 * blue: 8th row, 7th column
 * dark grey: 7th row, 1st column
 
-```{r dE_colorcard, echo=FALSE, fig.width=8, fig.height=8}
-color_differences %>% 
+The visualization used to compare the colors shows the 64 colors of the color cards according to their position on the color card. In each tile there are two colored circles which show the master color (left circle) and the sample color (right circle). The background color of the tiles corresponds to the dE-value. Light blue indicates a high dE-value. Dark blue ones a low dE-value.
+
+```{r, echo=FALSE}
+color_compar_tiles <- function(spotsize, spotdistance, tilesize = 1, tilehighlightcolor = "#000000", lwd = 1) {
+  color_differences %>% 
   filter(Sheet == 1, Row == 1, Column == 1) %>% 
   ggplot() +
-  geom_tile(aes(fill = Difference, x = Ccol, y = Crow)) +
-  geom_point(aes(x = Ccol+0.25, y = Crow, color = Color), size = 11) +
+  geom_tile(aes(fill = Difference, x = Ccol, y = Crow),
+            lwd = lwd, width=tilesize, height=tilesize) +
+  scale_color_manual(values = c("#FFFFFF00", tilehighlightcolor)) +
+  ggnewscale::new_scale_colour() +
+  geom_point(aes(x = Ccol+spotdistance, y = Crow, color = Color), size = spotsize) +
   scale_color_identity() +
   geom_point(
     data = master_colors %>% rowwise() %>% mutate(Color = lab_to_rgb(L, a, b)),
-    aes(x = Ccol-0.25, y = Crow, color = Color), size = 11
+    aes(x = Ccol-spotdistance, y = Crow, color = Color), size = spotsize
     ) +
   coord_fixed() +
   labs(caption = "Left circle: master color; Right circle: sample color") +
@@ -99,30 +121,18 @@ color_differences %>%
     axis.title=element_text(size=14,face="bold"),
     plot.caption = element_text(size=12, hjust = 0)
     )
+}
+```
+
+```{r dE_colorcard, echo=FALSE, fig.width=8, fig.height=8}
+color_compar_tiles(spotsize = 11, spotdistance = 0.25)
 ```
 
 To spot the color difference it is very helpful to let the colors to compare overlap. Thus we can find more colors that are distinguishable by us on our screen. Almost all grey colors are separable from their master color. So are most of the brown colors. Most of the other colors seem to be equal. An exception is the red color (3rd row, 8th column).
 
 
 ```{r dE_colorcard_2, echo=FALSE, fig.width=8, fig.height=8}
-color_differences %>% 
-  filter(Sheet == 1, Row == 1, Column == 1) %>% 
-  ggplot() +
-  geom_tile(aes(fill = Difference, x = Ccol, y = Crow)) +
-  geom_point(aes(x = Ccol+0.2, y = Crow, color = Color), size = 12) +
-  scale_color_identity() +
-  geom_point(
-    data = master_colors %>% rowwise() %>% mutate(Color = lab_to_rgb(L, a, b)),
-    aes(x = Ccol-0.2, y = Crow, color = Color), size = 12
-    ) +
-  coord_fixed() +
-  labs(caption = "Left circle: master color; Right circle: sample color") +
-  xlab("Column") + ylab("Row") +
-  theme(
-    axis.text=element_text(size=12),
-    axis.title=element_text(size=14,face="bold"),
-    plot.caption = element_text(size=12, hjust = 0)
-    )
+color_compar_tiles(spotsize = 13, spotdistance = 0.175)
 ```
 
 In order to check if the cut off value of 2 holds for our example we show the same picture again but highlight which colors should be distinguishable in theory. It tells us that we sould be able to spot the difference for the following colors but we did not:
@@ -139,11 +149,11 @@ color_differences %>%
             lwd = 1.5, width=0.95, height=0.95) +
   scale_color_manual(values = c("#FFFFFF00", "#88CC00")) +
   ggnewscale::new_scale_colour() +
-  geom_point(aes(x = Ccol+0.2, y = Crow, color = Color), size = 12) +
+  geom_point(aes(x = Ccol+0.175, y = Crow, color = Color), size = 13) +
   scale_color_identity() +
   geom_point(
     data = master_colors %>% rowwise() %>% mutate(Color = lab_to_rgb(L, a, b)),
-    aes(x = Ccol-0.2, y = Crow, color = Color), size = 12
+    aes(x = Ccol-0.175, y = Crow, color = Color), size = 13
     ) +
   coord_fixed() +
   labs(caption = "Left circle: master color; Right circle: sample color") +
@@ -165,11 +175,11 @@ color_differences %>%
             lwd = 1.5, width=0.95, height=0.95) +
   scale_color_manual(values = c("#FFFFFF00", "#CC3333")) +
   ggnewscale::new_scale_colour() +
-  geom_point(aes(x = Ccol+0.2, y = Crow, color = Color), size = 12) +
+  geom_point(aes(x = Ccol+0.175, y = Crow, color = Color), size = 13) +
   scale_color_identity() +
   geom_point(
     data = master_colors %>% rowwise() %>% mutate(Color = lab_to_rgb(L, a, b)),
-    aes(x = Ccol-0.2, y = Crow, color = Color), size = 12
+    aes(x = Ccol-0.175, y = Crow, color = Color), size = 13
     ) +
   coord_fixed() +
   labs(caption = "Left circle: master color; Right circle: sample color") +
@@ -181,16 +191,35 @@ color_differences %>%
     )
 ```
 
-## Questions
+#### color variance among cards
 
-1. Is the color difference greater within a sheet (among positions) or across sheets?  (Simon Schäfer)
-1. Is there a difference in dE regarding skin or non skin color?  (Simon Schäfer)
-1. How is the color special used (regression)?  (Simon Schäfer)
-1. What dE value can be seen on our screen? (Simon Schäfer)
-1. Color difference of mean over all cards to master target: is it in some uncertainty area? (Eric Jonas)
-1. Are some Lab values more often in master than in mean? (Eric Jonas)
-1. How close are CMYK and Lab value in rgb? (Eric Jonas)
-1. Is there a correlation between dE(CMYK colors, Lab colors) and S? (Eric Jonas)
-1. Are there colors that are very far off the master target? <- Field 18 (Why; see Lab values)
-1. Are findings on L, a or b also there in dE? (On the subjective meaning)?
-1. Can colors on cards be differntiated visually?
+```{r}
+DeltaE_map_for_sheet <- function(data) {
+  data %>% 
+    ggplot() +
+    geom_tile(aes(fill = Difference, x = Ccol, y = Crow)) +
+    coord_fixed() +
+    xlab("Column on sheet") + ylab("Row on sheet") +
+    theme(
+      axis.text=element_text(size=12),
+      axis.title=element_text(size=14,face="bold"),
+      plot.caption = element_text(size=12, hjust = 0)
+      )
+}
+```
+
+In order to get a feeling if the color difference compared to the masters colors varies more or less regarding to the color cards position on the sheet or among the sheets at the same position one can have a look at small multiples for both cases. Displaying all color cards of all sheets is possible on a huge screen but not in this report. Anyhow - as one can see - comparing the separated dE tile maps visually is not easy.
+
+Looking at all color cards in a specific position among all sheets shows little difference. Looking at all color cards of a single sheet shows that there might be two slight patterns. One might find 1) a light diagonal from bottom left to top right (see cards in first row) or 2) a dark diagonal from top left to bottom right (see cards in last row). We will investigate this further with other visualization techniques.
+
+```{r dE_colorcards_topleft_all_sheets, echo=FALSE, fig.width=8, fig.height=8}
+DeltaE_map_for_sheet(color_differences %>% filter(Row == 1, Column == 1)) +
+  labs(caption = "dE for all color cards at the top left position of all sheets") +
+  facet_wrap(Sheet ~.)
+```
+
+```{r dE_colorcards_1st_sheet, echo=FALSE, fig.width=8, fig.height=8}
+DeltaE_map_for_sheet(color_differences %>% filter(Sheet == 1)) +
+  labs(caption = "dE for all color cards of the first sheet") +
+  facet_grid(Row ~ Column)
+```
