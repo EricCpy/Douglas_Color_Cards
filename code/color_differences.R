@@ -5,12 +5,14 @@ source("code/setup.R")
 color_differences %>% 
   filter(Sheet == 1, Row == 1, Column == 1) %>% 
   ggplot() +
-  geom_tile(aes(fill = Difference, x = Crow, y = Ccol)) +
-  geom_point(aes(x = Crow+0.25, y = Ccol, color = Color), size = 12) +
+  geom_tile(aes(fill = Difference, x = Ccol, y = Crow, color = Difference > 2),
+            lwd = 1.5, linetype = 1, width=0.9, height=0.9) +
+  ggnewscale::new_scale_colour() +
+  geom_point(aes(x = Ccol+0.175, y = Crow, color = Color), size = 14) +
   scale_color_identity() +
   geom_point(
     data = master_colors %>% rowwise() %>% mutate(Color = lab_to_rgb(L, a, b)),
-    aes(x = Crow-0.25, y = Ccol, color = Color), size = 12
+    aes(x = Ccol-0.175, y = Crow, color = Color), size = 14
     ) +
   coord_fixed()
 
@@ -19,7 +21,7 @@ color_differences %>%
 DeltaE_map_for_sheet <- function(data) {
   data %>% 
     ggplot() +
-    geom_tile(aes(fill = Difference, x = Crow, y = Ccol)) +
+    geom_tile(aes(fill = Difference, x = Ccol, y = Crow)) +
     coord_fixed() +
     facet_grid(Row ~ Column)
 }
