@@ -193,7 +193,7 @@ color_differences %>%
 
 #### color variance among cards
 
-```{r}
+```{r, echo=FALSE}
 DeltaE_map_for_sheet <- function(data) {
   data %>% 
     ggplot() +
@@ -222,4 +222,22 @@ DeltaE_map_for_sheet(color_differences %>% filter(Row == 1, Column == 1)) +
 DeltaE_map_for_sheet(color_differences %>% filter(Sheet == 1)) +
   labs(caption = "dE for all color cards of the first sheet") +
   facet_grid(Row ~ Column)
+```
+
+```{r, echo=FALSE, echo=FALSE, fig.width=8, fig.height=12}
+color_dispersion_on_sheet1 <- color_differences %>%
+  filter(Sheet == 1) %>% 
+  mutate(Aggregated_by = "Sheet")
+
+color_dispersion_on_target1_1 <- color_differences %>%
+  filter(Row == 1, Column == 1) %>% 
+  mutate(Aggregated_by = "Target")
+
+color_dispersion_on_sheet1 %>% bind_rows(
+  color_dispersion_on_target1_1
+) %>% filter(Field != 18) %>% 
+  ggplot() +
+  geom_boxplot(aes(x = Aggregated_by, y = Difference)) +
+  facet_grid(Crow ~ Ccol, switch = "both", as.table=FALSE) +
+  coord_cartesian(ylim = c(0, 6.5))
 ```
