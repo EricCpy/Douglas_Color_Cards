@@ -15,9 +15,11 @@ plot_density_vs_master(mean_lab_color_card, master_colors)
 
 # master cmyk vs master lab
 master_colors_cmyk <- master_colors %>%
+  rowwise() %>%
   mutate(L = cmyk_to_lab(C, M, Y, K)[1],
          a = cmyk_to_lab(C, M, Y, K)[2],
-         b = cmyk_to_lab(C, M, Y, K)[3])
+         b = cmyk_to_lab(C, M, Y, K)[3]) %>%
+  ungroup()
 master_colors_cmyk_differences <- generate_color_difference_df(master_colors, master_colors_cmyk)
 plot_card_differences_to_master(master_colors_cmyk_differences %>% rename(Row = Crow, Col = Ccol), master_colors)
 

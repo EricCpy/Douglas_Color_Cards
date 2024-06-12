@@ -64,8 +64,6 @@ mean_lab_colors_for_sheets <- function(lab_colors_df, sheets) {
     for (c in 1:8) {
       lab_mean <- as.numeric(mean_lab_colors[paste0(c("L", "a", "b"), r, c)])
       lab_sd <- as.numeric(sd_lab_colors[paste0(c("L", "a", "b"), r, c)])
-      lab_min <- as.numeric(min_lab_colors[paste0(c("L", "a", "b"), r, c)])
-      lab_max <- as.numeric(max_lab_colors[paste0(c("L", "a", "b"), r, c)])
       mean_cols_vertical <- rbind(mean_cols_vertical, data.frame(Row = r,
                                                                  Col = c, 
                                                                  L = lab_mean[1], 

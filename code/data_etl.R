@@ -10,7 +10,9 @@ master_colors <- master_colors %>%
     S = p5
   ) %>% 
   rowwise() %>% 
-  mutate(Color = lab_to_rgb(L, a, b))
+  mutate(Color = lab_to_rgb(L, a, b)) %>% 
+  ungroup()
+
 #### sample color measurements ####
 
 lab_colors <- read.csv2("data/LabMeasurements-Color-Card.csv")

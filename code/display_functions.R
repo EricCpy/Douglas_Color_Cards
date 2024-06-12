@@ -13,11 +13,12 @@ display_color_card <- function(df, row_name = "Row", col_name = "Col", color_spa
   
   max_row <- max(df[[row_name]])
   max_col <- max(df[[col_name]])
+  adb <- 1
   corners <- df %>%
-    filter((.[[row_name]] == 1 & .[[col_name]] == 1) |
-             (.[[row_name]] == 1 & .[[col_name]] == max_col) |
-             (.[[row_name]] == max_row & .[[col_name]] == 1) |
-             (.[[row_name]] == max_row & .[[col_name]] == max_col))
+    filter((df[[row_name]] == 1 & df[[col_name]] == 1) |
+             (df[[row_name]] == 1 & df[[col_name]] == max_col) |
+             (df[[row_name]] == max_row & df[[col_name]] == 1) |
+             (df[[row_name]] == max_row & df[[col_name]] == max_col))
   df_no_corners <- anti_join(df, corners, by = c(row_name, col_name))
   
   ggplot() +
