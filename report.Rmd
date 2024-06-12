@@ -1,18 +1,49 @@
 ---
 title: "Douglas color cards"
-author: "Simon Schäfer"
-date: "2024-06-05"
+author: "Nicolas Hahn, Eric Jonas, Pavlo Kravets, Simon Schäfer"
+date: "`r Sys.Date()`"
 output: bookdown::gitbook
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+source("code/setup.R")
 ```
 
-# Questions
+# Douglas color cards
+
+The Douglas color cards are used to determine someones skin color to find the most appropriate cosmetics products - e.g. the perfect foundation. They show 64 squares of various colors. The center four squares get punched out.
+
+```{r colorcard, echo=FALSE, warning=FALSE}
+display_color_card(master_colors, "Crow", "Ccol", "Lab", 2)
+```
+
+The color cards are placed in front of ones facial skin and a photo is taken. The visual information about the skin color (visible at the four center squares) and the reference color squares is evaluated by an app and the closest skin color type is calculated.
+
+While production 42 color cards are printed on each single sheet. On each color card is a QR code that is used by the app to determine where on a sheet the color card was printed.
+
+## Quality assurance
+
+To assure the best skin color typification it is crucial to assure a consistent production of the color cards. Especially the reference color squares colors variance should be as low as possible.
+
+The existence of QR codes indicating the position on a sheet reduces the requirements to meet because thus only the variance of reference color squares at the same position of the sheets have to be as low as possible. Differnces between reference color squares among different positions on a sheet can be taken care of in the app once the positional information is evaluated from the QR code.
+
+## Data description
+
+The data given consists of two files. One file holds the master color information given in the Lab colorspace as well as in the CMYKS color space. In the latter S stands for special and might be some kind of skin color pigment.
+
+The second file holds color information obtained from 13 printed sheets. Thus we find the Lab color information for all 64 squares for 42 color cards for 13 sheets resulting in `r format(64*42*13*3, scientific=FALSE)` numeric values.
+
+## Objectives
+
+* Analyse where variance or difference in color is noteworthy high / low
+* Visualize variance and differences in colors
+* Use the CMYKS color information to match the Lab color values
+
+### Questions (formulated before exploration)
 
 1. Is the color difference greater within a sheet (among positions) or across sheets?  (Simon Schäfer)
-1. Is there a difference in dE regardin skin or non skin color?  (Simon Schäfer)
+1. Is there a difference in dE regarding skin or non skin color?  (Simon Schäfer)
 1. How is the color special used (regression)?  (Simon Schäfer)
 1. What dE value can be seen on our screen? (Simon Schäfer)
 1. Color difference of mean over all cards to master target: is it in some uncertainty area? (Eric Jonas: R-Code ✔)
@@ -23,24 +54,190 @@ knitr::opts_chunk$set(echo = TRUE)
 1. Are findings on L, a or b also there in dE? (On the subjective meaning)?
 1. Can colors on cards be differntiated visually?
 
-# Demo stuff
+## Color spaces
 
-## R Markdown
+Lab, CMYK, rgb, CMYKS?
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+## Color difference
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+One can analyse difference in color in at least three ways:
 
-```{r cars}
-summary(cars)
+1. Qualitative: Looking at them - but this takes a while if thee are many colors
+1. Quantitative: Compare the numeric values of each color space dimension
+1. Quantitative: Compare all color space dimensions at once with a proper function (i. e. \( \Delta \) E)
+
+### Comparing color space dimensions one by one
+
+blub
+
+### Compaing colors with distance function
+
+A function to compare two colors given in Lab color space is \( \Delta \) E - also called dE in this report. Actually there are multiple versions of [Delta E](https://zschuessler.github.io/DeltaE/learn/). The first was given 1976 and just calculates the Euklidean distance in the Lab color space:
+
+\[\Delta E_{ab}=\sqrt{(L_2-L_1)^2+(a_2-a_1)^2+(b_2-b_1)^2}\]
+
+In this report we use the most recent \( \Delta \) E formula from 2000. It is much more complex but solves problems when calculating color difference for colors with high lightness value.
+
+The aim of dE is that the calculated distance value can be interpreted in a meaningful way for humans. The following table can be a taken as a guide but there exceptions are possible.
+
+| Delta E   |	Perception                                |
+|-----------|-------------------------------------------|
+| <= 1.0    | Not perceptible by human eyes.            |
+| 1 - 2     | Perceptible through close observation.    |
+| 2 - 10    | Perceptible at a glance.                  |
+| 11 - 49   | Colors are more similar than opposite     |
+| 100       |	Colors are exact opposite                 |
+
+#### Color difference on a single card
+
+Comparing the first color cards colors with the master colors shows that there is one color that is pretty far from the master color (3rd row, 2nd column). There are some more fields where we spotted a difference at first glimpse:
+
+* lilac: 8th row, 5th column
+* blue: 8th row, 7th column
+* dark grey: 7th row, 1st column
+
+The visualization used to compare the colors shows the 64 colors of the color cards according to their position on the color card. In each tile there are two colored circles which show the master color (left circle) and the sample color (right circle). The background color of the tiles corresponds to the dE-value. Light blue indicates a high dE-value. Dark blue ones a low dE-value.
+
+```{r, echo=FALSE}
+color_compar_tiles <- function(spotsize, spotdistance, tilesize = 1, tilehighlightcolor = "#000000", lwd = 1) {
+  color_differences %>% 
+  filter(Sheet == 1, Row == 1, Column == 1) %>% 
+  ggplot() +
+  geom_tile(aes(fill = Difference, x = Ccol, y = Crow),
+            lwd = lwd, width=tilesize, height=tilesize) +
+  scale_color_manual(values = c("#FFFFFF00", tilehighlightcolor)) +
+  ggnewscale::new_scale_colour() +
+  geom_point(aes(x = Ccol+spotdistance, y = Crow, color = Color), size = spotsize) +
+  scale_color_identity() +
+  geom_point(
+    data = master_colors %>% rowwise() %>% mutate(Color = lab_to_rgb(L, a, b)),
+    aes(x = Ccol-spotdistance, y = Crow, color = Color), size = spotsize
+    ) +
+  coord_fixed() +
+  labs(caption = "Left circle: master color; Right circle: sample color") +
+  xlab("Column") + ylab("Row") +
+  theme(
+    axis.text=element_text(size=12),
+    axis.title=element_text(size=14,face="bold"),
+    plot.caption = element_text(size=12, hjust = 0)
+    )
+}
 ```
 
-## Including Plots
-
-You can also embed plots, for example:
-
-```{r pressure, echo=FALSE}
-plot(pressure)
+```{r dE_colorcard, echo=FALSE, fig.width=8, fig.height=8}
+color_compar_tiles(spotsize = 11, spotdistance = 0.25)
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+To spot the color difference it is very helpful to let the colors to compare overlap. Thus we can find more colors that are distinguishable by us on our screen. Almost all grey colors are separable from their master color. So are most of the brown colors. Most of the other colors seem to be equal. An exception is the red color (3rd row, 8th column).
+
+
+```{r dE_colorcard_2, echo=FALSE, fig.width=8, fig.height=8}
+color_compar_tiles(spotsize = 13, spotdistance = 0.175)
+```
+
+In order to check if the cut off value of 2 holds for our example we show the same picture again but highlight which colors should be distinguishable in theory. It tells us that we sould be able to spot the difference for the following colors but we did not:
+
+* magenta: 4th row, 8th column
+* olive: 1st row, 2nd column
+* lavender: 1st row, 5th column
+
+```{r dE_colorcard_3, echo=FALSE, fig.width=8, fig.height=8}
+color_differences %>% 
+  filter(Sheet == 1, Row == 1, Column == 1) %>% 
+  ggplot() +
+  geom_tile(aes(fill = Difference, x = Ccol, y = Crow, color = Difference > 2),
+            lwd = 1.5, width=0.95, height=0.95) +
+  scale_color_manual(values = c("#FFFFFF00", "#88CC00")) +
+  ggnewscale::new_scale_colour() +
+  geom_point(aes(x = Ccol+0.175, y = Crow, color = Color), size = 13) +
+  scale_color_identity() +
+  geom_point(
+    data = master_colors %>% rowwise() %>% mutate(Color = lab_to_rgb(L, a, b)),
+    aes(x = Ccol-0.175, y = Crow, color = Color), size = 13
+    ) +
+  coord_fixed() +
+  labs(caption = "Left circle: master color; Right circle: sample color") +
+  xlab("Column") + ylab("Row") +
+  theme(
+    axis.text=element_text(size=12),
+    axis.title=element_text(size=14,face="bold"),
+    plot.caption = element_text(size=12, hjust = 0)
+    )
+```
+
+Finally we have a look at which color pairs should be no visible difference. Here we found no exception to the rule of thumb given.
+
+```{r dE_colorcard_4, echo=FALSE, fig.width=8, fig.height=8}
+color_differences %>% 
+  filter(Sheet == 1, Row == 1, Column == 1) %>% 
+  ggplot() +
+  geom_tile(aes(fill = Difference, x = Ccol, y = Crow, color = Difference < 1),
+            lwd = 1.5, width=0.95, height=0.95) +
+  scale_color_manual(values = c("#FFFFFF00", "#CC3333")) +
+  ggnewscale::new_scale_colour() +
+  geom_point(aes(x = Ccol+0.175, y = Crow, color = Color), size = 13) +
+  scale_color_identity() +
+  geom_point(
+    data = master_colors %>% rowwise() %>% mutate(Color = lab_to_rgb(L, a, b)),
+    aes(x = Ccol-0.175, y = Crow, color = Color), size = 13
+    ) +
+  coord_fixed() +
+  labs(caption = "Left circle: master color; Right circle: sample color") +
+  xlab("Column") + ylab("Row") +
+  theme(
+    axis.text=element_text(size=12),
+    axis.title=element_text(size=14,face="bold"),
+    plot.caption = element_text(size=12, hjust = 0)
+    )
+```
+
+#### color variance among cards
+
+```{r, echo=FALSE}
+DeltaE_map_for_sheet <- function(data) {
+  data %>% 
+    ggplot() +
+    geom_tile(aes(fill = Difference, x = Ccol, y = Crow)) +
+    coord_fixed() +
+    xlab("Column on sheet") + ylab("Row on sheet") +
+    theme(
+      axis.text=element_text(size=12),
+      axis.title=element_text(size=14,face="bold"),
+      plot.caption = element_text(size=12, hjust = 0)
+      )
+}
+```
+
+In order to get a feeling if the color difference compared to the masters colors varies more or less regarding to the color cards position on the sheet or among the sheets at the same position one can have a look at small multiples for both cases. Displaying all color cards of all sheets is possible on a huge screen but not in this report. Anyhow - as one can see - comparing the separated dE tile maps visually is not easy.
+
+Looking at all color cards in a specific position among all sheets shows little difference. Looking at all color cards of a single sheet shows that there might be two slight patterns. One might find 1) a light diagonal from bottom left to top right (see cards in first row) or 2) a dark diagonal from top left to bottom right (see cards in last row). We will investigate this further with other visualization techniques.
+
+```{r dE_colorcards_topleft_all_sheets, echo=FALSE, fig.width=8, fig.height=8}
+DeltaE_map_for_sheet(color_differences %>% filter(Row == 1, Column == 1)) +
+  labs(caption = "dE for all color cards at the top left position of all sheets") +
+  facet_wrap(Sheet ~.)
+```
+
+```{r dE_colorcards_1st_sheet, echo=FALSE, fig.width=8, fig.height=8}
+DeltaE_map_for_sheet(color_differences %>% filter(Sheet == 1)) +
+  labs(caption = "dE for all color cards of the first sheet") +
+  facet_grid(Row ~ Column)
+```
+
+```{r, echo=FALSE, echo=FALSE, fig.width=8, fig.height=12}
+color_dispersion_on_sheet1 <- color_differences %>%
+  filter(Sheet == 1) %>% 
+  mutate(Aggregated_by = "Sheet")
+
+color_dispersion_on_target1_1 <- color_differences %>%
+  filter(Row == 1, Column == 1) %>% 
+  mutate(Aggregated_by = "Target")
+
+color_dispersion_on_sheet1 %>% bind_rows(
+  color_dispersion_on_target1_1
+) %>% filter(Field != 18) %>% 
+  ggplot() +
+  geom_boxplot(aes(x = Aggregated_by, y = Difference)) +
+  facet_grid(Crow ~ Ccol, switch = "both", as.table=FALSE) +
+  coord_cartesian(ylim = c(0, 6.5))
+```
