@@ -96,3 +96,13 @@ plot_card_differences_to_master <- function(card_colors, master_colors) {
     coord_fixed()
 }
 
+plot_correlation <- function(data, x_var, y_var) {
+  cor_spearman <- cor(data[[x_var]], data[[y_var]], method = "spearman")
+  cor_pearson <- cor(data[[x_var]], data[[y_var]], method = "pearson")
+  
+  ggplot(data, aes_string(x = x_var, y = y_var)) +
+    geom_point() +
+    geom_smooth(method = "lm", se = FALSE) +
+    labs(title = paste0("Correlation plot between ", x_var, " and ", y_var, "\nPearson: ", round(cor_pearson, 2), " Spearman: ", round(cor_spearman, 2)),
+         x = paste0(x_var, "-value"), y = paste0(y_var, "-value"))
+}

@@ -23,8 +23,8 @@ master_colors_cmyk <- master_colors %>%
 master_colors_cmyk_differences <- generate_color_difference_df(master_colors, master_colors_cmyk)
 plot_card_differences_to_master(master_colors_cmyk_differences %>% rename(Row = Crow, Col = Ccol), master_colors)
 
-# add correlation 
-# 2D Scatterplot Chroma und L einzeln zu S
-# 3D Scatterplot L, Chroma zu S
-# correlationen berechnen
-
+# 2D Scatterplots Chroma and single channels to S
+plot_correlation(master_colors, "L", "S")
+plot_correlation(master_colors, "a", "S")
+plot_correlation(master_colors, "b", "S")
+plot_correlation(master_colors, "Chroma", "S")

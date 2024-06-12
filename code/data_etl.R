@@ -1,6 +1,7 @@
 #### master color data ####
 
 master_colors <- read.csv2("data/MasterColorCard.csv")
+master_colors$Chroma <- sqrt(master_colors$a^2 + master_colors$b^2)
 master_colors <- master_colors %>%
   rename(
     C = p1,
