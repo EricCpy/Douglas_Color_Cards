@@ -23,7 +23,7 @@
 <meta name="author" content="Nicolas Hahn, Eric Jonas, Pavlo Kravets, Simon Schäfer" />
 
 
-<meta name="date" content="2024-06-11" />
+<meta name="date" content="2024-06-15" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -80,7 +80,12 @@
 <ul>
 <li class="chapter" data-level="1.3.1" data-path=""><a href="#questions-formulated-before-exploration"><i class="fa fa-check"></i><b>1.3.1</b> Questions (formulated before exploration)</a></li>
 </ul></li>
-<li class="chapter" data-level="1.4" data-path=""><a href="#color-spaces"><i class="fa fa-check"></i><b>1.4</b> Color spaces</a></li>
+<li class="chapter" data-level="1.4" data-path=""><a href="#color-spaces"><i class="fa fa-check"></i><b>1.4</b> Color spaces</a>
+<ul>
+<li class="chapter" data-level="1.4.1" data-path=""><a href="#rgb"><i class="fa fa-check"></i><b>1.4.1</b> RGB</a></li>
+<li class="chapter" data-level="1.4.2" data-path=""><a href="#cmyk"><i class="fa fa-check"></i><b>1.4.2</b> CMYK</a></li>
+<li class="chapter" data-level="1.4.3" data-path=""><a href="#cielab"><i class="fa fa-check"></i><b>1.4.3</b> CIELAB</a></li>
+</ul></li>
 <li class="chapter" data-level="1.5" data-path=""><a href="#color-difference"><i class="fa fa-check"></i><b>1.5</b> Color difference</a>
 <ul>
 <li class="chapter" data-level="1.5.1" data-path=""><a href="#comparing-color-space-dimensions-one-by-one"><i class="fa fa-check"></i><b>1.5.1</b> Comparing color space dimensions one by one</a></li>
@@ -107,7 +112,7 @@
 <div id="header">
 <h1 class="title">Douglas color cards</h1>
 <p class="author"><em>Nicolas Hahn, Eric Jonas, Pavlo Kravets, Simon Schäfer</em></p>
-<p class="date"><em>2024-06-11</em></p>
+<p class="date"><em>2024-06-15</em></p>
 </div>
 <div id="douglas-color-cards" class="section level1 hasAnchor" number="1">
 <h1><span class="header-section-number">1</span> Douglas color cards<a href="#douglas-color-cards" class="anchor-section" aria-label="Anchor link to header"></a></h1>
@@ -139,19 +144,35 @@
 <li>Is there a difference in dE regarding skin or non skin color? (Simon Schäfer)</li>
 <li>How is the color special used (regression)? (Simon Schäfer)</li>
 <li>What dE value can be seen on our screen? (Simon Schäfer)</li>
-<li>Color difference of mean over all cards to master target: is it in some uncertainty area? (Eric Jonas)</li>
-<li>Are some Lab values more often in master than in mean? (Eric Jonas)</li>
-<li>How close are CMYK and Lab value in rgb? (Eric Jonas)</li>
+<li>Color difference of mean over all cards to master target: is it in some uncertainty area? (Eric Jonas: R-Code ✔)</li>
+<li>Are some Lab values more often in master than in mean? (Eric Jonas: R-Code ✔)</li>
+<li>How close are CMYK and Lab values? (Eric Jonas: R-Code ✔)</li>
 <li>Is there a correlation between dE(CMYK colors, Lab colors) and S? (Eric Jonas)</li>
 <li>Are there colors that are very far off the master target? &lt;- Field 18 (Why; see Lab values)</li>
 <li>Are findings on L, a or b also there in dE? (On the subjective meaning)?</li>
-<li>Can colors on cards be differntiated visually?</li>
+<li>Can colors on cards be differentiated visually?</li>
 </ol>
 </div>
 </div>
 <div id="color-spaces" class="section level2 hasAnchor" number="1.4">
 <h2><span class="header-section-number">1.4</span> Color spaces<a href="#color-spaces" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>Lab, CMYK, rgb, CMYKS?</p>
+<p>Today there are many systems that are used to describe colors. Some of them are device-dependent, such as CMYK and RGB, - they use predefined original colors (for example, ink colors) to create the palette,
+others, such as CIE Lab try to approximate human perception of color.</p>
+<div id="rgb" class="section level3 hasAnchor" number="1.4.1">
+<h3><span class="header-section-number">1.4.1</span> RGB<a href="#rgb" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>RGB is what is known as additive color model - it defines white color as combination of its three components - red, green and blue. It is widely used for light-emitting devices that rely on a combination of smaller elements, such as an LED screen. RGB is device-dependent (its component colors rely on specific elements, such as LED lights), often struggles to portray darker colors, and does not work as well with not light-emitting surfaces. As such, it is not often used in printing.</p>
+</div>
+<div id="cmyk" class="section level3 hasAnchor" number="1.4.2">
+<h3><span class="header-section-number">1.4.2</span> CMYK<a href="#cmyk" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>CMYK (cyan, magenta, yellow and key) is a subtractive color model - white color is absence of its components. It is widely used in printing, and even the word “key” in the name comes from printing - it is used for key plates, a type of device that prints small details. Key color is black, and is used to obtain better black color, more precise print and to save on the expensive inks.</p>
+<p>CMYK sometimes struggles to correctly portray light, but saturated colors - it uses technique called halftoning to model light colors, which involves using less ink, which leads to lower saturation.</p>
+<p>CMYK is also device-dependent - the result depends on the provided inks. As such, you often cannot easily translate a picture from RGB to CMYK or from one device’s CMYK to another. As a result, you need a sort of a “middle ground”.</p>
+</div>
+<div id="cielab" class="section level3 hasAnchor" number="1.4.3">
+<h3><span class="header-section-number">1.4.3</span> CIELAB<a href="#cielab" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>CIELAB, also known as CIE L*a*b is a device-independent color space, designed to mimic human perception of color. In the name CIE stands for International Commission on Illumination (french name is used for an abbreviation), while L, a and b are component axis. L is luminosity, while a and b are two coordinates that define color - they don’t have specific color equivalents.</p>
+<p>CIELA found use in many applications - it is used when a conversion between color spaces are needed or when you want to define a palette to be the same across many devices.</p>
+</div>
 </div>
 <div id="color-difference" class="section level2 hasAnchor" number="1.5">
 <h2><span class="header-section-number">1.5</span> Color difference<a href="#color-difference" class="anchor-section" aria-label="Anchor link to header"></a></h2>

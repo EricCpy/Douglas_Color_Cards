@@ -52,11 +52,27 @@ The second file holds color information obtained from 13 printed sheets. Thus we
 1. Is there a correlation between dE(CMYK colors, Lab colors) and S? (Eric Jonas)
 1. Are there colors that are very far off the master target? <- Field 18 (Why; see Lab values)
 1. Are findings on L, a or b also there in dE? (On the subjective meaning)?
-1. Can colors on cards be differntiated visually?
+1. Can colors on cards be differentiated visually?
 
 ## Color spaces
 
-Lab, CMYK, rgb, CMYKS?
+Today there are many systems that are used to describe colors. Some of them are device-dependent, such as CMYK and RGB, - they use predefined original colors (for example, ink colors) to create the palette,
+others, such as CIE Lab try to approximate human perception of color.
+
+### RGB
+RGB is what is known as additive color model - it defines white color as combination of its three components - red, green and blue. It is widely used for light-emitting devices that rely on a combination of smaller elements, such as an LED screen. RGB is device-dependent (its component colors rely on specific elements, such as LED lights), often struggles to portray darker colors, and does not work as well with not light-emitting surfaces. As such, it is not often used in printing.
+
+### CMYK
+CMYK (cyan, magenta, yellow and key) is a subtractive color model - white color is absence of its components. It is widely used in printing, and even the word "key" in the name comes from printing - it is used for key plates, a type of device that prints small details. Key color is black, and is used to obtain better black color, more precise print and to save on the expensive inks.
+
+CMYK sometimes struggles to correctly portray light, but saturated colors - it uses technique called halftoning to model light colors, which involves using less ink, which leads to lower saturation.
+
+CMYK is also device-dependent - the result depends on the provided inks. As such, you often cannot easily translate a picture from RGB to CMYK or from one device's CMYK to another. As a result, you need a sort of a "middle ground".
+
+### CIELAB
+CIELAB, also known as CIE L\*a\*b is a device-independent color space, designed to mimic human perception of color. In the name CIE stands for International Commission on Illumination (french name is used for an abbreviation), while L, a and b are component axis. L is luminosity, while a and b are two coordinates that define color - they don't have specific color equivalents.
+
+CIELA found use in many applications - it is used when a conversion between color spaces are needed or when you want to define a palette to be the same across many devices.
 
 ## Color difference
 
