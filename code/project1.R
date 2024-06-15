@@ -7,9 +7,24 @@ display_color_sheet(lab_colors, color_sheet_idx = 1)
 display_color_sheet(lab_colors, color_sheet_idx = 5)
 display_color_sheet(lab_colors, color_sheet_idx = 13)
 
-# how does the column S in master influence CMYK values
-# compare cmyk lab to real lab
-# regression doesnt really help R2 of 90%, but regression still doesnt make sense if they have a formula for CMYKS to Lab
-
-mean_lab_color_card <- mean_lab_colors_for_sheets(lab_colors, 1:13)
+# mean color card evaluation
+display_color_card(mean_lab_color_card, "Row", "Col", "Lab", 2)
+plot_card_differences_to_master(mean_lab_color_differences, master_colors)
 plot_card_vs_master(mean_lab_color_card, master_colors)
+plot_density_vs_master(mean_lab_color_card, master_colors)
+
+# master cmyk vs master lab
+master_colors_cmyk <- master_colors %>%
+  rowwise() %>%
+  mutate(L = cmyk_to_lab(C, M, Y, K)[1],
+         a = cmyk_to_lab(C, M, Y, K)[2],
+         b = cmyk_to_lab(C, M, Y, K)[3]) %>%
+  ungroup()
+master_colors_cmyk_differences <- generate_color_difference_df(master_colors, master_colors_cmyk)
+plot_card_differences_to_master(master_colors_cmyk_differences %>% rename(Row = Crow, Col = Ccol), master_colors)
+
+# 2D Scatterplots Chroma and single channels to S
+plot_correlation(master_colors, "L", "S")
+plot_correlation(master_colors, "a", "S")
+plot_correlation(master_colors, "b", "S")
+plot_correlation(master_colors, "Chroma", "S")

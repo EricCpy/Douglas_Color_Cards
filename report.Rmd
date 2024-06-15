@@ -46,10 +46,9 @@ The second file holds color information obtained from 13 printed sheets. Thus we
 1. Is there a difference in dE regarding skin or non skin color / calibration color?  (Pavlov)
 1. How is the color special used (regression)? (Simon Schäfer)
 1. What dE value can be seen on our screen? (Simon Schäfer)
-1. Can colors on cards be differntiated visually? (Simon Schäfer)
-1. Color difference of mean over all cards to master target: is it in some uncertainty area? (Eric Jonas)
-1. Are some Lab values more often in master than in mean? (Eric Jonas)
-1. How close are CMYK and Lab value in rgb? (Eric Jonas)
+1. Color difference of mean over all cards to master target: is it in some uncertainty area? (Eric Jonas: R-Code ✔)
+1. Are some Lab values more often in master than in mean? (Eric Jonas: R-Code ✔)
+1. How close are CMYK and Lab values? (Eric Jonas: R-Code ✔)
 1. Is there a correlation between dE(CMYK colors, Lab colors) and S? (Eric Jonas)
 1. Are there colors that are very far off the master target? <- Field 18 (Why; see Lab values)
 1. Are findings on L, a or b also there in dE? (On the subjective meaning)?

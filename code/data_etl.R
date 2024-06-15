@@ -1,6 +1,7 @@
 #### master color data ####
 
 master_colors <- read.csv2("data/MasterColorCard.csv")
+master_colors$Chroma <- sqrt(master_colors$a^2 + master_colors$b^2)
 master_colors <- master_colors %>%
   rename(
     C = p1,
@@ -8,7 +9,10 @@ master_colors <- master_colors %>%
     Y = p3,
     K = p4,
     S = p5
-  )
+  ) %>% 
+  rowwise() %>% 
+  mutate(Color = lab_to_rgb(L, a, b)) %>% 
+  ungroup()
 
 #### sample color measurements ####
 
@@ -34,11 +38,9 @@ lab_colors_master_shape <- lab_colors %>%
 cards_per_sheet <- max(lab_colors_master_shape$Row)*max(lab_colors_master_shape$Column)
 n_sheets <- max(lab_colors$Sheet)
 
-color_differences <- dE(
-    master_colors %>% attach_replicas_to_df_by_rows(cards_per_sheet*n_sheets) %>% select("L", "a", "b"), 
-    lab_colors_master_shape %>% select("L", "a", "b")
-  ) %>% 
-  data.frame(Difference = .) %>% 
-  bind_cols(lab_colors_master_shape) %>% 
-  rowwise() %>% 
-  mutate(Color = lab_to_rgb(L, a, b))
+color_differences <- generate_color_difference_df(master_colors %>% attach_replicas_to_df_by_rows(cards_per_sheet*n_sheets), lab_colors_master_shape)
+
+mean_lab_color_card <- mean_lab_colors_for_sheets(lab_colors, 1:13)
+mean_lab_color_differences <- generate_color_difference_df(master_colors, mean_lab_color_card)
+
+
