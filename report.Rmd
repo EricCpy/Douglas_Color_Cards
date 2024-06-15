@@ -43,18 +43,19 @@ The second file holds color information obtained from 13 printed sheets. Thus we
 ### Questions (formulated before exploration)
 
 1. Is the color difference greater within a sheet (among positions) or across sheets?  (Simon Schäfer)
-1. Is there a difference in dE regarding skin or non skin color?  (Simon Schäfer)
-1. How is the color special used (regression)?  (Simon Schäfer)
+1. Is there a difference in dE regarding skin or non skin color / calibration color?  (Pavlov)
+1. How is the color special used (regression)? (Simon Schäfer)
 1. What dE value can be seen on our screen? (Simon Schäfer)
+1. Can colors on cards be differntiated visually? (Simon Schäfer)
 1. Color difference of mean over all cards to master target: is it in some uncertainty area? (Eric Jonas)
 1. Are some Lab values more often in master than in mean? (Eric Jonas)
 1. How close are CMYK and Lab value in rgb? (Eric Jonas)
 1. Is there a correlation between dE(CMYK colors, Lab colors) and S? (Eric Jonas)
 1. Are there colors that are very far off the master target? <- Field 18 (Why; see Lab values)
 1. Are findings on L, a or b also there in dE? (On the subjective meaning)?
-1. Can colors on cards be differntiated visually?
+1. Are there especially good / bad cards? (Consistently / target specific) (Pavlo)
 
-## Color spaces
+## Color spaces (Pavlo)
 
 Lab, CMYK, rgb, CMYKS?
 
@@ -199,7 +200,6 @@ DeltaE_map_for_sheet <- function(data) {
     ggplot() +
     geom_tile(aes(fill = Difference, x = Ccol, y = Crow)) +
     coord_fixed() +
-    xlab("Column on sheet") + ylab("Row on sheet") +
     theme(
       axis.text=element_text(size=12),
       axis.title=element_text(size=14,face="bold"),
@@ -215,13 +215,17 @@ Looking at all color cards in a specific position among all sheets shows little 
 ```{r dE_colorcards_topleft_all_sheets, echo=FALSE, fig.width=8, fig.height=8}
 DeltaE_map_for_sheet(color_differences %>% filter(Row == 1, Column == 1)) +
   labs(caption = "dE for all color cards at the top left position of all sheets") +
-  facet_wrap(Sheet ~.)
+  facet_wrap(Sheet ~.) +
+  theme(
+    axis.title = element_blank()
+  )
 ```
 
 ```{r dE_colorcards_1st_sheet, echo=FALSE, fig.width=8, fig.height=8}
 DeltaE_map_for_sheet(color_differences %>% filter(Sheet == 1)) +
   labs(caption = "dE for all color cards of the first sheet") +
-  facet_grid(Row ~ Column)
+  facet_grid(Row ~ Column) +
+  xlab("Column on sheet") + ylab("Row on sheet")
 ```
 
 ```{r, echo=FALSE, echo=FALSE, fig.width=8, fig.height=12}

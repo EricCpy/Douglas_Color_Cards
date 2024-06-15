@@ -69,11 +69,11 @@ color_differences %>%
   ) %>% mutate(Color = lab_to_rgb(L, a, b)) %>% 
   ggplot() +
   geom_tile(aes(fill = Difference, x = Crow, y = Ccol)) +
-  geom_point(aes(x = Crow+0.25, y = Ccol, color = Color), size = 12) +
+  geom_point(aes(x = Crow+0.175, y = Ccol, color = Color), size = 13) +
   scale_color_identity() +
   geom_point(
     data = master_colors %>% rowwise() %>% mutate(Color = lab_to_rgb(L, a, b)),
-    aes(x = Crow-0.25, y = Ccol, color = Color), size = 12
+    aes(x = Crow-0.175, y = Ccol, color = Color), size = 13
   ) +
   coord_fixed()
 
