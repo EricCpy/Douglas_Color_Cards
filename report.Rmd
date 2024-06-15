@@ -45,7 +45,7 @@ The second file holds color information obtained from 13 printed sheets. Thus we
 1. Is the color difference greater within a sheet (among positions) or across sheets?  (Simon Schäfer)
 1. Is there a difference in dE regarding skin or non skin color / calibration color?  (Pavlov)
 1. How is the color special used (regression)? (Simon Schäfer)
-1. What dE value can be seen on our screen? (Simon Schäfer)
+1. What dE value can be seen on our screen? (Simon Schäfer: R-Code ✔, Text ✔)
 1. Color difference of mean over all cards to master target: is it in some uncertainty area? (Eric Jonas: R-Code ✔)
 1. Are some Lab values more often in master than in mean? (Eric Jonas: R-Code ✔)
 1. How close are CMYK and Lab values? (Eric Jonas: R-Code ✔)
@@ -147,7 +147,7 @@ color_differences %>%
   ggplot() +
   geom_tile(aes(fill = Difference, x = Ccol, y = Crow, color = Difference > 2),
             lwd = 1.5, width=0.95, height=0.95) +
-  scale_color_manual(values = c("#FFFFFF00", "#88CC00")) +
+  scale_color_manual(values = c("#FFFFFF00", "#CC3333")) +
   ggnewscale::new_scale_colour() +
   geom_point(aes(x = Ccol+0.175, y = Crow, color = Color), size = 13) +
   scale_color_identity() +
@@ -173,7 +173,7 @@ color_differences %>%
   ggplot() +
   geom_tile(aes(fill = Difference, x = Ccol, y = Crow, color = Difference < 1),
             lwd = 1.5, width=0.95, height=0.95) +
-  scale_color_manual(values = c("#FFFFFF00", "#CC3333")) +
+  scale_color_manual(values = c("#FFFFFF00", "#88CC00")) +
   ggnewscale::new_scale_colour() +
   geom_point(aes(x = Ccol+0.175, y = Crow, color = Color), size = 13) +
   scale_color_identity() +
@@ -209,7 +209,7 @@ DeltaE_map_for_sheet <- function(data) {
 
 In order to get a feeling if the color difference compared to the masters colors varies more or less regarding to the color cards position on the sheet or among the sheets at the same position one can have a look at small multiples for both cases. Displaying all color cards of all sheets is possible on a huge screen but not in this report. Anyhow - as one can see - comparing the separated dE tile maps visually is not easy.
 
-Looking at all color cards in a specific position among all sheets shows little difference. Looking at all color cards of a single sheet shows that there might be two slight patterns. One might find 1) a light diagonal from bottom left to top right (see cards in first row) or 2) a dark diagonal from top left to bottom right (see cards in last row). We will investigate this further with other visualization techniques.
+Looking at all color cards in a specific position among all 13 sheets shows little difference. Looking at all 42 color cards of a single sheet shows that there might be two slight patterns. One might find a) a light diagonal from bottom left to top right (see cards in first row) or b) a dark diagonal from top left to bottom right (see cards in last row). We will investigate this further with other visualization techniques.
 
 ```{r dE_colorcards_topleft_all_sheets, echo=FALSE, fig.width=8, fig.height=8}
 DeltaE_map_for_sheet(color_differences %>% filter(Row == 1, Column == 1)) +
@@ -243,4 +243,151 @@ color_dispersion_on_sheet1 %>% bind_rows(
   geom_boxplot(aes(x = Aggregated_by, y = Difference)) +
   facet_grid(Crow ~ Ccol, switch = "both", as.table=FALSE) +
   coord_cartesian(ylim = c(0, 6.5))
+```
+
+## Douglas CMYKS-Formula
+
+The Douglas master color data yields colors in a unique CMYKS space. Here S stands for special. Ignoring this value is a bad idea if one wants to match the reference color. Converting just the CMYK values leads to:
+
+```{r colors_only_CMYK, echo=FALSE, fig.width=8, fig.height=8}
+mastercolor_cmyk_difference <- master_colors %>% rowwise() %>% mutate(rgb_by_cmyk = cmyk_to_rgb(C,M,Y,K)) %>% 
+  bind_cols(
+    map_dfr(srgb_to_Lab, .x = .$rgb_by_cmyk) 
+  ) %>% bind_cols(
+    dE(.[c("L", "a", "b")], .[c("Lab.L", "Lab.a", "Lab.b")]) %>% as.data.frame() %>% setNames("Difference")
+  )
+
+mastercolor_cmyk_difference %>% 
+  ggplot() +
+  geom_tile(aes(fill = Difference, x = Ccol, y = Crow, color = Difference > 2),
+            lwd = 1.5, linetype = 1, width=0.9, height=0.9) +
+  scale_color_manual(values = c("#FFFFFF00", "#CC3333")) +
+  ggnewscale::new_scale_colour() +
+  geom_point(aes(x = Ccol+0.175, y = Crow, color = rgb_by_cmyk), size = 14) +
+  scale_color_identity() +
+  geom_point(
+    aes(x = Ccol-0.175, y = Crow, color = Color), size = 14
+  ) +
+  coord_fixed() +
+  labs(caption = "Left circle: master color; Right circle: sample color") +
+  xlab("Column") + ylab("Row") +
+  theme(
+    axis.text=element_text(size=12),
+    axis.title=element_text(size=14,face="bold"),
+    plot.caption = element_text(size=12, hjust = 0)
+  )
+```
+
+```{r, echo=FALSE}
+color_regression_linear <- lm(data = master_colors, cbind(L, a, b) ~ C + M + Y + K + S)
+color_regression <- color_regression_linear
+color_differences_regression <- dE(predict(color_regression), master_colors %>% select("L", "a", "b")) %>% 
+  data.frame(Difference = .)
+
+# summary(color_regression)
+```
+
+With a multivariate multiple linear regression we find `r sum(color_differences_regression > 2)` colors that should be different on first glimpse.
+
+```{r, echo=FALSE, fig.width=8, fig.height=8}
+color_differences %>% 
+  filter(Sheet == 1, Row == 1, Column == 1) %>% select(-Difference, -L, -a, -b) %>% bind_cols(
+    color_differences_regression, predict(color_regression)
+  ) %>% mutate(Color = lab_to_rgb(L, a, b)) %>% 
+  ggplot() +
+  geom_tile(aes(fill = Difference, x = Ccol, y = Crow, color = Difference > 2),
+            lwd = 1.5, width=0.95, height=0.95) +
+  scale_color_manual(values = c("#FFFFFF00", "#CC3333")) +
+  ggnewscale::new_scale_colour() +
+  geom_point(aes(x = Ccol+0.175, y = Crow, color = Color), size = 13) +
+  scale_color_identity() +
+  geom_point(
+    data = master_colors %>% rowwise() %>% mutate(Color = lab_to_rgb(L, a, b)),
+    aes(x = Ccol-0.175, y = Crow, color = Color), size = 13
+    ) +
+  coord_fixed() +
+  labs(caption = "Left circle: master color; Right circle: sample color") +
+  xlab("Column") + ylab("Row") +
+  theme(
+    axis.text=element_text(size=12),
+    axis.title=element_text(size=14,face="bold"),
+    plot.caption = element_text(size=12, hjust = 0)
+    )
+```
+
+```{r, echo=FALSE}
+degree <- 3
+color_regression_poly <- lm(data = master_colors, cbind(L, a, b) ~ poly(C, degree) + poly(M, degree) + poly(Y, degree) + poly(K, degree) + poly(S, degree))
+color_regression <- color_regression_poly
+color_differences_regression <- dE(predict(color_regression), master_colors %>% select("L", "a", "b")) %>% 
+  data.frame(Difference = .)
+
+# summary(color_regression)
+```
+
+With a multivariate multiple polynomial regression with degree `r degree`  we find `r sum(color_differences_regression > 2)` colors that should be different on first glimpse. (38 colors with 2nd degree polynomials.) This are almost as many as with the linear regression. We even find some colors that have been matched better with linear regression.
+
+```{r, echo=FALSE, fig.width=8, fig.height=8}
+color_differences %>% 
+  filter(Sheet == 1, Row == 1, Column == 1) %>% select(-Difference, -L, -a, -b) %>% bind_cols(
+    color_differences_regression, predict(color_regression)
+  ) %>% mutate(Color = lab_to_rgb(L, a, b)) %>% 
+  ggplot() +
+  geom_tile(aes(fill = Difference, x = Ccol, y = Crow, color = Difference > 2),
+            lwd = 1.5, width=0.95, height=0.95) +
+  scale_color_manual(values = c("#FFFFFF00", "#CC3333")) +
+  ggnewscale::new_scale_colour() +
+  geom_point(aes(x = Ccol+0.175, y = Crow, color = Color), size = 13) +
+  scale_color_identity() +
+  geom_point(
+    data = master_colors %>% rowwise() %>% mutate(Color = lab_to_rgb(L, a, b)),
+    aes(x = Ccol-0.175, y = Crow, color = Color), size = 13
+    ) +
+  coord_fixed() +
+  labs(caption = "Left circle: master color; Right circle: sample color") +
+  xlab("Column") + ylab("Row") +
+  theme(
+    axis.text=element_text(size=12),
+    axis.title=element_text(size=14,face="bold"),
+    plot.caption = element_text(size=12, hjust = 0)
+    )
+```
+
+```{r, echo=FALSE}
+color_regression_interaction_3terms <- lm(data = master_colors %>% select(C, M, Y, K, S, L, a, b), cbind(L, a, b) ~ .^3)
+color_regression <- color_regression_interaction_3terms
+color_differences_regression <- dE(predict(color_regression), master_colors %>% select("L", "a", "b")) %>% 
+  data.frame(Difference = .)
+
+# summary(color_regression)
+```
+
+With a multivariate multiple linear regression including interaction terms up to 3rd order we find `r sum(color_differences_regression > 2)` colors that should be different on first glimpse. (Five colors with only 2nd order interaction terms.)
+
+**Should we set scale_fill_continuous(limits = c(0, 10)) for more comparable scales?**
+
+```{r, echo=FALSE, fig.width=8, fig.height=8}
+color_differences %>% 
+  filter(Sheet == 1, Row == 1, Column == 1) %>% select(-Difference, -L, -a, -b) %>% bind_cols(
+    color_differences_regression, predict(color_regression)
+  ) %>% mutate(Color = lab_to_rgb(L, a, b)) %>% 
+  ggplot() +
+  geom_tile(aes(fill = Difference, x = Ccol, y = Crow, color = Difference > 2),
+            lwd = 1.5, width=0.95, height=0.95) +
+  scale_color_manual(values = c("#FFFFFF00", "#CC3333")) +
+  ggnewscale::new_scale_colour() +
+  geom_point(aes(x = Ccol+0.175, y = Crow, color = Color), size = 13) +
+  scale_color_identity() +
+  geom_point(
+    data = master_colors %>% rowwise() %>% mutate(Color = lab_to_rgb(L, a, b)),
+    aes(x = Ccol-0.175, y = Crow, color = Color), size = 13
+    ) +
+  coord_fixed() +
+  labs(caption = "Left circle: master color; Right circle: sample color") +
+  xlab("Column") + ylab("Row") +
+  theme(
+    axis.text=element_text(size=12),
+    axis.title=element_text(size=14,face="bold"),
+    plot.caption = element_text(size=12, hjust = 0)
+    )
 ```

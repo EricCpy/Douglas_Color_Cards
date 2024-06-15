@@ -24,6 +24,14 @@ lab_to_rgb <- function(l, a, b) {
   rgb(convertColor(c(l, a, b), from = "Lab", to = "sRGB"))
 }
 
+srgb_to_Lab <- function(srgb) {
+  srgb %>% substring(seq(2, 6, 2), seq(3, 7, 2)) %>% 
+    sapply(X = ., FUN = broman::hex2dec) %>% 
+    array(c(1, 1, 3)) %>% OpenImageR::RGB_to_Lab() %>% 
+    as.data.frame() %>% 
+    setNames(c("Lab.L", "Lab.a", "Lab.b"))
+}
+
 dE <- function(colors1, colors2, metric = 2000) {
   DeltaE(as.matrix(colors1), as.matrix(colors2), metric = metric)
 }

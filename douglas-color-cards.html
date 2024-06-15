@@ -86,6 +86,7 @@
 <li class="chapter" data-level="1.5.1" data-path=""><a href="#comparing-color-space-dimensions-one-by-one"><i class="fa fa-check"></i><b>1.5.1</b> Comparing color space dimensions one by one</a></li>
 <li class="chapter" data-level="1.5.2" data-path=""><a href="#compaing-colors-with-distance-function"><i class="fa fa-check"></i><b>1.5.2</b> Compaing colors with distance function</a></li>
 </ul></li>
+<li class="chapter" data-level="1.6" data-path=""><a href="#douglas-cmyks-formula"><i class="fa fa-check"></i><b>1.6</b> Douglas CMYKS-Formula</a></li>
 </ul></li>
 </ul>
 
@@ -138,7 +139,7 @@
 <li>Is the color difference greater within a sheet (among positions) or across sheets? (Simon Schäfer)</li>
 <li>Is there a difference in dE regarding skin or non skin color / calibration color? (Pavlov)</li>
 <li>How is the color special used (regression)? (Simon Schäfer)</li>
-<li>What dE value can be seen on our screen? (Simon Schäfer)</li>
+<li>What dE value can be seen on our screen? (Simon Schäfer: R-Code ✔, Text ✔)</li>
 <li>Color difference of mean over all cards to master target: is it in some uncertainty area? (Eric Jonas: R-Code ✔)</li>
 <li>Are some Lab values more often in master than in mean? (Eric Jonas: R-Code ✔)</li>
 <li>How close are CMYK and Lab values? (Eric Jonas: R-Code ✔)</li>
@@ -226,12 +227,24 @@
 <div id="color-variance-among-cards" class="section level4 hasAnchor" number="1.5.2.2">
 <h4><span class="header-section-number">1.5.2.2</span> color variance among cards<a href="#color-variance-among-cards" class="anchor-section" aria-label="Anchor link to header"></a></h4>
 <p>In order to get a feeling if the color difference compared to the masters colors varies more or less regarding to the color cards position on the sheet or among the sheets at the same position one can have a look at small multiples for both cases. Displaying all color cards of all sheets is possible on a huge screen but not in this report. Anyhow - as one can see - comparing the separated dE tile maps visually is not easy.</p>
-<p>Looking at all color cards in a specific position among all sheets shows little difference. Looking at all color cards of a single sheet shows that there might be two slight patterns. One might find 1) a light diagonal from bottom left to top right (see cards in first row) or 2) a dark diagonal from top left to bottom right (see cards in last row). We will investigate this further with other visualization techniques.</p>
+<p>Looking at all color cards in a specific position among all 13 sheets shows little difference. Looking at all 42 color cards of a single sheet shows that there might be two slight patterns. One might find a) a light diagonal from bottom left to top right (see cards in first row) or b) a dark diagonal from top left to bottom right (see cards in last row). We will investigate this further with other visualization techniques.</p>
 <p><img src="report_files/figure-html/dE_colorcards_topleft_all_sheets-1.png" width="768" /></p>
 <p><img src="report_files/figure-html/dE_colorcards_1st_sheet-1.png" width="768" /></p>
 <p><img src="report_files/figure-html/unnamed-chunk-3-1.png" width="768" /></p>
 </div>
 </div>
+</div>
+<div id="douglas-cmyks-formula" class="section level2 hasAnchor" number="1.6">
+<h2><span class="header-section-number">1.6</span> Douglas CMYKS-Formula<a href="#douglas-cmyks-formula" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>The Douglas master color data yields colors in a unique CMYKS space. Here S stands for special. Ignoring this value is a bad idea if one wants to match the reference color. Converting just the CMYK values leads to:</p>
+<p><img src="report_files/figure-html/colors_only_CMYK-1.png" width="768" /></p>
+<p>With a multivariate multiple linear regression we find 39 colors that should be different on first glimpse.</p>
+<p><img src="report_files/figure-html/unnamed-chunk-5-1.png" width="768" /></p>
+<p>With a multivariate multiple polynomial regression with degree 3 we find 37 colors that should be different on first glimpse. (38 colors with 2nd degree polynomials.) This are almost as many as with the linear regression. We even find some colors that have been matched better with linear regression.</p>
+<p><img src="report_files/figure-html/unnamed-chunk-7-1.png" width="768" /></p>
+<p>With a multivariate multiple linear regression including interaction terms up to 3rd order we find 1 colors that should be different on first glimpse. (Five colors with only 2nd order interaction terms.)</p>
+<p><strong>Should we set scale_fill_continuous(limits = c(0, 10)) for more comparable scales?</strong></p>
+<p><img src="report_files/figure-html/unnamed-chunk-9-1.png" width="768" /></p>
 </div>
 </div>
             </section>
