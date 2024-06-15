@@ -1,8 +1,6 @@
-library(dplyr)
-library(ggplot2)
+library(tidyverse)
 library(colorspace)
 library(grDevices)
-library(tidyr)
 library(gridExtra)
 library(spacesXYZ)
 
