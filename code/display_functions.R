@@ -1,4 +1,4 @@
-display_color_card <- function(df, row_name = "Row", col_name = "Col", color_space = NaN, space_between = 1, circle_size=21) {
+display_color_card <- function(df, row_name = "Row", col_name = "Col", color_space = NaN, space_between = 1, circle_size=19) {
   if (!all(c(row_name, col_name) %in% colnames(df))) {
     stop("Dataframe must contain " + row_name + " and " + col_name + " columns")
   }
@@ -53,8 +53,8 @@ plot_card_vs_master <- function(card_colors, master_colors, channels = c("L", "a
   for(channel in channels) {
     # Don't add dispersion since it doesn't significantly affect the visualization and can make the plot visually cluttered.
     plot(
-      master_colors[, channel], type = "o", cex=1.5, lwd= 2, col = "red", pch=17, xlab="Colorspot", ylab = paste0(channel, "-value"), main = paste0(" Master vs. Card: Channel ", channel))
-      lines(card_colors[, channel], type = "o", cex=1.5, lwd= 2, col = "blue", pch=19)
+      master_colors[, channel], type ="o", cex=1.5, lwd= 2, col = "red", pch=17, xlab="Colorspot", ylab = paste0(channel, "-value"), main = paste0(" Master vs. Card: Channel ", channel))
+      lines(card_colors[, channel], type ="o", cex=1.5, lwd= 2, col = "blue", pch=19)
       legend("topleft", 
            legend = c("Master", "Measurement"), 
            col = c("red", "blue"),
@@ -65,6 +65,7 @@ plot_card_vs_master <- function(card_colors, master_colors, channels = c("L", "a
 }
 
 plot_density_vs_master <- function(card_colors, master_colors, channels = c("L", "a", "b")) {
+  output_plots <- list()
   for(channel in channels) {
     sd_val <- card_colors[, paste0(channel,"_sd")]
     bounds_data <- data.frame(
@@ -82,18 +83,32 @@ plot_density_vs_master <- function(card_colors, master_colors, channels = c("L",
       labs(title = paste0("Density Plot of ", channel, "-value"), x = paste0(channel, "-value"), y = "Density") +
       theme_minimal() +
       guides(color = guide_legend(override.aes = list(size = 6)))
-    print(p)
+    output_plots[[channel]] <- p
   }
+  output_plots
 }
 
-plot_card_differences_to_master <- function(card_colors, master_colors) {
+plot_card_differences_to_master <- function(card_colors, master_colors, spotsize = 11, spotdistance = 0.25, tilesize = 1, tilehighlightcolor = "#000000", lwd = 1) {
   card_colors %>% 
     ggplot() +
-    geom_tile(aes(fill = Difference, x = Col, y = Row)) +
-    geom_point(aes(x = Col+0.25, y = Row, color = Color), size = 12) +
+    geom_tile(aes(fill = Difference, x = Ccol, y = Crow),
+              lwd = lwd, width=tilesize, height=tilesize) +
+    scale_color_manual(values = c("#FFFFFF00", tilehighlightcolor)) +
+    ggnewscale::new_scale_colour() +
+    geom_point(aes(x = Ccol+spotdistance, y = Crow, color = Color), size = spotsize) +
     scale_color_identity() +
-    geom_point(data = master_colors, aes(x = Ccol-0.25, y = Crow, color = Color), size = 12) +
-    coord_fixed()
+    geom_point(
+      data = master_colors,
+      aes(x = Ccol-spotdistance, y = Crow, color = Color), size = spotsize
+    ) +
+    coord_fixed() +
+    labs(caption = "Left circle: master color; Right circle: sample color") +
+    xlab("Column") + ylab("Row") +
+    theme(
+      axis.text=element_text(size=12),
+      axis.title=element_text(size=14,face="bold"),
+      plot.caption = element_text(size=12, hjust = 0)
+    )
 }
 
 plot_correlation <- function(data, x_var, y_var) {
@@ -103,6 +118,6 @@ plot_correlation <- function(data, x_var, y_var) {
   ggplot(data, aes_string(x = x_var, y = y_var)) +
     geom_point() +
     geom_smooth(method = "lm", se = FALSE) +
-    labs(title = paste0("Correlation plot between ", x_var, " and ", y_var, "\nPearson: ", round(cor_pearson, 2), " Spearman: ", round(cor_spearman, 2)),
+    labs(title = paste0("Correlation between ", x_var, " and ", y_var, "\nPearson: ", round(cor_pearson, 2), " Spearman: ", round(cor_spearman, 2)),
          x = paste0(x_var, "-value"), y = paste0(y_var, "-value"))
 }
