@@ -20,13 +20,17 @@ display_color_card(master_colors, "Crow", "Ccol", "Lab", 2)
 
 The color cards are placed in front of ones facial skin and a photo is taken. The visual information about the skin color (visible at the four center squares) and the reference color squares is evaluated by an app and the closest skin color type is calculated.
 
-While production 42 color cards are printed on each single sheet. On each color card is a QR code that is used by the app to determine where on a sheet the color card was printed.
+Each sheet contains 42 color cards, each with a QR code. The QR codes allow the app to identify the precise location of each color card on the sheet. Below is a visualization of the first sheet in our dataset.
+
+```{r colorcard first sheet, echo=FALSE, warning=FALSE}
+display_color_sheet(lab_colors, color_sheet_idx = 1)
+```
 
 ## Quality assurance
 
 To assure the best skin color typification it is crucial to assure a consistent production of the color cards. Especially the reference color squares colors variance should be as low as possible.
 
-The existence of QR codes indicating the position on a sheet reduces the requirements to meet because thus only the variance of reference color squares at the same position of the sheets have to be as low as possible. Differnces between reference color squares among different positions on a sheet can be taken care of in the app once the positional information is evaluated from the QR code.
+The existence of QR codes indicating the position on a sheet reduces the requirements to meet because thus only the variance of reference color squares at the same position of the sheets have to be as low as possible. Differences between reference color squares among different positions on a sheet can be taken care of in the app once the positional information is evaluated from the QR code.
 
 ## Data description
 
@@ -44,12 +48,12 @@ The second file holds color information obtained from 13 printed sheets. Thus we
 
 1. Is the color difference greater within a sheet (among positions) or across sheets?  (Simon Schäfer)
 1. Is there a difference in dE regarding skin or non skin color / calibration color?  (Pavlov)
-1. How is the color special used (regression)? (Simon Schäfer)
+1. How is the color special used (regression)? (Nico)
 1. What dE value can be seen on our screen? (Simon Schäfer: R-Code ✔, Text ✔)
-1. Color difference of mean over all cards to master target: is it in some uncertainty area? (Eric Jonas: R-Code ✔)
-1. Are some Lab values more often in master than in mean? (Eric Jonas: R-Code ✔)
-1. How close are CMYK and Lab values? (Eric Jonas: R-Code ✔)
-1. Is there a correlation between dE(CMYK colors, Lab colors) and S? (Eric Jonas)
+1. Color difference of mean over all cards to master target: is it in some uncertainty area? (Eric Jonas: R-Code ✔, Text ✔)
+1. Are some Lab values more often in master than in mean? (Eric Jonas: R-Code ✔, Text ✔)
+1. How close are CMYK and Lab values? (Eric Jonas: R-Code ✔, Text ✔)
+1. Is there a correlation between dE(CMYK colors, Lab colors) and S? (Eric Jonas: R-Code ✔, Text ✔))
 1. Are there colors that are very far off the master target? <- Field 18 (Why; see Lab values)
 1. Are findings on L, a or b also there in dE? (On the subjective meaning)?
 1. Are there especially good / bad cards? (Consistently / target specific) (Pavlo)
@@ -57,6 +61,56 @@ The second file holds color information obtained from 13 printed sheets. Thus we
 ## Color spaces (Pavlo)
 
 Lab, CMYK, rgb, CMYKS?
+
+### Analysis of S in CMYKS
+
+How does the S value, representing skin tone, influence CMYK values? When comparing the Lab Master with the CMYK Master excluding S, a notable difference emerges, suggesting that the S value significantly impacts CMYK values when converted to Lab.
+
+```{r CMYK and Lab master colorcard, echo=FALSE, warning=FALSE}
+grid.arrange(display_color_card(master_colors, "Crow", "Ccol", "CMYK", 2, 12), 
+             display_color_card(master_colors, "Crow", "Ccol", "Lab", 2, 12), 
+             ncol = 2)
+```
+
+A detailed examination is depicted in the graphic below:
+
+```{r CMYK and Lab master colorcard difference, echo=FALSE, warning=FALSE, fig.width=8, fig.height=8}
+master_colors_cmyk <- master_colors %>%
+  rowwise() %>%
+  mutate(L = cmyk_to_lab(C, M, Y, K)[1],
+         a = cmyk_to_lab(C, M, Y, K)[2],
+         b = cmyk_to_lab(C, M, Y, K)[3]) %>%
+  as.data.frame()
+master_colors_cmyk_differences <- generate_color_difference_df(master_colors, master_colors_cmyk)
+plot_card_differences_to_master(master_colors_cmyk_differences, master_colors)
+```
+
+Given the ambiguity in the CMYK-to-Lab conversion method, this chapter explores correlations between Lab values and S values, employing machine learning models to enhance our understanding of S values and their role in CMYK conversion.
+
+**TODO: ADD CONCLUSION (Nico)**
+
+#### Analysis of Lab Correlations with S
+
+In this section, we investigate the relationships between S values and Lab values by correlation.
+
+```{r Lab correlations with S, echo=FALSE, warning=FALSE, message=FALSE, fig.width=8, fig.height=8}
+grid.arrange(plot_correlation(master_colors, "L", "S"),
+             plot_correlation(master_colors, "a", "S"),
+             plot_correlation(master_colors, "b", "S"),
+             plot_correlation(master_colors, "Chroma", "S"),
+             ncol = 2, nrow = 2)
+```
+
+Notably, the S values show strong correlations with 'a' and 'b', while showing a weaker correlation with Chroma. Chroma in the Lab color space quantifies the saturation or colorfulness of a color. It measures how far a color is from being neutral (gray). Chroma in the Lab color space is calculated using the formula:
+
+\[ C = \sqrt{a^2 + b^2} \]
+
+where 'a' and 'b' represent the color opponent dimensions in the Lab color model. Notably, Pearson correlations are lower than Spearman rank correlations, suggesting that the relationship between S and Lab values is likely not strictly linear.
+This observation prompts further investigation into how S values interact with Lab color space.
+
+#### Analysis of relationship with machine learning models
+
+**TODO (Nico)**
 
 ## Color difference
 
@@ -68,11 +122,47 @@ One can analyse difference in color in at least three ways:
 
 ### Comparing color space dimensions one by one
 
-blub
+In this chapter, we will compare the colorspaces with the master based on their different dimensions. 
 
-### Compaing colors with distance function
+To compare the color spaces, we generated a mean color card derived from derived from all color cards in our *Lab_Measurement* dataset. 
+This mean color card serves as a baseline against the reference data of the master. Below is a representation of the mean color card.
+```{r mean colorcard, echo=FALSE, warning=FALSE}
+display_color_card(mean_lab_color_card, "Row", "Col", "Lab", 2)
+```
 
-A function to compare two colors given in Lab color space is \( \Delta \) E - also called dE in this report. Actually there are multiple versions of [Delta E](https://zschuessler.github.io/DeltaE/learn/). The first was given 1976 and just calculates the Euklidean distance in the Lab color space:
+#### Analysis of field discrepancies
+
+```{r colorcard mean vs master, echo=FALSE, warning=FALSE, fig.width=8, fig.height=10}
+plot_card_vs_master(mean_lab_color_card, master_colors)
+```
+
+Our examination reveals notable fluctuations across various fields. Particularly, the 18th field exhibits significant deviations from the master's data. Additionally, a trend is observed where decreases in 'a' and 'b' values coincide with increases in 'L' values, notably in fields 54 to 56.
+Overall, it is evident that the mean of the color cards approximately matches the master in most other fields.
+
+#### Analysis of density distributions
+
+Examining the distribution of values across individual channels provides insights into the predominant brightness and color characteristics.
+To adjust the height of the plots in your R Markdown document, you can use the `fig.height` chunk option within your code chunk that generates the plots. Here’s how you can modify your code chunk:
+
+```{r colorcard distributions, echo=FALSE, fig.height=6, warning=FALSE, fig.align='center'}
+plots <- plot_density_vs_master(mean_lab_color_card, master_colors)
+grid.arrange(plots[["L"]], plots[["a"]], plots[["b"]], nrow = 3)
+```
+
+The distributions reveal distinct characteristics across the channels: 
+
+- The **L** dimension follows a normal distribution, indicating a tendency around a specific brightness level.
+- Both **a** and **b** dimensions have bimodal distributions, suggesting a limited spread of colors in our dataset.
+
+Further analysis highlights specific discrepancies:
+
+- **L dimension:** Notably, there is a leftward shift in values compared to the master, indicating that the dataset tends to have higher brightness levels than the master reference. Additionally, the L channel shows significantly higher variability compared to the other dimensions, where variability is notably low.
+- **a dimension:** There is a noticeable deviation from the master particularly around 'a' values near zero, suggesting limitations in accurately representing subtle color variations within this range.
+- **b dimension:** Similar to 'a', deviations are observed especially around 'b' values between -10 and 40, indicating representations that differ from the master in both higher and lower ranges.
+
+### Comparing colors with distance function
+
+A function to compare two colors given in Lab color space is \( \Delta \) E - also called dE in this report. Actually there are multiple versions of [Delta E](https://zschuessler.github.io/DeltaE/learn/). The first was given 1976 and just calculates the euclidean distance in the Lab color space:
 
 \[\Delta E_{ab}=\sqrt{(L_2-L_1)^2+(a_2-a_1)^2+(b_2-b_1)^2}\]
 
@@ -190,6 +280,19 @@ color_differences %>%
     plot.caption = element_text(size=12, hjust = 0)
     )
 ```
+
+#### Correlation \( \Delta \) E with Lab Dimensions
+
+In the previous chapter, we analyzed the difference of \( \Delta \) E across various color fields. This chapter explores the influence of channels on \( \Delta \) E.
+
+```{r Lab correlations with deltaE, echo=FALSE, warning=FALSE}
+grid.arrange(plot_correlation(mean_lab_color_differences, "L", "Difference"),
+             plot_correlation(mean_lab_color_differences, "a", "Difference"),
+             plot_correlation(mean_lab_color_differences, "b", "Difference"),
+             nrow = 3)
+```
+
+From the scatter plots, it is evident that there is generally no or very weak linear correlation between \( \Delta \) E and the Lab dimensions. Interestingly, the Spearman coefficient highlights a notable correlation between L and \( \Delta \) E values. This suggests that the perception of color differences may not be solely tied to the individual color channels a and b in a straightforward linear manner. Rather, factors influencing the perception of lightness differences appear to be more intricate and multifaceted. These findings prompt further exploration into the nuanced aspects of color perception beyond basic channel influences.
 
 #### color variance among cards
 

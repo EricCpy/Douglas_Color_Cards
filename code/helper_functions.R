@@ -57,7 +57,8 @@ generate_color_difference_df <- function(master_colors, lab_colors) {
     data.frame(Difference = .) %>% 
     bind_cols(lab_colors) %>% 
     rowwise() %>% 
-    mutate(Color = lab_to_rgb(L, a, b))
+    mutate(Color = lab_to_rgb(L, a, b))  %>% 
+    as.data.frame()
   
   color_difference
 }
