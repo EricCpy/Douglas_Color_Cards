@@ -72,7 +72,11 @@ CMYK is also device-dependent - the result depends on the provided inks. As such
 ### CIELAB
 CIELAB, also known as CIE L\*a\*b is a device-independent color space, designed to mimic human perception of color. In the name CIE stands for International Commission on Illumination (french name is used for an abbreviation), while L, a and b are component axis. L is luminosity, while a and b are two coordinates that define color - they don't have specific color equivalents.
 
-CIELA found use in many applications - it is used when a conversion between color spaces are needed or when you want to define a palette to be the same across many devices.
+CIELAB found use in many applications - it is used when a conversion between color spaces are needed or when you want to define a palette to be the same across many devices.
+
+### CMYKS
+
+CMYK, as any other additive or subtractive model, can be further modified with additional components - new dyes. For Douglas color system CMYKS, they add additional dye ("Special" for S in CMYKS) that helps to create more accurate skin colors. 
 
 ## Color difference
 
@@ -88,7 +92,7 @@ blub
 
 ### Compaing colors with distance function
 
-A function to compare two colors given in Lab color space is \( \Delta \) E - also called dE in this report. Actually there are multiple versions of [Delta E](https://zschuessler.github.io/DeltaE/learn/). The first was given 1976 and just calculates the Euklidean distance in the Lab color space:
+A function to compare two colors given in Lab color space is \( \Delta \) E - also called dE in this report. Actually there are multiple versions of [Delta E](https://zschuessler.github.io/DeltaE/learn/). The first was given 1976 and just calculates the Euclidean distance in the Lab color space:
 
 \[\Delta E_{ab}=\sqrt{(L_2-L_1)^2+(a_2-a_1)^2+(b_2-b_1)^2}\]
 
