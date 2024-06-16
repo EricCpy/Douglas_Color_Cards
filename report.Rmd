@@ -279,6 +279,8 @@ mastercolor_cmyk_difference %>%
 ```
 
 ```{r, echo=FALSE}
+options(scipen = 1, digits = 2)
+
 color_regression_linear <- lm(data = master_colors, cbind(L, a, b) ~ C + M + Y + K + S)
 color_regression <- color_regression_linear
 color_differences_regression <- dE(predict(color_regression), master_colors %>% select("L", "a", "b")) %>% 
@@ -287,7 +289,7 @@ color_differences_regression <- dE(predict(color_regression), master_colors %>% 
 # summary(color_regression)
 ```
 
-With a multivariate multiple linear regression we find `r sum(color_differences_regression > 2)` colors that should be different on first glimpse.
+With a multivariate multiple linear regression we find `r sum(color_differences_regression > 2)` colors that should be different on first glimpse. The median color difference is `r median(color_differences_regression$Difference)` (MAD = `r mad(color_differences_regression$Difference)`).
 
 ```{r, echo=FALSE, fig.width=8, fig.height=8}
 color_differences %>% 
@@ -325,7 +327,7 @@ color_differences_regression <- dE(predict(color_regression), master_colors %>% 
 # summary(color_regression)
 ```
 
-With a multivariate multiple polynomial regression with degree `r degree`  we find `r sum(color_differences_regression > 2)` colors that should be different on first glimpse. (38 colors with 2nd degree polynomials.) This are almost as many as with the linear regression. We even find some colors that have been matched better with linear regression.
+With a multivariate multiple polynomial regression with degree `r degree`  we find `r sum(color_differences_regression > 2)` colors that should be different on first glimpse. (38 colors with 2nd degree polynomials.) This are almost as many as with the linear regression. We even find some colors that have been matched better with linear regression. The median color difference is `r median(color_differences_regression$Difference)` (MAD = `r mad(color_differences_regression$Difference)`).
 
 ```{r, echo=FALSE, fig.width=8, fig.height=8}
 color_differences %>% 
@@ -362,7 +364,7 @@ color_differences_regression <- dE(predict(color_regression), master_colors %>% 
 # summary(color_regression)
 ```
 
-With a multivariate multiple linear regression including interaction terms up to 3rd order we find `r sum(color_differences_regression > 2)` colors that should be different on first glimpse. (Five colors with only 2nd order interaction terms.)
+With a multivariate multiple linear regression including interaction terms up to 3rd order we find `r sum(color_differences_regression > 2)` colors that should be different on first glimpse. (Five colors with only 2nd order interaction terms.) The median color difference is `r median(color_differences_regression$Difference)` (MAD = `r mad(color_differences_regression$Difference)`).
 
 **Should we set scale_fill_continuous(limits = c(0, 10)) for more comparable scales?**
 

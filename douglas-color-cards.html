@@ -238,11 +238,11 @@
 <h2><span class="header-section-number">1.6</span> Douglas CMYKS-Formula<a href="#douglas-cmyks-formula" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>The Douglas master color data yields colors in a unique CMYKS space. Here S stands for special. Ignoring this value is a bad idea if one wants to match the reference color. Converting just the CMYK values leads to:</p>
 <p><img src="report_files/figure-html/colors_only_CMYK-1.png" width="768" /></p>
-<p>With a multivariate multiple linear regression we find 39 colors that should be different on first glimpse.</p>
+<p>With a multivariate multiple linear regression we find 39 colors that should be different on first glimpse. The median color difference is 3.13 (MAD = 2.84).</p>
 <p><img src="report_files/figure-html/unnamed-chunk-5-1.png" width="768" /></p>
-<p>With a multivariate multiple polynomial regression with degree 3 we find 37 colors that should be different on first glimpse. (38 colors with 2nd degree polynomials.) This are almost as many as with the linear regression. We even find some colors that have been matched better with linear regression.</p>
+<p>With a multivariate multiple polynomial regression with degree 3 we find 37 colors that should be different on first glimpse. (38 colors with 2nd degree polynomials.) This are almost as many as with the linear regression. We even find some colors that have been matched better with linear regression. The median color difference is 2.2 (MAD = 1.11).</p>
 <p><img src="report_files/figure-html/unnamed-chunk-7-1.png" width="768" /></p>
-<p>With a multivariate multiple linear regression including interaction terms up to 3rd order we find 1 colors that should be different on first glimpse. (Five colors with only 2nd order interaction terms.)</p>
+<p>With a multivariate multiple linear regression including interaction terms up to 3rd order we find 1 colors that should be different on first glimpse. (Five colors with only 2nd order interaction terms.) The median color difference is 0.28 (MAD = 0.26).</p>
 <p><strong>Should we set scale_fill_continuous(limits = c(0, 10)) for more comparable scales?</strong></p>
 <p><img src="report_files/figure-html/unnamed-chunk-9-1.png" width="768" /></p>
 </div>
