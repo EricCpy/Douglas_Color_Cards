@@ -285,7 +285,7 @@ color_differences %>%
 
 In the previous chapter, we analyzed the difference of \( \Delta \) E across various color fields. This chapter explores the influence of channels on \( \Delta \) E.
 
-```{r Lab correlations with deltaE, echo=FALSE, warning=FALSE}
+```{r Lab correlations with deltaE, echo=FALSE, warning=FALSE, message=FALSE}
 grid.arrange(plot_correlation(mean_lab_color_differences, "L", "Difference"),
              plot_correlation(mean_lab_color_differences, "a", "Difference"),
              plot_correlation(mean_lab_color_differences, "b", "Difference"),
@@ -398,7 +398,7 @@ With a multivariate multiple linear regression we find `r sum(color_differences_
 color_differences %>% 
   filter(Sheet == 1, Row == 1, Column == 1) %>% select(-Difference, -L, -a, -b) %>% bind_cols(
     color_differences_regression, predict(color_regression)
-  ) %>% mutate(Color = lab_to_rgb(L, a, b)) %>% 
+  ) %>% rowwise() %>% mutate(Color = lab_to_rgb(L, a, b)) %>% 
   ggplot() +
   geom_tile(aes(fill = Difference, x = Ccol, y = Crow, color = Difference > 2),
             lwd = 1.5, width=0.95, height=0.95) +
@@ -436,7 +436,7 @@ With a multivariate multiple polynomial regression with degree `r degree`  we fi
 color_differences %>% 
   filter(Sheet == 1, Row == 1, Column == 1) %>% select(-Difference, -L, -a, -b) %>% bind_cols(
     color_differences_regression, predict(color_regression)
-  ) %>% mutate(Color = lab_to_rgb(L, a, b)) %>% 
+  ) %>% rowwise() %>% mutate(Color = lab_to_rgb(L, a, b)) %>% 
   ggplot() +
   geom_tile(aes(fill = Difference, x = Ccol, y = Crow, color = Difference > 2),
             lwd = 1.5, width=0.95, height=0.95) +
@@ -475,7 +475,7 @@ With a multivariate multiple linear regression including interaction terms up to
 color_differences %>% 
   filter(Sheet == 1, Row == 1, Column == 1) %>% select(-Difference, -L, -a, -b) %>% bind_cols(
     color_differences_regression, predict(color_regression)
-  ) %>% mutate(Color = lab_to_rgb(L, a, b)) %>% 
+  ) %>% rowwise() %>% mutate(Color = lab_to_rgb(L, a, b)) %>% 
   ggplot() +
   geom_tile(aes(fill = Difference, x = Ccol, y = Crow, color = Difference > 2),
             lwd = 1.5, width=0.95, height=0.95) +
