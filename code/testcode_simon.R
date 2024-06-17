@@ -71,15 +71,30 @@ color_dispersion_compare <- color_dispersion_over_sheets %>% bind_rows(
   color_dispersion_over_targets
 )
 
-color_dispersion_compare %>% left_join(
-  color_differences %>% select(Field, Crow, Ccol) %>% unique()
-) %>% filter(Field != 18) %>% ggplot() +
-  geom_point(aes(x = Field, y = median_dE, color = Aggregated_by, size = mad_dE), alpha = 0.5)
+# color_dispersion_compare %>% left_join(
+#   color_differences %>% select(Field, Crow, Ccol) %>% unique()
+# ) %>% filter(Field != 18) %>% ggplot() +
+#   geom_point(aes(x = Field, y = median_dE, color = Aggregated_by, size = mad_dE), alpha = 0.5)
+# 
+# color_dispersion_compare %>% left_join(
+#   color_differences %>% select(Field, Crow, Ccol) %>% unique()
+# ) %>% filter(Field != 18) %>% ggplot() +
+#   geom_jitter(aes(x = Crow, y = Ccol, color = Aggregated_by, size = median_dE), alpha = 0.5)
 
 color_dispersion_compare %>% left_join(
   color_differences %>% select(Field, Crow, Ccol) %>% unique()
-) %>% filter(Field != 18) %>% ggplot() +
-  geom_jitter(aes(x = Crow, y = Ccol, color = Aggregated_by, size = median_dE), alpha = 0.5)
+) %>% #filter(Field != 18) %>% 
+  ggplot() +
+  geom_boxplot(aes(x = Aggregated_by, y = mad_dE)) +
+  facet_grid(Crow ~ Ccol, as.table = FALSE)
+
+color_dispersion_compare %>% left_join(
+  color_differences %>% select(Field, Crow, Ccol) %>% unique()
+) %>% filter(Field != 18) %>% 
+  ggplot() +
+  geom_boxplot(aes(x = Aggregated_by, y = median_dE)) +
+  geom_jitter(aes(x = Aggregated_by, y = median_dE), alpha = 0.5) +
+  facet_grid(Crow ~ Ccol, as.table = FALSE)
 
 ##### linear regression on color differences ####
 

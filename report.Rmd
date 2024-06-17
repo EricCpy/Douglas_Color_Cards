@@ -348,6 +348,28 @@ color_dispersion_on_sheet1 %>% bind_rows(
   coord_cartesian(ylim = c(0, 6.5))
 ```
 
+**Color variety in general lower within a target position than over a sheet. Makes sense to generate QR code to inform app which color a printed square is actually closer to (instead of master color).**
+
+```{r, echo=FALSE, echo=FALSE, fig.width=8, fig.height=12}
+color_dispersion_compare %>% left_join(
+  color_differences %>% select(Field, Crow, Ccol) %>% unique()
+) %>% #filter(Field != 18) %>% 
+  ggplot() +
+  geom_boxplot(aes(x = Aggregated_by, y = mad_dE), alpha = 0.5) +
+  facet_grid(Crow ~ Ccol, as.table = FALSE)
+```
+
+**No real difference in median color distances. color distances more spread for targets. (Less individual values per group for target 13 vs 42 over sheets and more groups could explain wider box and whisker)**
+
+```{r, echo=FALSE, echo=FALSE, fig.width=8, fig.height=12}
+color_dispersion_compare %>% left_join(
+  color_differences %>% select(Field, Crow, Ccol) %>% unique()
+) %>% filter(Field != 18) %>% 
+  ggplot() +
+  geom_boxplot(aes(x = Aggregated_by, y = median_dE), alpha = 0.5) +
+  facet_grid(Crow ~ Ccol, as.table = FALSE)
+```
+
 ## Douglas CMYKS-Formula
 
 The Douglas master color data yields colors in a unique CMYKS space. Here S stands for special. Ignoring this value is a bad idea if one wants to match the reference color. Converting just the CMYK values leads to:
@@ -496,3 +518,7 @@ color_differences %>%
     plot.caption = element_text(size=12, hjust = 0)
     )
 ```
+
+**Train on part of data and assess performance on testdata (with bootstrap?)**
+
+**Discuss parameter number and learning data: 25 vs 64 for 3rd order interaction (15 vs 64 in 2nd order interaction; 15 vs 64 in 3rd degree polinomial)**
