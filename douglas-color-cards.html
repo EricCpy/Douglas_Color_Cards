@@ -23,7 +23,7 @@
 <meta name="author" content="Nicolas Hahn, Eric Jonas, Pavlo Kravets, Simon Schäfer" />
 
 
-<meta name="date" content="2024-06-16" />
+<meta name="date" content="2024-06-17" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -89,7 +89,8 @@
 <li class="chapter" data-level="1.5.1" data-path=""><a href="#comparing-color-space-dimensions-one-by-one"><i class="fa fa-check"></i><b>1.5.1</b> Comparing color space dimensions one by one</a></li>
 <li class="chapter" data-level="1.5.2" data-path=""><a href="#comparing-colors-with-distance-function"><i class="fa fa-check"></i><b>1.5.2</b> Comparing colors with distance function</a></li>
 </ul></li>
-<li class="chapter" data-level="1.6" data-path=""><a href="#douglas-cmyks-formula"><i class="fa fa-check"></i><b>1.6</b> Douglas CMYKS-Formula</a></li>
+<li class="chapter" data-level="1.6" data-path=""><a href="#new-reference-colors-by-targets"><i class="fa fa-check"></i><b>1.6</b> New Reference colors by targets</a></li>
+<li class="chapter" data-level="1.7" data-path=""><a href="#douglas-cmyks-formula"><i class="fa fa-check"></i><b>1.7</b> Douglas CMYKS-Formula</a></li>
 </ul></li>
 </ul>
 
@@ -111,7 +112,7 @@
 <div id="header">
 <h1 class="title">Douglas color cards</h1>
 <p class="author"><em>Nicolas Hahn, Eric Jonas, Pavlo Kravets, Simon Schäfer</em></p>
-<p class="date"><em>2024-06-16</em></p>
+<p class="date"><em>2024-06-17</em></p>
 </div>
 <div id="douglas-color-cards" class="section level1 hasAnchor" number="1">
 <h1><span class="header-section-number">1</span> Douglas color cards<a href="#douglas-color-cards" class="anchor-section" aria-label="Anchor link to header"></a></h1>
@@ -140,7 +141,7 @@
 <div id="questions-formulated-before-exploration" class="section level3 hasAnchor" number="1.3.1">
 <h3><span class="header-section-number">1.3.1</span> Questions (formulated before exploration)<a href="#questions-formulated-before-exploration" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <ol style="list-style-type: decimal">
-<li>Is the color difference greater within a sheet (among positions) or across sheets? (Simon Schäfer)</li>
+<li>Is the color difference greater within a sheet (among positions) or across sheets? (Simon Schäfer: R-Code ✔)</li>
 <li>Is there a difference in dE regarding skin or non skin color / calibration color? (Pavlov)</li>
 <li>How is the color special used (regression)? (Nico)</li>
 <li>What dE value can be seen on our screen? (Simon Schäfer: R-Code ✔, Text ✔)</li>
@@ -177,6 +178,7 @@ This observation prompts further investigation into how S values interact with L
 <div id="analysis-of-relationship-with-machine-learning-models" class="section level4 hasAnchor" number="1.4.1.2">
 <h4><span class="header-section-number">1.4.1.2</span> Analysis of relationship with machine learning models<a href="#analysis-of-relationship-with-machine-learning-models" class="anchor-section" aria-label="Anchor link to header"></a></h4>
 <p><strong>TODO (Nico)</strong></p>
+<p>Also see 1.6.</p>
 </div>
 </div>
 </div>
@@ -191,7 +193,7 @@ This observation prompts further investigation into how S values interact with L
 <div id="comparing-color-space-dimensions-one-by-one" class="section level3 hasAnchor" number="1.5.1">
 <h3><span class="header-section-number">1.5.1</span> Comparing color space dimensions one by one<a href="#comparing-color-space-dimensions-one-by-one" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <p>In this chapter, we will compare the colorspaces with the master based on their different dimensions.</p>
-<p>To compare the color spaces, we generated a mean color card derived from derived from all color cards in our <em>Lab_Measurement</em> dataset.
+<p>To compare the color spaces, we generated a mean color card derived from all color cards in our <em>Lab_Measurement</em> dataset.
 This mean color card serves as a baseline against the reference data of the master. Below is a representation of the mean color card.
 <img src="report_files/figure-html/mean%20colorcard-1.png" width="672" /></p>
 <div id="analysis-of-field-discrepancies" class="section level4 hasAnchor" number="1.5.1.1">
@@ -203,13 +205,15 @@ Overall, it is evident that the mean of the color cards approximately matches th
 <div id="analysis-of-density-distributions" class="section level4 hasAnchor" number="1.5.1.2">
 <h4><span class="header-section-number">1.5.1.2</span> Analysis of density distributions<a href="#analysis-of-density-distributions" class="anchor-section" aria-label="Anchor link to header"></a></h4>
 <p>Examining the distribution of values across individual channels provides insights into the predominant brightness and color characteristics.
-To adjust the height of the plots in your R Markdown document, you can use the <code>fig.height</code> chunk option within your code chunk that generates the plots. Here’s how you can modify your code chunk:</p>
+<strong>To adjust the height of the plots in your R Markdown document, you can use the <code>fig.height</code> chunk option within your code chunk that generates the plots. Here’s how you can modify your code chunk: (delete this?)</strong></p>
 <p><img src="report_files/figure-html/colorcard%20distributions-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p><strong>Lower and upper density curves switch position relative to card. Can we make ribbons with alpha instead of two lines?: See <a href="https://stackoverflow.com/questions/45908120/add-shaded-standard-error-curves-to-geom-density-in-ggplot2">here</a>.</strong></p>
 <p>The distributions reveal distinct characteristics across the channels:</p>
 <ul>
 <li>The <strong>L</strong> dimension follows a normal distribution, indicating a tendency around a specific brightness level.</li>
 <li>Both <strong>a</strong> and <strong>b</strong> dimensions have bimodal distributions, suggesting a limited spread of colors in our dataset.</li>
 </ul>
+<p><strong>don’t agree with the above (Simon)</strong></p>
 <p>Further analysis highlights specific discrepancies:</p>
 <ul>
 <li><strong>L dimension:</strong> Notably, there is a leftward shift in values compared to the master, indicating that the dataset tends to have higher brightness levels than the master reference. Additionally, the L channel shows significantly higher variability compared to the other dimensions, where variability is notably low.</li>
@@ -279,9 +283,6 @@ To adjust the height of the plots in your R Markdown document, you can use the <
 <div id="correlation-delta-e-with-lab-dimensions" class="section level4 hasAnchor" number="1.5.2.2">
 <h4><span class="header-section-number">1.5.2.2</span> Correlation <span class="math inline">\(\Delta\)</span> E with Lab Dimensions<a href="#correlation-delta-e-with-lab-dimensions" class="anchor-section" aria-label="Anchor link to header"></a></h4>
 <p>In the previous chapter, we analyzed the difference of <span class="math inline">\(\Delta\)</span> E across various color fields. This chapter explores the influence of channels on <span class="math inline">\(\Delta\)</span> E.</p>
-<pre><code>## `geom_smooth()` using formula = &#39;y ~ x&#39;
-## `geom_smooth()` using formula = &#39;y ~ x&#39;
-## `geom_smooth()` using formula = &#39;y ~ x&#39;</code></pre>
 <p><img src="report_files/figure-html/Lab%20correlations%20with%20deltaE-1.png" width="672" /></p>
 <p>From the scatter plots, it is evident that there is generally no or very weak linear correlation between <span class="math inline">\(\Delta\)</span> E and the Lab dimensions. Interestingly, the Spearman coefficient highlights a notable correlation between L and <span class="math inline">\(\Delta\)</span> E values. This suggests that the perception of color differences may not be solely tied to the individual color channels a and b in a straightforward linear manner. Rather, factors influencing the perception of lightness differences appear to be more intricate and multifaceted. These findings prompt further exploration into the nuanced aspects of color perception beyond basic channel influences.</p>
 </div>
@@ -292,20 +293,34 @@ To adjust the height of the plots in your R Markdown document, you can use the <
 <p><img src="report_files/figure-html/dE_colorcards_topleft_all_sheets-1.png" width="768" /></p>
 <p><img src="report_files/figure-html/dE_colorcards_1st_sheet-1.png" width="768" /></p>
 <p><img src="report_files/figure-html/unnamed-chunk-3-1.png" width="768" /></p>
+<pre><code>## `summarise()` has grouped output by &#39;Sheet&#39;. You can override using the
+## `.groups` argument.
+## `summarise()` has grouped output by &#39;Field&#39;, &#39;Row&#39;. You can override using the
+## `.groups` argument.</code></pre>
+<p><strong>Color variety in general lower within a target position than over a sheet. Makes sense to generate QR code to inform app which color a printed square is actually closer to (instead of master color).</strong></p>
+<p><img src="report_files/figure-html/unnamed-chunk-5-1.png" width="768" /></p>
+<p><strong>No real difference in median color distances. color distances more spread for targets. (Less individual values per group for target 13 vs 42 over sheets and more groups could explain wider box and whisker)</strong></p>
+<p><img src="report_files/figure-html/unnamed-chunk-6-1.png" width="768" /></p>
 </div>
 </div>
 </div>
-<div id="douglas-cmyks-formula" class="section level2 hasAnchor" number="1.6">
-<h2><span class="header-section-number">1.6</span> Douglas CMYKS-Formula<a href="#douglas-cmyks-formula" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div id="new-reference-colors-by-targets" class="section level2 hasAnchor" number="1.6">
+<h2><span class="header-section-number">1.6</span> New Reference colors by targets<a href="#new-reference-colors-by-targets" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p><strong>Colors vary less among targets. What is the the “new” reference color the colors are scattered around? Compare to master color for one target.</strong></p>
+</div>
+<div id="douglas-cmyks-formula" class="section level2 hasAnchor" number="1.7">
+<h2><span class="header-section-number">1.7</span> Douglas CMYKS-Formula<a href="#douglas-cmyks-formula" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>The Douglas master color data yields colors in a unique CMYKS space. Here S stands for special. Ignoring this value is a bad idea if one wants to match the reference color. Converting just the CMYK values leads to:</p>
 <p><img src="report_files/figure-html/colors_only_CMYK-1.png" width="768" /></p>
 <p>With a multivariate multiple linear regression we find 39 colors that should be different on first glimpse. The median color difference is 3.13 (MAD = 2.84).</p>
-<p><img src="report_files/figure-html/unnamed-chunk-5-1.png" width="768" /></p>
+<p><img src="report_files/figure-html/unnamed-chunk-8-1.png" width="768" /></p>
 <p>With a multivariate multiple polynomial regression with degree 3 we find 37 colors that should be different on first glimpse. (38 colors with 2nd degree polynomials.) This are almost as many as with the linear regression. We even find some colors that have been matched better with linear regression. The median color difference is 2.2 (MAD = 1.11).</p>
-<p><img src="report_files/figure-html/unnamed-chunk-7-1.png" width="768" /></p>
+<p><img src="report_files/figure-html/unnamed-chunk-10-1.png" width="768" /></p>
 <p>With a multivariate multiple linear regression including interaction terms up to 3rd order we find 1 colors that should be different on first glimpse. (Five colors with only 2nd order interaction terms.) The median color difference is 0.28 (MAD = 0.26).</p>
 <p><strong>Should we set scale_fill_continuous(limits = c(0, 10)) for more comparable scales?</strong></p>
-<p><img src="report_files/figure-html/unnamed-chunk-9-1.png" width="768" /></p>
+<p><img src="report_files/figure-html/unnamed-chunk-12-1.png" width="768" /></p>
+<p><strong>Train on part of data and assess performance on testdata (with bootstrap?)</strong></p>
+<p><strong>Discuss parameter number and learning data: 25 vs 64 for 3rd order interaction (15 vs 64 in 2nd order interaction; 15 vs 64 in 3rd degree polinomial)</strong></p>
 </div>
 </div>
             </section>

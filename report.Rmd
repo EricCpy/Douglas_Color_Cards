@@ -46,7 +46,7 @@ The second file holds color information obtained from 13 printed sheets. Thus we
 
 ### Questions (formulated before exploration)
 
-1. Is the color difference greater within a sheet (among positions) or across sheets?  (Simon Schäfer)
+1. Is the color difference greater within a sheet (among positions) or across sheets?  (Simon Schäfer: R-Code ✔)
 1. Is there a difference in dE regarding skin or non skin color / calibration color?  (Pavlov)
 1. How is the color special used (regression)? (Nico)
 1. What dE value can be seen on our screen? (Simon Schäfer: R-Code ✔, Text ✔)
@@ -112,6 +112,8 @@ This observation prompts further investigation into how S values interact with L
 
 **TODO (Nico)**
 
+Also see 1.6.
+
 ## Color difference
 
 One can analyse difference in color in at least three ways:
@@ -124,7 +126,7 @@ One can analyse difference in color in at least three ways:
 
 In this chapter, we will compare the colorspaces with the master based on their different dimensions. 
 
-To compare the color spaces, we generated a mean color card derived from derived from all color cards in our *Lab_Measurement* dataset. 
+To compare the color spaces, we generated a mean color card derived from all color cards in our *Lab_Measurement* dataset. 
 This mean color card serves as a baseline against the reference data of the master. Below is a representation of the mean color card.
 ```{r mean colorcard, echo=FALSE, warning=FALSE}
 display_color_card(mean_lab_color_card, "Row", "Col", "Lab", 2)
@@ -142,17 +144,21 @@ Overall, it is evident that the mean of the color cards approximately matches th
 #### Analysis of density distributions
 
 Examining the distribution of values across individual channels provides insights into the predominant brightness and color characteristics.
-To adjust the height of the plots in your R Markdown document, you can use the `fig.height` chunk option within your code chunk that generates the plots. Here’s how you can modify your code chunk:
+**To adjust the height of the plots in your R Markdown document, you can use the `fig.height` chunk option within your code chunk that generates the plots. Here’s how you can modify your code chunk: (delete this?)**
 
 ```{r colorcard distributions, echo=FALSE, fig.height=6, warning=FALSE, fig.align='center'}
 plots <- plot_density_vs_master(mean_lab_color_card, master_colors)
 grid.arrange(plots[["L"]], plots[["a"]], plots[["b"]], nrow = 3)
 ```
 
+**Lower and upper density curves switch position relative to card. Can we make ribbons with alpha instead of two lines?: See [here](https://stackoverflow.com/questions/45908120/add-shaded-standard-error-curves-to-geom-density-in-ggplot2).**
+
 The distributions reveal distinct characteristics across the channels: 
 
 - The **L** dimension follows a normal distribution, indicating a tendency around a specific brightness level.
 - Both **a** and **b** dimensions have bimodal distributions, suggesting a limited spread of colors in our dataset.
+
+**don't agree with the above (Simon)**
 
 Further analysis highlights specific discrepancies:
 
@@ -348,27 +354,49 @@ color_dispersion_on_sheet1 %>% bind_rows(
   coord_cartesian(ylim = c(0, 6.5))
 ```
 
+```{r, echo=FALSE}
+color_dispersion_over_sheets <- color_differences %>% group_by(Sheet, Field) %>% 
+  summarise(median_dE = median(Difference), count = n(), mad_dE = mad(Difference)) %>% 
+  mutate(Aggregated_by = "Sheet") %>% 
+  ungroup()
+
+color_dispersion_over_targets <- color_differences %>% group_by(Field, Row, Column) %>% 
+  summarise(median_dE = median(Difference), count = n(), mad_dE = mad(Difference)) %>% 
+  mutate(Aggregated_by = "Target") %>% 
+  ungroup()
+
+color_dispersion_compare <- color_dispersion_over_sheets %>% bind_rows(
+  color_dispersion_over_targets
+)
+```
+
 **Color variety in general lower within a target position than over a sheet. Makes sense to generate QR code to inform app which color a printed square is actually closer to (instead of master color).**
 
 ```{r, echo=FALSE, echo=FALSE, fig.width=8, fig.height=12}
 color_dispersion_compare %>% left_join(
-  color_differences %>% select(Field, Crow, Ccol) %>% unique()
+  color_differences %>% select(Field, Crow, Ccol) %>% unique(),
+  by = join_by(Field)
 ) %>% #filter(Field != 18) %>% 
   ggplot() +
   geom_boxplot(aes(x = Aggregated_by, y = mad_dE), alpha = 0.5) +
-  facet_grid(Crow ~ Ccol, as.table = FALSE)
+  facet_grid(Crow ~ Ccol, as.table = FALSE, switch = "both")
 ```
 
 **No real difference in median color distances. color distances more spread for targets. (Less individual values per group for target 13 vs 42 over sheets and more groups could explain wider box and whisker)**
 
 ```{r, echo=FALSE, echo=FALSE, fig.width=8, fig.height=12}
 color_dispersion_compare %>% left_join(
-  color_differences %>% select(Field, Crow, Ccol) %>% unique()
+  color_differences %>% select(Field, Crow, Ccol) %>% unique(),
+  by = join_by(Field)
 ) %>% filter(Field != 18) %>% 
   ggplot() +
   geom_boxplot(aes(x = Aggregated_by, y = median_dE), alpha = 0.5) +
-  facet_grid(Crow ~ Ccol, as.table = FALSE)
+  facet_grid(Crow ~ Ccol, as.table = FALSE, switch = "both")
 ```
+
+## New Reference colors by targets
+
+**Colors vary less among targets. What is the the "new" reference color the colors are scattered around? Compare to master color for one target.**
 
 ## Douglas CMYKS-Formula
 
