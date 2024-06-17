@@ -93,20 +93,40 @@ Given the ambiguity in the CMYK-to-Lab conversion method, this chapter explores 
 
 In this section, we investigate the relationships between S values and Lab values by correlation.
 
-```{r Lab correlations with S, echo=FALSE, warning=FALSE, message=FALSE, fig.width=8, fig.height=8}
-grid.arrange(plot_correlation(master_colors, "L", "S"),
-             plot_correlation(master_colors, "a", "S"),
-             plot_correlation(master_colors, "b", "S"),
-             plot_correlation(master_colors, "Chroma", "S"),
+Examining S values reveals that brownish colors tend to have higher S values. The left side of the gradient—from black to white—shows an S value of 0. This observation suggests that luminance has minimal, if any, influence on S values.
+The tile plots below visualizes this relationship. It illustrates how S values vary across different color points in the dataset.
+
+```{r S tile plot, echo=FALSE, warning=FALSE, message=FALSE, fig.width=8, fig.height=8}
+ggplot(master_colors, aes(x = Ccol, y = Crow)) +
+  geom_tile(aes(fill = S), color = "white") +
+  geom_text(aes(label = S), color = "black") +
+  scale_fill_gradient(low = "white", high = "#4682B4", name = "S-value") +
+  labs(title = "Tile Plot of S-values",
+       x = "Column",
+       y = "Row") +
+  theme_minimal()
+```
+
+Next, we examine the correlations between individual Lab dimensions (L, a, b, Chroma) and S.
+
+```{r Lab correlations with S, echo=FALSE, warning=FALSE, message=FALSE, fig.width=10, fig.height=8}
+grid.arrange(plot_correlation_with_categories(master_colors, "L", "S"),
+             plot_correlation_with_categories(master_colors, "a", "S"),
+             plot_correlation_with_categories(master_colors, "b", "S"),
+             plot_correlation_with_categories(master_colors, "Chroma", "S"),
              ncol = 2, nrow = 2)
 ```
 
-Notably, the S values show strong correlations with 'a' and 'b', while showing a weaker correlation with Chroma. Chroma in the Lab color space quantifies the saturation or colorfulness of a color. It measures how far a color is from being neutral (gray). Chroma in the Lab color space is calculated using the formula:
+The L dimension appears to correlate strongly with S values, when excluding cases where S equals 0. However, this correlation is misleading as our analysis indicates that L values do not significantly influence S values.
+
+Notably, the S values also show strong correlations with 'a' and 'b' and the strongest correlation with Chroma. Chroma in the Lab color space quantifies the saturation or colorfulness of a color. It measures how far a color is from being neutral (gray). Chroma in the Lab color space is calculated using the formula:
 
 \[ C = \sqrt{a^2 + b^2} \]
 
-where 'a' and 'b' represent the color opponent dimensions in the Lab color model. Notably, Pearson correlations are lower than Spearman rank correlations, suggesting that the relationship between S and Lab values is likely not strictly linear.
-This observation prompts further investigation into how S values interact with Lab color space.
+where 'a' and 'b' represent the color opponent dimensions in the Lab color model.
+Pearson correlations tend to be higher than Spearman rank correlations, implying a predominantly linear relationship between S and Lab values. However, outliers significantly influence Pearson coefficients, challenging the assumption of a straightforward linear dependency between S and Lab values across all data points. Moreover, upon examining the scatter plots, a strict linear relationship is not evident.
+
+From this analysis, we conclude that the color values 'a' and 'b' exert a stronger influence on S than luminance.
 
 #### Analysis of relationship with machine learning models
 
@@ -143,28 +163,18 @@ Overall, it is evident that the mean of the color cards approximately matches th
 
 #### Analysis of density distributions
 
-Examining the distribution of values across individual channels provides insights into the predominant brightness and color characteristics.
-**To adjust the height of the plots in your R Markdown document, you can use the `fig.height` chunk option within your code chunk that generates the plots. Here’s how you can modify your code chunk: (delete this?)**
+Examining the distribution of values across individual channels provides insights into the predominant brightness and color characteristics. The following graphic displays the median density of all cards along with the 95% confidence interval.
 
 ```{r colorcard distributions, echo=FALSE, fig.height=6, warning=FALSE, fig.align='center'}
-plots <- plot_density_vs_master(mean_lab_color_card, master_colors)
+plots <- plot_density_vs_master(lab_colors_master_shape, master_colors)
 grid.arrange(plots[["L"]], plots[["a"]], plots[["b"]], nrow = 3)
 ```
 
-**Lower and upper density curves switch position relative to card. Can we make ribbons with alpha instead of two lines?: See [here](https://stackoverflow.com/questions/45908120/add-shaded-standard-error-curves-to-geom-density-in-ggplot2).**
-
 The distributions reveal distinct characteristics across the channels: 
-
-- The **L** dimension follows a normal distribution, indicating a tendency around a specific brightness level.
-- Both **a** and **b** dimensions have bimodal distributions, suggesting a limited spread of colors in our dataset.
-
-**don't agree with the above (Simon)**
-
-Further analysis highlights specific discrepancies:
 
 - **L dimension:** Notably, there is a leftward shift in values compared to the master, indicating that the dataset tends to have higher brightness levels than the master reference. Additionally, the L channel shows significantly higher variability compared to the other dimensions, where variability is notably low.
 - **a dimension:** There is a noticeable deviation from the master particularly around 'a' values near zero, suggesting limitations in accurately representing subtle color variations within this range.
-- **b dimension:** Similar to 'a', deviations are observed especially around 'b' values between -10 and 40, indicating representations that differ from the master in both higher and lower ranges.
+- **b dimension:** Similar to 'a', deviations are observed especially around 'b' values between -10 and 40, indicating representations that differ from the master inside this range.
 
 ### Comparing colors with distance function
 
@@ -300,7 +310,7 @@ grid.arrange(plot_correlation(mean_lab_color_differences, "L", "Difference"),
 
 From the scatter plots, it is evident that there is generally no or very weak linear correlation between \( \Delta \) E and the Lab dimensions. Interestingly, the Spearman coefficient highlights a notable correlation between L and \( \Delta \) E values. This suggests that the perception of color differences may not be solely tied to the individual color channels a and b in a straightforward linear manner. Rather, factors influencing the perception of lightness differences appear to be more intricate and multifaceted. These findings prompt further exploration into the nuanced aspects of color perception beyond basic channel influences.
 
-#### color variance among cards
+#### Color variance among cards
 
 ```{r, echo=FALSE}
 DeltaE_map_for_sheet <- function(data) {
@@ -354,7 +364,7 @@ color_dispersion_on_sheet1 %>% bind_rows(
   coord_cartesian(ylim = c(0, 6.5))
 ```
 
-```{r, echo=FALSE}
+```{r, echo=FALSE, message=FALSE}
 color_dispersion_over_sheets <- color_differences %>% group_by(Sheet, Field) %>% 
   summarise(median_dE = median(Difference), count = n(), mad_dE = mad(Difference)) %>% 
   mutate(Aggregated_by = "Sheet") %>% 
@@ -519,8 +529,6 @@ color_differences_regression <- dE(predict(color_regression), master_colors %>% 
 
 With a multivariate multiple linear regression including interaction terms up to 3rd order we find `r sum(color_differences_regression > 2)` colors that should be different on first glimpse. (Five colors with only 2nd order interaction terms.) The median color difference is `r median(color_differences_regression$Difference)` (MAD = `r mad(color_differences_regression$Difference)`).
 
-**Should we set scale_fill_continuous(limits = c(0, 10)) for more comparable scales?**
-
 ```{r, echo=FALSE, fig.width=8, fig.height=8}
 color_differences %>% 
   filter(Sheet == 1, Row == 1, Column == 1) %>% select(-Difference, -L, -a, -b) %>% bind_cols(
@@ -533,6 +541,7 @@ color_differences %>%
   ggnewscale::new_scale_colour() +
   geom_point(aes(x = Ccol+0.175, y = Crow, color = Color), size = 13) +
   scale_color_identity() +
+  scale_fill_continuous(limits = c(0, 10)) +
   geom_point(
     data = master_colors %>% rowwise() %>% mutate(Color = lab_to_rgb(L, a, b)),
     aes(x = Ccol-0.175, y = Crow, color = Color), size = 13

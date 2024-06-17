@@ -64,25 +64,31 @@ plot_card_vs_master <- function(card_colors, master_colors, channels = c("L", "a
   }
 }
 
-plot_density_vs_master <- function(card_colors, master_colors, channels = c("L", "a", "b")) {
+plot_density_vs_master <- function(card_colors, master_colors, channels = c("L", "a", "b"), n_bootstrap = 1000) {
   output_plots <- list()
   for(channel in channels) {
-    sd_val <- card_colors[, paste0(channel,"_sd")]
-    bounds_data <- data.frame(
-      upper_sd = card_colors[, channel] + sd_val,
-      lower_sd = card_colors[, channel] - sd_val
-    )
+    density_quantiles <- card_colors %>%
+      group_by(Sheet, Row, Column) %>%
+      do(tidy(density(.[[channel]], from = min(card_colors[[channel]]), to = max(card_colors[[channel]])))) %>%
+      ungroup() %>%
+      rename(value = x, density = y) %>%
+      group_by(value) %>%
+      summarise(q025 = quantile(density, 0.025),
+                q5   = quantile(density, 0.5),
+                q975 = quantile(density, 0.975))
+    
+    master_density_df <- tidy(density(master_colors[[channel]], from = min(master_colors[[channel]]), to = max(master_colors[[channel]])))
     
     p <- ggplot() +
-      geom_density(data = master_colors, aes_string(x = channel, color = "'Master'"), size = 1) +
-      geom_density(data = card_colors, aes_string(x = channel, color = "'Card'"), size = 1) +
-      geom_density(data = bounds_data, aes_string(x = "upper_sd", color = "'Card Upper SD'"), linetype = "dashed") +
-      geom_density(data = bounds_data, aes_string(x = "lower_sd", color = "'Card Lower SD'"), linetype = "dotted") +
+      geom_ribbon(data = density_quantiles, aes(x = value, ymin = q025, ymax = q975), alpha = 0.5, fill = "grey50") +
+      geom_line(data = master_density_df, aes(x = x, y = y, color = "Master"), size = 1.5) +
+      geom_line(data = density_quantiles, aes(x = value, y = q5, color = "Card"), size = 1.5, alpha = 0.8) +
       scale_color_manual(name = "",
-                         values = c("Master" = "red", "Card" = "blue", "Card Upper SD" = "blue", "Card Lower SD" = "blue")) +
+                         values = c("Master" = "red", "Card" = "blue")) +
       labs(title = paste0("Density Plot of ", channel, "-value"), x = paste0(channel, "-value"), y = "Density") +
       theme_minimal() +
       guides(color = guide_legend(override.aes = list(size = 6)))
+    
     output_plots[[channel]] <- p
   }
   output_plots
@@ -120,4 +126,29 @@ plot_correlation <- function(data, x_var, y_var) {
     geom_smooth(method = "lm", se = FALSE) +
     labs(title = paste0("Correlation between ", x_var, " and ", y_var, "\nPearson: ", round(cor_pearson, 2), " Spearman: ", round(cor_spearman, 2)),
          x = paste0(x_var, "-value"), y = paste0(y_var, "-value"))
+}
+
+
+plot_correlation_with_categories <- function(data, x_var, y_var, exclude_below=1) {
+  data$category <- ifelse(data[[y_var]] > exclude_below, "Above", "Below")
+  # Total correlations
+  cor_spearman_total <- cor(data[[x_var]], data[[y_var]], method = "spearman")
+  cor_pearson_total <- cor(data[[x_var]], data[[y_var]], method = "pearson")
+  # Correlations without "Low"
+  data_high <- data[data$category == "Above", ]
+  cor_spearman_high <- cor(data_high[[x_var]], data_high[[y_var]], method = "spearman")
+  cor_pearson_high <- cor(data_high[[x_var]], data_high[[y_var]], method = "pearson")
+
+  ggplot(data, aes_string(x = x_var, y = y_var, color = "category")) +
+    geom_point() +
+    geom_smooth(aes(group = 1, linetype = "Total"), method = "lm", se = FALSE, color = "black") +
+    geom_smooth(data = data_high, aes(linetype = "Excluded"), method = "lm", se = FALSE, color = "blue") + 
+    labs(title = paste0("Correlation between ", x_var, " and ", y_var, "\n",
+                        "Total: Pearson: ", round(cor_pearson_total, 2), " Spearman: ", round(cor_spearman_total, 2), "\n",
+                        "Exclude ", y_var, " < ", exclude_below, ": Pearson: ", round(cor_pearson_high, 2), " Spearman: ", round(cor_spearman_high, 2)),
+         x = paste0(x_var, "-value"), y = paste0(y_var, "-value")) +
+    theme_minimal() +
+    scale_color_manual(values = c("Above" = "blue", "Below" = "red"), name = y_var) +
+    scale_linetype_manual(values = c("Total" = "dotted", "Excluded" = "solid"), name = "Regression Line") +
+    guides(color = guide_legend(order = 1), linetype = guide_legend(order = 2))
 }

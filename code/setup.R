@@ -5,6 +5,7 @@ library(gridExtra)
 library(spacesXYZ)
 library(OpenImageR)
 library(broman)
+library(broom)
 
 source("code/helper_functions.R")
 source("code/display_functions.R")

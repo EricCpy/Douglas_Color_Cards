@@ -11,8 +11,8 @@ display_color_sheet(lab_colors, color_sheet_idx = 13)
 display_color_card(mean_lab_color_card, "Row", "Col", "Lab", 2)
 plot_card_differences_to_master(mean_lab_color_differences %>% rename(Crow = Row, Ccol = Col), master_colors)
 plot_card_vs_master(mean_lab_color_card, master_colors)
-plot_density_vs_master(mean_lab_color_card, master_colors)
-
+plots <- plot_density_vs_master(lab_colors_master_shape, master_colors)
+grid.arrange(plots[["L"]], plots[["a"]], plots[["b"]], nrow = 3)
 # master cmyk vs master lab 
 master_colors_cmyk <- master_colors %>%
   rowwise() %>%
@@ -24,10 +24,10 @@ master_colors_cmyk_differences <- generate_color_difference_df(master_colors, ma
 plot_card_differences_to_master(master_colors_cmyk_differences, master_colors)
 
 # 2D Scatterplots Chroma and single channels to S
-plot_correlation(master_colors, "L", "S")
-plot_correlation(master_colors, "a", "S")
-plot_correlation(master_colors, "b", "S")
-plot_correlation(master_colors, "Chroma", "S")
+plot_correlation_with_categories(master_colors, "L", "S")
+plot_correlation_with_categories(master_colors, "a", "S")
+plot_correlation_with_categories(master_colors, "b", "S")
+plot_correlation_with_categories(master_colors, "Chroma", "S")
 
 # 2D Scatterplots for correlation and channel
 grid.arrange(plot_correlation(mean_lab_color_differences, "L", "Difference"),
