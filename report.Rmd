@@ -350,7 +350,7 @@ In the previous chapter, we analyzed the difference of \( \Delta \)E across vari
 
 ```{r Lab correlations with deltaE, echo=FALSE, warning=FALSE, message=FALSE, cache=!full_refit}
 mean_lab_color_differences_exlcude_18 <- mean_lab_color_differences %>% 
-                                          filter(!(Row == 3 & Column == 2))
+                                          filter(!(Row == 3 & Col == 2))
 
 grid.arrange(plot_correlation(mean_lab_color_differences, "L", "Difference"),
              plot_correlation(mean_lab_color_differences, "a", "Difference"),
