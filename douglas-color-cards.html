@@ -129,7 +129,318 @@
 <div id="data-description" class="section level2 hasAnchor" number="1.2">
 <h2><span class="header-section-number">1.2</span> Data description<a href="#data-description" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>The data given consists of two files. One file holds the master color information given in the Lab colorspace as well as in the CMYKS color space. In the latter S stands for special and might be some kind of skin color pigment.</p>
-<p>The second file holds color information obtained from 13 printed sheets. Thus we find the Lab color information for all 64 squares for 42 color cards for 13 sheets resulting in 104832 numeric values.</p>
+<div class="container st-container">
+<h3>Data Frame Summary</h3>
+<h4>master_colors</h4>
+<strong>Dimensions</strong>: 64 x 13
+  <br/><strong>Duplicates</strong>: 0
+<br/>
+<table class="table table-striped table-bordered st-table st-table-striped st-table-bordered st-multiline ">
+  <thead>
+    <tr>
+      <th align="center" class="st-protect-top-border"><strong>No</strong></th>
+      <th align="center" class="st-protect-top-border"><strong>Variable</strong></th>
+      <th align="center" class="st-protect-top-border"><strong>Stats / Values</strong></th>
+      <th align="center" class="st-protect-top-border"><strong>Freqs (% of Valid)</strong></th>
+      <th align="center" class="st-protect-top-border"><strong>Graph</strong></th>
+      <th align="center" class="st-protect-top-border"><strong>Valid</strong></th>
+      <th align="center" class="st-protect-top-border"><strong>Missing</strong></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td align="center">1</td>
+      <td align="left">Field
+[integer]</td>
+      <td align="left" style="padding:8;vertical-align:middle"><table style="border-collapse:collapse;border:none;margin:0"><tr style="background-color:transparent"><td style="padding:0;margin:0;border:0" align="left">Mean (sd) : 32.5 (18.6)</td></tr><tr style="background-color:transparent"><td style="padding:0;margin:0;border:0" align="left">min &le; med &le; max:</td></tr><tr style="background-color:transparent"><td style="padding:0;margin:0;border:0" align="left">1 &le; 32.5 &le; 64</td></tr><tr style="background-color:transparent"><td style="padding:0;margin:0;border:0" align="left">IQR (CV) : 31.5 (0.6)</td></tr></table></td>
+      <td align="left" style="vertical-align:middle">64 distinct values
+(Integer sequence)</td>
+      <td align="left" style="vertical-align:middle;padding:0;background-color:transparent;"><img style="border:none;background-color:transparent;padding:0;max-width:max-content;" src="data:image/png;base64, iVBORw0KGgoAAAANSUhEUgAAALEAAAB/BAMAAABS5T4yAAAAIGNIUk0AAHomAACAhAAA+gAAAIDoAAB1MAAA6mAAADqYAAAXcJy6UTwAAAAPUExURf////3+/aampvDw8P///7GHRIEAAAACdFJOUwAAdpPNOAAAAAFiS0dEAIgFHUgAAAAHdElNRQfoBhIRHCcdCniKAAAAbklEQVRo3u3aywnAIBBAQUtIOsinA9N/b14E92BuGyEw7ySyTAG6pWhVV0rnPtq6fD+jcK7z67cRMplMJpPJZDKZTCaTyWQymUwmk8nklXL8ATlS5ThCJpPJZDKZTCaTyWQy+c9yzu7l7BVC39cAYcAKLpzCzv4AAAAASUVORK5CYII="></td>
+      <td align="center">64
+(100.0%)</td>
+      <td align="center">0
+(0.0%)</td>
+    </tr>
+    <tr>
+      <td align="center">2</td>
+      <td align="left">Crow
+[integer]</td>
+      <td align="left" style="padding:8;vertical-align:middle"><table style="border-collapse:collapse;border:none;margin:0"><tr style="background-color:transparent"><td style="padding:0;margin:0;border:0" align="left">Mean (sd) : 4.5 (2.3)</td></tr><tr style="background-color:transparent"><td style="padding:0;margin:0;border:0" align="left">min &le; med &le; max:</td></tr><tr style="background-color:transparent"><td style="padding:0;margin:0;border:0" align="left">1 &le; 4.5 &le; 8</td></tr><tr style="background-color:transparent"><td style="padding:0;margin:0;border:0" align="left">IQR (CV) : 3.5 (0.5)</td></tr></table></td>
+      <td align="left" style="padding:0;vertical-align:middle"><table style="border-collapse:collapse;border:none;margin:0"><tr style="background-color:transparent"><td style="padding:0 2px 0 7px;margin:0;border:0" align="right">1</td><td style="padding:0 2px;border:0;" align="left">:</td><td style="padding:0 4px 0 6px;margin:0;border:0" align="right">8</td><td style="padding:0;border:0" align="left">(</td><td style="padding:0 2px;margin:0;border:0" align="right">12.5%</td><td style="padding:0 4px 0 0;border:0" align="left">)</td></tr><tr style="background-color:transparent"><td style="padding:0 2px 0 7px;margin:0;border:0" align="right">2</td><td style="padding:0 2px;border:0;" align="left">:</td><td style="padding:0 4px 0 6px;margin:0;border:0" align="right">8</td><td style="padding:0;border:0" align="left">(</td><td style="padding:0 2px;margin:0;border:0" align="right">12.5%</td><td style="padding:0 4px 0 0;border:0" align="left">)</td></tr><tr style="background-color:transparent"><td style="padding:0 2px 0 7px;margin:0;border:0" align="right">3</td><td style="padding:0 2px;border:0;" align="left">:</td><td style="padding:0 4px 0 6px;margin:0;border:0" align="right">8</td><td style="padding:0;border:0" align="left">(</td><td style="padding:0 2px;margin:0;border:0" align="right">12.5%</td><td style="padding:0 4px 0 0;border:0" align="left">)</td></tr><tr style="background-color:transparent"><td style="padding:0 2px 0 7px;margin:0;border:0" align="right">4</td><td style="padding:0 2px;border:0;" align="left">:</td><td style="padding:0 4px 0 6px;margin:0;border:0" align="right">8</td><td style="padding:0;border:0" align="left">(</td><td style="padding:0 2px;margin:0;border:0" align="right">12.5%</td><td style="padding:0 4px 0 0;border:0" align="left">)</td></tr><tr style="background-color:transparent"><td style="padding:0 2px 0 7px;margin:0;border:0" align="right">5</td><td style="padding:0 2px;border:0;" align="left">:</td><td style="padding:0 4px 0 6px;margin:0;border:0" align="right">8</td><td style="padding:0;border:0" align="left">(</td><td style="padding:0 2px;margin:0;border:0" align="right">12.5%</td><td style="padding:0 4px 0 0;border:0" align="left">)</td></tr><tr style="background-color:transparent"><td style="padding:0 2px 0 7px;margin:0;border:0" align="right">6</td><td style="padding:0 2px;border:0;" align="left">:</td><td style="padding:0 4px 0 6px;margin:0;border:0" align="right">8</td><td style="padding:0;border:0" align="left">(</td><td style="padding:0 2px;margin:0;border:0" align="right">12.5%</td><td style="padding:0 4px 0 0;border:0" align="left">)</td></tr><tr style="background-color:transparent"><td style="padding:0 2px 0 7px;margin:0;border:0" align="right">7</td><td style="padding:0 2px;border:0;" align="left">:</td><td style="padding:0 4px 0 6px;margin:0;border:0" align="right">8</td><td style="padding:0;border:0" align="left">(</td><td style="padding:0 2px;margin:0;border:0" align="right">12.5%</td><td style="padding:0 4px 0 0;border:0" align="left">)</td></tr><tr style="background-color:transparent"><td style="padding:0 2px 0 7px;margin:0;border:0" align="right">8</td><td style="padding:0 2px;border:0;" align="left">:</td><td style="padding:0 4px 0 6px;margin:0;border:0" align="right">8</td><td style="padding:0;border:0" align="left">(</td><td style="padding:0 2px;margin:0;border:0" align="right">12.5%</td><td style="padding:0 4px 0 0;border:0" align="left">)</td></tr></table></td>
+      <td align="left" style="vertical-align:middle;padding:0;background-color:transparent;"><img style="border:none;background-color:transparent;padding:0;max-width:max-content;" src="data:image/png;base64, iVBORw0KGgoAAAANSUhEUgAAACMAAADmBAMAAACt0iFtAAAAIGNIUk0AAHomAACAhAAA+gAAAIDoAAB1MAAA6mAAADqYAAAXcJy6UTwAAAAPUExURf////3+/aampvDw8P///7GHRIEAAAACdFJOUwAAdpPNOAAAAAFiS0dEAIgFHUgAAAAHdElNRQfoBhIRHCcdCniKAAAATUlEQVRYw+3SsQ0AIAhEUUbQDYyO4P672RhpKCEB86987X0R303duLT2G5SSjNO6rgUQmRSk4ExooiDRBEQTEE1ANAElb4JM/iDjNK8dZmu96oeqV8kAAAAASUVORK5CYII="></td>
+      <td align="center">64
+(100.0%)</td>
+      <td align="center">0
+(0.0%)</td>
+    </tr>
+    <tr>
+      <td align="center">3</td>
+      <td align="left">Ccol
+[integer]</td>
+      <td align="left" style="padding:8;vertical-align:middle"><table style="border-collapse:collapse;border:none;margin:0"><tr style="background-color:transparent"><td style="padding:0;margin:0;border:0" align="left">Mean (sd) : 4.5 (2.3)</td></tr><tr style="background-color:transparent"><td style="padding:0;margin:0;border:0" align="left">min &le; med &le; max:</td></tr><tr style="background-color:transparent"><td style="padding:0;margin:0;border:0" align="left">1 &le; 4.5 &le; 8</td></tr><tr style="background-color:transparent"><td style="padding:0;margin:0;border:0" align="left">IQR (CV) : 3.5 (0.5)</td></tr></table></td>
+      <td align="left" style="padding:0;vertical-align:middle"><table style="border-collapse:collapse;border:none;margin:0"><tr style="background-color:transparent"><td style="padding:0 2px 0 7px;margin:0;border:0" align="right">1</td><td style="padding:0 2px;border:0;" align="left">:</td><td style="padding:0 4px 0 6px;margin:0;border:0" align="right">8</td><td style="padding:0;border:0" align="left">(</td><td style="padding:0 2px;margin:0;border:0" align="right">12.5%</td><td style="padding:0 4px 0 0;border:0" align="left">)</td></tr><tr style="background-color:transparent"><td style="padding:0 2px 0 7px;margin:0;border:0" align="right">2</td><td style="padding:0 2px;border:0;" align="left">:</td><td style="padding:0 4px 0 6px;margin:0;border:0" align="right">8</td><td style="padding:0;border:0" align="left">(</td><td style="padding:0 2px;margin:0;border:0" align="right">12.5%</td><td style="padding:0 4px 0 0;border:0" align="left">)</td></tr><tr style="background-color:transparent"><td style="padding:0 2px 0 7px;margin:0;border:0" align="right">3</td><td style="padding:0 2px;border:0;" align="left">:</td><td style="padding:0 4px 0 6px;margin:0;border:0" align="right">8</td><td style="padding:0;border:0" align="left">(</td><td style="padding:0 2px;margin:0;border:0" align="right">12.5%</td><td style="padding:0 4px 0 0;border:0" align="left">)</td></tr><tr style="background-color:transparent"><td style="padding:0 2px 0 7px;margin:0;border:0" align="right">4</td><td style="padding:0 2px;border:0;" align="left">:</td><td style="padding:0 4px 0 6px;margin:0;border:0" align="right">8</td><td style="padding:0;border:0" align="left">(</td><td style="padding:0 2px;margin:0;border:0" align="right">12.5%</td><td style="padding:0 4px 0 0;border:0" align="left">)</td></tr><tr style="background-color:transparent"><td style="padding:0 2px 0 7px;margin:0;border:0" align="right">5</td><td style="padding:0 2px;border:0;" align="left">:</td><td style="padding:0 4px 0 6px;margin:0;border:0" align="right">8</td><td style="padding:0;border:0" align="left">(</td><td style="padding:0 2px;margin:0;border:0" align="right">12.5%</td><td style="padding:0 4px 0 0;border:0" align="left">)</td></tr><tr style="background-color:transparent"><td style="padding:0 2px 0 7px;margin:0;border:0" align="right">6</td><td style="padding:0 2px;border:0;" align="left">:</td><td style="padding:0 4px 0 6px;margin:0;border:0" align="right">8</td><td style="padding:0;border:0" align="left">(</td><td style="padding:0 2px;margin:0;border:0" align="right">12.5%</td><td style="padding:0 4px 0 0;border:0" align="left">)</td></tr><tr style="background-color:transparent"><td style="padding:0 2px 0 7px;margin:0;border:0" align="right">7</td><td style="padding:0 2px;border:0;" align="left">:</td><td style="padding:0 4px 0 6px;margin:0;border:0" align="right">8</td><td style="padding:0;border:0" align="left">(</td><td style="padding:0 2px;margin:0;border:0" align="right">12.5%</td><td style="padding:0 4px 0 0;border:0" align="left">)</td></tr><tr style="background-color:transparent"><td style="padding:0 2px 0 7px;margin:0;border:0" align="right">8</td><td style="padding:0 2px;border:0;" align="left">:</td><td style="padding:0 4px 0 6px;margin:0;border:0" align="right">8</td><td style="padding:0;border:0" align="left">(</td><td style="padding:0 2px;margin:0;border:0" align="right">12.5%</td><td style="padding:0 4px 0 0;border:0" align="left">)</td></tr></table></td>
+      <td align="left" style="vertical-align:middle;padding:0;background-color:transparent;"><img style="border:none;background-color:transparent;padding:0;max-width:max-content;" src="data:image/png;base64, iVBORw0KGgoAAAANSUhEUgAAACMAAADmBAMAAACt0iFtAAAAIGNIUk0AAHomAACAhAAA+gAAAIDoAAB1MAAA6mAAADqYAAAXcJy6UTwAAAAPUExURf////3+/aampvDw8P///7GHRIEAAAACdFJOUwAAdpPNOAAAAAFiS0dEAIgFHUgAAAAHdElNRQfoBhIRHCcdCniKAAAATUlEQVRYw+3SsQ0AIAhEUUbQDYyO4P672RhpKCEB86987X0R303duLT2G5SSjNO6rgUQmRSk4ExooiDRBEQTEE1ANAElb4JM/iDjNK8dZmu96oeqV8kAAAAASUVORK5CYII="></td>
+      <td align="center">64
+(100.0%)</td>
+      <td align="center">0
+(0.0%)</td>
+    </tr>
+    <tr>
+      <td align="center">4</td>
+      <td align="left">C
+[integer]</td>
+      <td align="left" style="padding:8;vertical-align:middle"><table style="border-collapse:collapse;border:none;margin:0"><tr style="background-color:transparent"><td style="padding:0;margin:0;border:0" align="left">Mean (sd) : 9.1 (23.1)</td></tr><tr style="background-color:transparent"><td style="padding:0;margin:0;border:0" align="left">min &le; med &le; max:</td></tr><tr style="background-color:transparent"><td style="padding:0;margin:0;border:0" align="left">0 &le; 0 &le; 100</td></tr><tr style="background-color:transparent"><td style="padding:0;margin:0;border:0" align="left">IQR (CV) : 0 (2.5)</td></tr></table></td>
+      <td align="left" style="vertical-align:middle">13 distinct values</td>
+      <td align="left" style="vertical-align:middle;padding:0;background-color:transparent;"><img style="border:none;background-color:transparent;padding:0;max-width:max-content;" src="data:image/png;base64, iVBORw0KGgoAAAANSUhEUgAAALEAAAB/BAMAAABS5T4yAAAAIGNIUk0AAHomAACAhAAA+gAAAIDoAAB1MAAA6mAAADqYAAAXcJy6UTwAAAAPUExURf////3+/aampvDw8P///7GHRIEAAAACdFJOUwAAdpPNOAAAAAFiS0dEAIgFHUgAAAAHdElNRQfoBhIRHCcdCniKAAAAd0lEQVRo3u3aywmAMBBAQUvQDjTpwPTfmxc9uCLBLyjzbgubIeScptFbpVh3tXaWc1k3kslkMplMJpPJZDKZTCaTyWQymUwmk8lkMplMJpPJZDKZ/B85/r8bbpPjwnk53jEupFr9nhzmkivz5sCX5eqzHW6R9XwTGDC4+ADmpP0AAAAASUVORK5CYII="></td>
+      <td align="center">64
+(100.0%)</td>
+      <td align="center">0
+(0.0%)</td>
+    </tr>
+    <tr>
+      <td align="center">5</td>
+      <td align="left">M
+[integer]</td>
+      <td align="left" style="padding:8;vertical-align:middle"><table style="border-collapse:collapse;border:none;margin:0"><tr style="background-color:transparent"><td style="padding:0;margin:0;border:0" align="left">Mean (sd) : 14.6 (25)</td></tr><tr style="background-color:transparent"><td style="padding:0;margin:0;border:0" align="left">min &le; med &le; max:</td></tr><tr style="background-color:transparent"><td style="padding:0;margin:0;border:0" align="left">0 &le; 0 &le; 100</td></tr><tr style="background-color:transparent"><td style="padding:0;margin:0;border:0" align="left">IQR (CV) : 24.5 (1.7)</td></tr></table></td>
+      <td align="left" style="vertical-align:middle">24 distinct values</td>
+      <td align="left" style="vertical-align:middle;padding:0;background-color:transparent;"><img style="border:none;background-color:transparent;padding:0;max-width:max-content;" src="data:image/png;base64, iVBORw0KGgoAAAANSUhEUgAAALEAAAB/BAMAAABS5T4yAAAAIGNIUk0AAHomAACAhAAA+gAAAIDoAAB1MAAA6mAAADqYAAAXcJy6UTwAAAAPUExURf////3+/aampvDw8P///7GHRIEAAAACdFJOUwAAdpPNOAAAAAFiS0dEAIgFHUgAAAAHdElNRQfoBhIRHCcdCniKAAAAe0lEQVRo3u3asRFAQBBAUSWgAk4Hrv/eJAQWw3Ak3s9uZvell2xV6atSrHlaPctDXjeSyWQymUwmk8lkMplMJpPJZDKZTCaTyWQymUwmH8nxgqEvJod3JpPJZPLf5LM/po0D3VU5DmzkuHBb3pz6FZNPF8h7cireIuv9Jpsh8YtpYeLNAAAAAElFTkSuQmCC"></td>
+      <td align="center">64
+(100.0%)</td>
+      <td align="center">0
+(0.0%)</td>
+    </tr>
+    <tr>
+      <td align="center">6</td>
+      <td align="left">Y
+[integer]</td>
+      <td align="left" style="padding:8;vertical-align:middle"><table style="border-collapse:collapse;border:none;margin:0"><tr style="background-color:transparent"><td style="padding:0;margin:0;border:0" align="left">Mean (sd) : 20.6 (31.9)</td></tr><tr style="background-color:transparent"><td style="padding:0;margin:0;border:0" align="left">min &le; med &le; max:</td></tr><tr style="background-color:transparent"><td style="padding:0;margin:0;border:0" align="left">0 &le; 0.5 &le; 100</td></tr><tr style="background-color:transparent"><td style="padding:0;margin:0;border:0" align="left">IQR (CV) : 37.5 (1.6)</td></tr></table></td>
+      <td align="left" style="vertical-align:middle">26 distinct values</td>
+      <td align="left" style="vertical-align:middle;padding:0;background-color:transparent;"><img style="border:none;background-color:transparent;padding:0;max-width:max-content;" src="data:image/png;base64, iVBORw0KGgoAAAANSUhEUgAAALEAAAB/BAMAAABS5T4yAAAAIGNIUk0AAHomAACAhAAA+gAAAIDoAAB1MAAA6mAAADqYAAAXcJy6UTwAAAAPUExURf////3+/aampvDw8P///7GHRIEAAAACdFJOUwAAdpPNOAAAAAFiS0dEAIgFHUgAAAAHdElNRQfoBhIRHCcdCniKAAAAe0lEQVRo3u3aMRJAQAxAUUfACVg34P5301AIMwrBFu/XyZtJn6bRV5VY97R2k6fl2Ewmk8lkMplMJpPJZDKZTCaTyWQymUwmk8lkMplMJr8t9/EdZkiTA7BUIMdjxzQ5DtQox+vz5DhIJv8vn1790uTbBfKVXNLbZb3fCk1TBGYH3uy3AAAAAElFTkSuQmCC"></td>
+      <td align="center">64
+(100.0%)</td>
+      <td align="center">0
+(0.0%)</td>
+    </tr>
+    <tr>
+      <td align="center">7</td>
+      <td align="left">K
+[integer]</td>
+      <td align="left" style="padding:8;vertical-align:middle"><table style="border-collapse:collapse;border:none;margin:0"><tr style="background-color:transparent"><td style="padding:0;margin:0;border:0" align="left">Mean (sd) : 31.4 (28.8)</td></tr><tr style="background-color:transparent"><td style="padding:0;margin:0;border:0" align="left">min &le; med &le; max:</td></tr><tr style="background-color:transparent"><td style="padding:0;margin:0;border:0" align="left">0 &le; 24 &le; 99</td></tr><tr style="background-color:transparent"><td style="padding:0;margin:0;border:0" align="left">IQR (CV) : 59.2 (0.9)</td></tr></table></td>
+      <td align="left" style="vertical-align:middle">28 distinct values</td>
+      <td align="left" style="vertical-align:middle;padding:0;background-color:transparent;"><img style="border:none;background-color:transparent;padding:0;max-width:max-content;" src="data:image/png;base64, iVBORw0KGgoAAAANSUhEUgAAALEAAAB/BAMAAABS5T4yAAAAIGNIUk0AAHomAACAhAAA+gAAAIDoAAB1MAAA6mAAADqYAAAXcJy6UTwAAAAPUExURf////3+/aampvDw8P///7GHRIEAAAACdFJOUwAAdpPNOAAAAAFiS0dEAIgFHUgAAAAHdElNRQfoBhIRHCcdCniKAAAAe0lEQVRo3u3YsQ2AIBBAUUbQDQxuIPvvZqOF15Agkhjer7lXERIuJY0qx9a3LZe8l2cHmUwmk8lkMplMJpPJY+Xqp7dZrg6QyWQymUwmk8lkMplMJk8jxxVMPzkeIM8r125Zu1wqEplMJk8px2d36ybHgT/LuXu3rO87AX9Wn88ButkwAAAAAElFTkSuQmCC"></td>
+      <td align="center">64
+(100.0%)</td>
+      <td align="center">0
+(0.0%)</td>
+    </tr>
+    <tr>
+      <td align="center">8</td>
+      <td align="left">S
+[integer]</td>
+      <td align="left" style="padding:8;vertical-align:middle"><table style="border-collapse:collapse;border:none;margin:0"><tr style="background-color:transparent"><td style="padding:0;margin:0;border:0" align="left">Mean (sd) : 35 (40.4)</td></tr><tr style="background-color:transparent"><td style="padding:0;margin:0;border:0" align="left">min &le; med &le; max:</td></tr><tr style="background-color:transparent"><td style="padding:0;margin:0;border:0" align="left">0 &le; 1 &le; 100</td></tr><tr style="background-color:transparent"><td style="padding:0;margin:0;border:0" align="left">IQR (CV) : 75.8 (1.2)</td></tr></table></td>
+      <td align="left" style="vertical-align:middle">23 distinct values</td>
+      <td align="left" style="vertical-align:middle;padding:0;background-color:transparent;"><img style="border:none;background-color:transparent;padding:0;max-width:max-content;" src="data:image/png;base64, iVBORw0KGgoAAAANSUhEUgAAALEAAAB/BAMAAABS5T4yAAAAIGNIUk0AAHomAACAhAAA+gAAAIDoAAB1MAAA6mAAADqYAAAXcJy6UTwAAAAPUExURf////3+/aampvDw8P///7GHRIEAAAACdFJOUwAAdpPNOAAAAAFiS0dEAIgFHUgAAAAHdElNRQfoBhIRHCcdCniKAAAAc0lEQVRo3u3ZoRGAMAxA0Y4ATMCVDej+u2FAkB6K0EO8r5MnY1KKRlVj89umU97avZ1MJpPJZDKZTCaTyWQymUwmk8lkMplMJo+Rl/gGXNPkADTyz+XuJZwmdwtkMpk8TI6nLU+OA2QymUwmP8g1vUvW9x0ZlFhq3aliEwAAAABJRU5ErkJggg=="></td>
+      <td align="center">64
+(100.0%)</td>
+      <td align="center">0
+(0.0%)</td>
+    </tr>
+    <tr>
+      <td align="center">9</td>
+      <td align="left">L
+[numeric]</td>
+      <td align="left" style="padding:8;vertical-align:middle"><table style="border-collapse:collapse;border:none;margin:0"><tr style="background-color:transparent"><td style="padding:0;margin:0;border:0" align="left">Mean (sd) : 56.3 (14.6)</td></tr><tr style="background-color:transparent"><td style="padding:0;margin:0;border:0" align="left">min &le; med &le; max:</td></tr><tr style="background-color:transparent"><td style="padding:0;margin:0;border:0" align="left">24.2 &le; 51.6 &le; 93.4</td></tr><tr style="background-color:transparent"><td style="padding:0;margin:0;border:0" align="left">IQR (CV) : 15.8 (0.3)</td></tr></table></td>
+      <td align="left" style="vertical-align:middle">49 distinct values</td>
+      <td align="left" style="vertical-align:middle;padding:0;background-color:transparent;"><img style="border:none;background-color:transparent;padding:0;max-width:max-content;" src="data:image/png;base64, iVBORw0KGgoAAAANSUhEUgAAALEAAAB/BAMAAABS5T4yAAAAIGNIUk0AAHomAACAhAAA+gAAAIDoAAB1MAAA6mAAADqYAAAXcJy6UTwAAAAPUExURf////3+/aampvDw8P///7GHRIEAAAACdFJOUwAAdpPNOAAAAAFiS0dEAIgFHUgAAAAHdElNRQfoBhIRHCcdCniKAAAAiklEQVRo3u3YQQrDIBBA0RyhyQlSewO9/92ySnAxtFMwheL7K0F9iCtxWfSr1veVq+ea7JGTX+2MTCaTyWQymUwmk8lkMplMJpPJM8vpn+iv5fTpyWQymUwm9/JWgiK5m07K19baAi8aVTKZTCaTyf8lRw+JfYgcbSFHcnf1g+UPyyaTy/BOWfd3AL7FDq6jTM8YAAAAAElFTkSuQmCC"></td>
+      <td align="center">64
+(100.0%)</td>
+      <td align="center">0
+(0.0%)</td>
+    </tr>
+    <tr>
+      <td align="center">10</td>
+      <td align="left">a
+[numeric]</td>
+      <td align="left" style="padding:8;vertical-align:middle"><table style="border-collapse:collapse;border:none;margin:0"><tr style="background-color:transparent"><td style="padding:0;margin:0;border:0" align="left">Mean (sd) : 7.5 (15.6)</td></tr><tr style="background-color:transparent"><td style="padding:0;margin:0;border:0" align="left">min &le; med &le; max:</td></tr><tr style="background-color:transparent"><td style="padding:0;margin:0;border:0" align="left">-37.1 &le; 9.5 &le; 51.3</td></tr><tr style="background-color:transparent"><td style="padding:0;margin:0;border:0" align="left">IQR (CV) : 13.4 (2.1)</td></tr></table></td>
+      <td align="left" style="vertical-align:middle">49 distinct values</td>
+      <td align="left" style="vertical-align:middle;padding:0;background-color:transparent;"><img style="border:none;background-color:transparent;padding:0;max-width:max-content;" src="data:image/png;base64, iVBORw0KGgoAAAANSUhEUgAAALEAAAB/BAMAAABS5T4yAAAAIGNIUk0AAHomAACAhAAA+gAAAIDoAAB1MAAA6mAAADqYAAAXcJy6UTwAAAAPUExURf////3+/aampvDw8P///7GHRIEAAAACdFJOUwAAdpPNOAAAAAFiS0dEAIgFHUgAAAAHdElNRQfoBhIRHCcdCniKAAAAj0lEQVRo3u3SQQqDMBBAUY9gPYGNN9D7381Fnc1ASAQr1L6/CYGZRxCHQXf1alWO3s3Jo7FXXrZPZPL9cvd/fVrufjuZTCaTyWQymUwmk8lkMplMJpPJZDKZTCaTyWQymfxPcsm15Dw45cWQY2GNsyUvaXDKi4+S83evyjGQ73NNTudWlWsLvyyXywtZ328HO1ivDs+BOmwAAAAASUVORK5CYII="></td>
+      <td align="center">64
+(100.0%)</td>
+      <td align="center">0
+(0.0%)</td>
+    </tr>
+    <tr>
+      <td align="center">11</td>
+      <td align="left">b
+[numeric]</td>
+      <td align="left" style="padding:8;vertical-align:middle"><table style="border-collapse:collapse;border:none;margin:0"><tr style="background-color:transparent"><td style="padding:0;margin:0;border:0" align="left">Mean (sd) : 11.2 (19.6)</td></tr><tr style="background-color:transparent"><td style="padding:0;margin:0;border:0" align="left">min &le; med &le; max:</td></tr><tr style="background-color:transparent"><td style="padding:0;margin:0;border:0" align="left">-38.3 &le; 11.9 &le; 82.2</td></tr><tr style="background-color:transparent"><td style="padding:0;margin:0;border:0" align="left">IQR (CV) : 15 (1.8)</td></tr></table></td>
+      <td align="left" style="vertical-align:middle">49 distinct values</td>
+      <td align="left" style="vertical-align:middle;padding:0;background-color:transparent;"><img style="border:none;background-color:transparent;padding:0;max-width:max-content;" src="data:image/png;base64, iVBORw0KGgoAAAANSUhEUgAAALEAAAB/BAMAAABS5T4yAAAAIGNIUk0AAHomAACAhAAA+gAAAIDoAAB1MAAA6mAAADqYAAAXcJy6UTwAAAAPUExURf////3+/aampvDw8P///7GHRIEAAAACdFJOUwAAdpPNOAAAAAFiS0dEAIgFHUgAAAAHdElNRQfoBhIRHCcdCniKAAAAh0lEQVRo3u3auw2AMAxAQUYAJoCwAey/GxUiBRay+AnpXpXCOaVwmabRW3XH9WVv7FK1J/KyRyaTyWQymUwmk8lkMplMJpPJZDKZTCaTyWQymUz+Vi65XyIJecq9n0w+k4NlvUEOrpHJL8n1bgdyPZKQq/McyPXIH+Vy3HBdDkY2udzeJuv5VrvYjdXbOgKpAAAAAElFTkSuQmCC"></td>
+      <td align="center">64
+(100.0%)</td>
+      <td align="center">0
+(0.0%)</td>
+    </tr>
+    <tr>
+      <td align="center">12</td>
+      <td align="left">Chroma
+[numeric]</td>
+      <td align="left" style="padding:8;vertical-align:middle"><table style="border-collapse:collapse;border:none;margin:0"><tr style="background-color:transparent"><td style="padding:0;margin:0;border:0" align="left">Mean (sd) : 21 (19.1)</td></tr><tr style="background-color:transparent"><td style="padding:0;margin:0;border:0" align="left">min &le; med &le; max:</td></tr><tr style="background-color:transparent"><td style="padding:0;margin:0;border:0" align="left">1.3 &le; 19.9 &le; 82.3</td></tr><tr style="background-color:transparent"><td style="padding:0;margin:0;border:0" align="left">IQR (CV) : 22.6 (0.9)</td></tr></table></td>
+      <td align="left" style="vertical-align:middle">49 distinct values</td>
+      <td align="left" style="vertical-align:middle;padding:0;background-color:transparent;"><img style="border:none;background-color:transparent;padding:0;max-width:max-content;" src="data:image/png;base64, iVBORw0KGgoAAAANSUhEUgAAALEAAAB/BAMAAABS5T4yAAAAIGNIUk0AAHomAACAhAAA+gAAAIDoAAB1MAAA6mAAADqYAAAXcJy6UTwAAAAPUExURf////3+/aampvDw8P///7GHRIEAAAACdFJOUwAAdpPNOAAAAAFiS0dEAIgFHUgAAAAHdElNRQfoBhIRHCcdCniKAAAAmUlEQVRo3u3ZwQmDMBiAUUdonaBNN9D9d/Ni0oNFYvwVpe87BYOPCBLQdJ3OKuXez6Aes/wZ58hkMpkcIvdlyw6X85WBTCaTyWQymUwmk8nkS8rlmzhFy2UwkMlkMplMJpPJZPIfym1HkDVy2+LJu+WqY+U2ueYpyLeQV16SnfLK4snN8vK32HKq9NoiVwy+95N/ySm8LOv4JunUJ2KrzeA1AAAAAElFTkSuQmCC"></td>
+      <td align="center">64
+(100.0%)</td>
+      <td align="center">0
+(0.0%)</td>
+    </tr>
+    <tr>
+      <td align="center">13</td>
+      <td align="left">Color
+[character]</td>
+      <td align="left" style="padding:8;vertical-align:middle"><table style="border-collapse:collapse;border:none;margin:0"><tr style="background-color:transparent"><td style="padding:0;margin:0;border:0" align="left">1. #7E7B76</td></tr><tr style="background-color:transparent"><td style="padding:0;margin:0;border:0" align="left">2. #0088A8</td></tr><tr style="background-color:transparent"><td style="padding:0;margin:0;border:0" align="left">3. #2E4A89</td></tr><tr style="background-color:transparent"><td style="padding:0;margin:0;border:0" align="left">4. #3B3938</td></tr><tr style="background-color:transparent"><td style="padding:0;margin:0;border:0" align="left">5. #50954D</td></tr><tr style="background-color:transparent"><td style="padding:0;margin:0;border:0" align="left">6. #557A9C</td></tr><tr style="background-color:transparent"><td style="padding:0;margin:0;border:0" align="left">7. #5A433B</td></tr><tr style="background-color:transparent"><td style="padding:0;margin:0;border:0" align="left">8. #5B3D69</td></tr><tr style="background-color:transparent"><td style="padding:0;margin:0;border:0" align="left">9. #5B5954</td></tr><tr style="background-color:transparent"><td style="padding:0;margin:0;border:0" align="left">10. #5DBFAF</td></tr><tr style="background-color:transparent"><td style="padding:0;margin:0;border:0" align="left">[ 39 others ]</td></tr></table></td>
+      <td align="left" style="padding:0;vertical-align:middle"><table style="border-collapse:collapse;border:none;margin:0"><tr style="background-color:transparent"><td style="padding:0 5px 0 7px;margin:0;border:0" align="right">16</td><td style="padding:0 2px 0 0;border:0;" align="left">(</td><td style="padding:0;border:0" align="right">25.0%</td><td style="padding:0 4px 0 2px;border:0" align="left">)</td></tr><tr style="background-color:transparent"><td style="padding:0 5px 0 7px;margin:0;border:0" align="right">1</td><td style="padding:0 2px 0 0;border:0;" align="left">(</td><td style="padding:0;border:0" align="right">1.6%</td><td style="padding:0 4px 0 2px;border:0" align="left">)</td></tr><tr style="background-color:transparent"><td style="padding:0 5px 0 7px;margin:0;border:0" align="right">1</td><td style="padding:0 2px 0 0;border:0;" align="left">(</td><td style="padding:0;border:0" align="right">1.6%</td><td style="padding:0 4px 0 2px;border:0" align="left">)</td></tr><tr style="background-color:transparent"><td style="padding:0 5px 0 7px;margin:0;border:0" align="right">1</td><td style="padding:0 2px 0 0;border:0;" align="left">(</td><td style="padding:0;border:0" align="right">1.6%</td><td style="padding:0 4px 0 2px;border:0" align="left">)</td></tr><tr style="background-color:transparent"><td style="padding:0 5px 0 7px;margin:0;border:0" align="right">1</td><td style="padding:0 2px 0 0;border:0;" align="left">(</td><td style="padding:0;border:0" align="right">1.6%</td><td style="padding:0 4px 0 2px;border:0" align="left">)</td></tr><tr style="background-color:transparent"><td style="padding:0 5px 0 7px;margin:0;border:0" align="right">1</td><td style="padding:0 2px 0 0;border:0;" align="left">(</td><td style="padding:0;border:0" align="right">1.6%</td><td style="padding:0 4px 0 2px;border:0" align="left">)</td></tr><tr style="background-color:transparent"><td style="padding:0 5px 0 7px;margin:0;border:0" align="right">1</td><td style="padding:0 2px 0 0;border:0;" align="left">(</td><td style="padding:0;border:0" align="right">1.6%</td><td style="padding:0 4px 0 2px;border:0" align="left">)</td></tr><tr style="background-color:transparent"><td style="padding:0 5px 0 7px;margin:0;border:0" align="right">1</td><td style="padding:0 2px 0 0;border:0;" align="left">(</td><td style="padding:0;border:0" align="right">1.6%</td><td style="padding:0 4px 0 2px;border:0" align="left">)</td></tr><tr style="background-color:transparent"><td style="padding:0 5px 0 7px;margin:0;border:0" align="right">1</td><td style="padding:0 2px 0 0;border:0;" align="left">(</td><td style="padding:0;border:0" align="right">1.6%</td><td style="padding:0 4px 0 2px;border:0" align="left">)</td></tr><tr style="background-color:transparent"><td style="padding:0 5px 0 7px;margin:0;border:0" align="right">1</td><td style="padding:0 2px 0 0;border:0;" align="left">(</td><td style="padding:0;border:0" align="right">1.6%</td><td style="padding:0 4px 0 2px;border:0" align="left">)</td></tr><tr style="background-color:transparent"><td style="padding:0 5px 0 7px;margin:0;border:0" align="right">39</td><td style="padding:0 2px 0 0;border:0;" align="left">(</td><td style="padding:0;border:0" align="right">60.9%</td><td style="padding:0 4px 0 2px;border:0" align="left">)</td></tr></table></td>
+      <td align="left" style="vertical-align:middle;padding:0;background-color:transparent;"><img style="border:none;background-color:transparent;padding:0;max-width:max-content;" src="data:image/png;base64, iVBORw0KGgoAAAANSUhEUgAAAHgAAAE4BAMAAABiZSo5AAAAIGNIUk0AAHomAACAhAAA+gAAAIDoAAB1MAAA6mAAADqYAAAXcJy6UTwAAAAPUExURf////3+/aampvDw8P///7GHRIEAAAACdFJOUwAAdpPNOAAAAAFiS0dEAIgFHUgAAAAHdElNRQfoBhIRHCcdCniKAAAApUlEQVR42u3VsQmAQBBEUVuwBM8OtP/eTDQTYe5gQe5N/qKF/csy59rrtvV7N97Pt8EwDMPfeOj1rl37N25tAO8HDMMwnOOh19tD/461CoZhuBxrVYi1CoZhuBxrVYi1CoZhuBxrVYi1CoZhuBxrVYi1CoZhuBxrVYi1CoZhuBxrVYi1CoZhuBxrVYi1CoZhuBxrVYhb155TnR07YBiGZ8dDr3e2XX5KUxTK+uiIAAAAAElFTkSuQmCC"></td>
+      <td align="center">64
+(100.0%)</td>
+      <td align="center">0
+(0.0%)</td>
+    </tr>
+  </tbody>
+</table>
+<p>Generated by <a href='https://github.com/dcomtois/summarytools'>summarytools</a> 1.0.1 (<a href='https://www.r-project.org/'>R</a> version 4.3.1)<br/>2024-06-18</p>
+</div>
+<p>The second file holds color information obtained from 13 printed sheets. Thus we find the Lab color information for all 64 squares for 42 color cards for 13 sheets resulting in 104832 numeric values. We transformed the data into long format so we can easily match the colors of each field with those of the master colors.</p>
+<div class="container st-container">
+<h3>Data Frame Summary</h3>
+<h4>lab_colors_master_shape</h4>
+<strong>Dimensions</strong>: 34944 x 9
+  <br/><strong>Duplicates</strong>: 0
+<br/>
+<table class="table table-striped table-bordered st-table st-table-striped st-table-bordered st-multiline ">
+  <thead>
+    <tr>
+      <th align="center" class="st-protect-top-border"><strong>No</strong></th>
+      <th align="center" class="st-protect-top-border"><strong>Variable</strong></th>
+      <th align="center" class="st-protect-top-border"><strong>Stats / Values</strong></th>
+      <th align="center" class="st-protect-top-border"><strong>Freqs (% of Valid)</strong></th>
+      <th align="center" class="st-protect-top-border"><strong>Graph</strong></th>
+      <th align="center" class="st-protect-top-border"><strong>Valid</strong></th>
+      <th align="center" class="st-protect-top-border"><strong>Missing</strong></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td align="center">1</td>
+      <td align="left">Row
+[integer]</td>
+      <td align="left" style="padding:8;vertical-align:middle"><table style="border-collapse:collapse;border:none;margin:0"><tr style="background-color:transparent"><td style="padding:0;margin:0;border:0" align="left">Mean (sd) : 4 (2)</td></tr><tr style="background-color:transparent"><td style="padding:0;margin:0;border:0" align="left">min &le; med &le; max:</td></tr><tr style="background-color:transparent"><td style="padding:0;margin:0;border:0" align="left">1 &le; 4 &le; 7</td></tr><tr style="background-color:transparent"><td style="padding:0;margin:0;border:0" align="left">IQR (CV) : 4 (0.5)</td></tr></table></td>
+      <td align="left" style="padding:0;vertical-align:middle"><table style="border-collapse:collapse;border:none;margin:0"><tr style="background-color:transparent"><td style="padding:0 2px 0 7px;margin:0;border:0" align="right">1</td><td style="padding:0 2px;border:0;" align="left">:</td><td style="padding:0 4px 0 6px;margin:0;border:0" align="right">4992</td><td style="padding:0;border:0" align="left">(</td><td style="padding:0 2px;margin:0;border:0" align="right">14.3%</td><td style="padding:0 4px 0 0;border:0" align="left">)</td></tr><tr style="background-color:transparent"><td style="padding:0 2px 0 7px;margin:0;border:0" align="right">2</td><td style="padding:0 2px;border:0;" align="left">:</td><td style="padding:0 4px 0 6px;margin:0;border:0" align="right">4992</td><td style="padding:0;border:0" align="left">(</td><td style="padding:0 2px;margin:0;border:0" align="right">14.3%</td><td style="padding:0 4px 0 0;border:0" align="left">)</td></tr><tr style="background-color:transparent"><td style="padding:0 2px 0 7px;margin:0;border:0" align="right">3</td><td style="padding:0 2px;border:0;" align="left">:</td><td style="padding:0 4px 0 6px;margin:0;border:0" align="right">4992</td><td style="padding:0;border:0" align="left">(</td><td style="padding:0 2px;margin:0;border:0" align="right">14.3%</td><td style="padding:0 4px 0 0;border:0" align="left">)</td></tr><tr style="background-color:transparent"><td style="padding:0 2px 0 7px;margin:0;border:0" align="right">4</td><td style="padding:0 2px;border:0;" align="left">:</td><td style="padding:0 4px 0 6px;margin:0;border:0" align="right">4992</td><td style="padding:0;border:0" align="left">(</td><td style="padding:0 2px;margin:0;border:0" align="right">14.3%</td><td style="padding:0 4px 0 0;border:0" align="left">)</td></tr><tr style="background-color:transparent"><td style="padding:0 2px 0 7px;margin:0;border:0" align="right">5</td><td style="padding:0 2px;border:0;" align="left">:</td><td style="padding:0 4px 0 6px;margin:0;border:0" align="right">4992</td><td style="padding:0;border:0" align="left">(</td><td style="padding:0 2px;margin:0;border:0" align="right">14.3%</td><td style="padding:0 4px 0 0;border:0" align="left">)</td></tr><tr style="background-color:transparent"><td style="padding:0 2px 0 7px;margin:0;border:0" align="right">6</td><td style="padding:0 2px;border:0;" align="left">:</td><td style="padding:0 4px 0 6px;margin:0;border:0" align="right">4992</td><td style="padding:0;border:0" align="left">(</td><td style="padding:0 2px;margin:0;border:0" align="right">14.3%</td><td style="padding:0 4px 0 0;border:0" align="left">)</td></tr><tr style="background-color:transparent"><td style="padding:0 2px 0 7px;margin:0;border:0" align="right">7</td><td style="padding:0 2px;border:0;" align="left">:</td><td style="padding:0 4px 0 6px;margin:0;border:0" align="right">4992</td><td style="padding:0;border:0" align="left">(</td><td style="padding:0 2px;margin:0;border:0" align="right">14.3%</td><td style="padding:0 4px 0 0;border:0" align="left">)</td></tr></table></td>
+      <td align="left" style="vertical-align:middle;padding:0;background-color:transparent;"><img style="border:none;background-color:transparent;padding:0;max-width:max-content;" src="data:image/png;base64, iVBORw0KGgoAAAANSUhEUgAAACYAAADKBAMAAAA7lS9kAAAAIGNIUk0AAHomAACAhAAA+gAAAIDoAAB1MAAA6mAAADqYAAAXcJy6UTwAAAAPUExURf////3+/aampvDw8P///7GHRIEAAAACdFJOUwAAdpPNOAAAAAFiS0dEAIgFHUgAAAAHdElNRQfoBhIRHxpuT2dYAAAARUlEQVRIx2NgoD5QQgZQMWVjBDAaFRsyYtjiUhAZUEFsNL0Mb7HRNDQqNppeRsVG08uo2GAQG00vo2KjaWhUbKDTCzUBAAxrtpwjHTiNAAAAAElFTkSuQmCC"></td>
+      <td align="center">34944
+(100.0%)</td>
+      <td align="center">0
+(0.0%)</td>
+    </tr>
+    <tr>
+      <td align="center">2</td>
+      <td align="left">Column
+[integer]</td>
+      <td align="left" style="padding:8;vertical-align:middle"><table style="border-collapse:collapse;border:none;margin:0"><tr style="background-color:transparent"><td style="padding:0;margin:0;border:0" align="left">Mean (sd) : 3.5 (1.7)</td></tr><tr style="background-color:transparent"><td style="padding:0;margin:0;border:0" align="left">min &le; med &le; max:</td></tr><tr style="background-color:transparent"><td style="padding:0;margin:0;border:0" align="left">1 &le; 3.5 &le; 6</td></tr><tr style="background-color:transparent"><td style="padding:0;margin:0;border:0" align="left">IQR (CV) : 3 (0.5)</td></tr></table></td>
+      <td align="left" style="padding:0;vertical-align:middle"><table style="border-collapse:collapse;border:none;margin:0"><tr style="background-color:transparent"><td style="padding:0 2px 0 7px;margin:0;border:0" align="right">1</td><td style="padding:0 2px;border:0;" align="left">:</td><td style="padding:0 4px 0 6px;margin:0;border:0" align="right">5824</td><td style="padding:0;border:0" align="left">(</td><td style="padding:0 2px;margin:0;border:0" align="right">16.7%</td><td style="padding:0 4px 0 0;border:0" align="left">)</td></tr><tr style="background-color:transparent"><td style="padding:0 2px 0 7px;margin:0;border:0" align="right">2</td><td style="padding:0 2px;border:0;" align="left">:</td><td style="padding:0 4px 0 6px;margin:0;border:0" align="right">5824</td><td style="padding:0;border:0" align="left">(</td><td style="padding:0 2px;margin:0;border:0" align="right">16.7%</td><td style="padding:0 4px 0 0;border:0" align="left">)</td></tr><tr style="background-color:transparent"><td style="padding:0 2px 0 7px;margin:0;border:0" align="right">3</td><td style="padding:0 2px;border:0;" align="left">:</td><td style="padding:0 4px 0 6px;margin:0;border:0" align="right">5824</td><td style="padding:0;border:0" align="left">(</td><td style="padding:0 2px;margin:0;border:0" align="right">16.7%</td><td style="padding:0 4px 0 0;border:0" align="left">)</td></tr><tr style="background-color:transparent"><td style="padding:0 2px 0 7px;margin:0;border:0" align="right">4</td><td style="padding:0 2px;border:0;" align="left">:</td><td style="padding:0 4px 0 6px;margin:0;border:0" align="right">5824</td><td style="padding:0;border:0" align="left">(</td><td style="padding:0 2px;margin:0;border:0" align="right">16.7%</td><td style="padding:0 4px 0 0;border:0" align="left">)</td></tr><tr style="background-color:transparent"><td style="padding:0 2px 0 7px;margin:0;border:0" align="right">5</td><td style="padding:0 2px;border:0;" align="left">:</td><td style="padding:0 4px 0 6px;margin:0;border:0" align="right">5824</td><td style="padding:0;border:0" align="left">(</td><td style="padding:0 2px;margin:0;border:0" align="right">16.7%</td><td style="padding:0 4px 0 0;border:0" align="left">)</td></tr><tr style="background-color:transparent"><td style="padding:0 2px 0 7px;margin:0;border:0" align="right">6</td><td style="padding:0 2px;border:0;" align="left">:</td><td style="padding:0 4px 0 6px;margin:0;border:0" align="right">5824</td><td style="padding:0;border:0" align="left">(</td><td style="padding:0 2px;margin:0;border:0" align="right">16.7%</td><td style="padding:0 4px 0 0;border:0" align="left">)</td></tr></table></td>
+      <td align="left" style="vertical-align:middle;padding:0;background-color:transparent;"><img style="border:none;background-color:transparent;padding:0;max-width:max-content;" src="data:image/png;base64, iVBORw0KGgoAAAANSUhEUgAAACoAAACuBAMAAACyzIKmAAAAIGNIUk0AAHomAACAhAAA+gAAAIDoAAB1MAAA6mAAADqYAAAXcJy6UTwAAAAPUExURf////3+/aampvDw8P///7GHRIEAAAACdFJOUwAAdpPNOAAAAAFiS0dEAIgFHUgAAAAHdElNRQfoBhIRHxpuT2dYAAAASElEQVRIx2NgoB1QQgVQUWVjZGA0KjoMRbHHvCAqoJroaDobFUUWHU19o6L0EB1NZ6Oi9BAdTWejogMnOpr6RkXpIYo95mkBAJSPs2w1qCFxAAAAAElFTkSuQmCC"></td>
+      <td align="center">34944
+(100.0%)</td>
+      <td align="center">0
+(0.0%)</td>
+    </tr>
+    <tr>
+      <td align="center">3</td>
+      <td align="left">Sheet
+[integer]</td>
+      <td align="left" style="padding:8;vertical-align:middle"><table style="border-collapse:collapse;border:none;margin:0"><tr style="background-color:transparent"><td style="padding:0;margin:0;border:0" align="left">Mean (sd) : 7 (3.7)</td></tr><tr style="background-color:transparent"><td style="padding:0;margin:0;border:0" align="left">min &le; med &le; max:</td></tr><tr style="background-color:transparent"><td style="padding:0;margin:0;border:0" align="left">1 &le; 7 &le; 13</td></tr><tr style="background-color:transparent"><td style="padding:0;margin:0;border:0" align="left">IQR (CV) : 6 (0.5)</td></tr></table></td>
+      <td align="left" style="vertical-align:middle">13 distinct values</td>
+      <td align="left" style="vertical-align:middle;padding:0;background-color:transparent;"><img style="border:none;background-color:transparent;padding:0;max-width:max-content;" src="data:image/png;base64, iVBORw0KGgoAAAANSUhEUgAAALEAAAB/BAMAAABS5T4yAAAAIGNIUk0AAHomAACAhAAA+gAAAIDoAAB1MAAA6mAAADqYAAAXcJy6UTwAAAAPUExURf////3+/aampvDw8P///7GHRIEAAAACdFJOUwAAdpPNOAAAAAFiS0dEAIgFHUgAAAAHdElNRQfoBhIRHxpuT2dYAAAAaklEQVRo3u3YsQ2AMAxFwYwAG4SwAdl/NySgIOlQDA33mt9YN4BT0leVs2UOa7rktR6RyWQymUwmk8lkMplMJpPJZPKIXOLKrdzMVu/z9IJMJpPJZDKZTCaTyWQymUwm/0kOfFt230u93w4/IS74tKpZUwAAAABJRU5ErkJggg=="></td>
+      <td align="center">34944
+(100.0%)</td>
+      <td align="center">0
+(0.0%)</td>
+    </tr>
+    <tr>
+      <td align="center">4</td>
+      <td align="left">Crow
+[numeric]</td>
+      <td align="left" style="padding:8;vertical-align:middle"><table style="border-collapse:collapse;border:none;margin:0"><tr style="background-color:transparent"><td style="padding:0;margin:0;border:0" align="left">Mean (sd) : 4.5 (2.3)</td></tr><tr style="background-color:transparent"><td style="padding:0;margin:0;border:0" align="left">min &le; med &le; max:</td></tr><tr style="background-color:transparent"><td style="padding:0;margin:0;border:0" align="left">1 &le; 4.5 &le; 8</td></tr><tr style="background-color:transparent"><td style="padding:0;margin:0;border:0" align="left">IQR (CV) : 3.5 (0.5)</td></tr></table></td>
+      <td align="left" style="padding:0;vertical-align:middle"><table style="border-collapse:collapse;border:none;margin:0"><tr style="background-color:transparent"><td style="padding:0 2px 0 7px;margin:0;border:0" align="right">1</td><td style="padding:0 2px;border:0;" align="left">:</td><td style="padding:0 4px 0 6px;margin:0;border:0" align="right">4368</td><td style="padding:0;border:0" align="left">(</td><td style="padding:0 2px;margin:0;border:0" align="right">12.5%</td><td style="padding:0 4px 0 0;border:0" align="left">)</td></tr><tr style="background-color:transparent"><td style="padding:0 2px 0 7px;margin:0;border:0" align="right">2</td><td style="padding:0 2px;border:0;" align="left">:</td><td style="padding:0 4px 0 6px;margin:0;border:0" align="right">4368</td><td style="padding:0;border:0" align="left">(</td><td style="padding:0 2px;margin:0;border:0" align="right">12.5%</td><td style="padding:0 4px 0 0;border:0" align="left">)</td></tr><tr style="background-color:transparent"><td style="padding:0 2px 0 7px;margin:0;border:0" align="right">3</td><td style="padding:0 2px;border:0;" align="left">:</td><td style="padding:0 4px 0 6px;margin:0;border:0" align="right">4368</td><td style="padding:0;border:0" align="left">(</td><td style="padding:0 2px;margin:0;border:0" align="right">12.5%</td><td style="padding:0 4px 0 0;border:0" align="left">)</td></tr><tr style="background-color:transparent"><td style="padding:0 2px 0 7px;margin:0;border:0" align="right">4</td><td style="padding:0 2px;border:0;" align="left">:</td><td style="padding:0 4px 0 6px;margin:0;border:0" align="right">4368</td><td style="padding:0;border:0" align="left">(</td><td style="padding:0 2px;margin:0;border:0" align="right">12.5%</td><td style="padding:0 4px 0 0;border:0" align="left">)</td></tr><tr style="background-color:transparent"><td style="padding:0 2px 0 7px;margin:0;border:0" align="right">5</td><td style="padding:0 2px;border:0;" align="left">:</td><td style="padding:0 4px 0 6px;margin:0;border:0" align="right">4368</td><td style="padding:0;border:0" align="left">(</td><td style="padding:0 2px;margin:0;border:0" align="right">12.5%</td><td style="padding:0 4px 0 0;border:0" align="left">)</td></tr><tr style="background-color:transparent"><td style="padding:0 2px 0 7px;margin:0;border:0" align="right">6</td><td style="padding:0 2px;border:0;" align="left">:</td><td style="padding:0 4px 0 6px;margin:0;border:0" align="right">4368</td><td style="padding:0;border:0" align="left">(</td><td style="padding:0 2px;margin:0;border:0" align="right">12.5%</td><td style="padding:0 4px 0 0;border:0" align="left">)</td></tr><tr style="background-color:transparent"><td style="padding:0 2px 0 7px;margin:0;border:0" align="right">7</td><td style="padding:0 2px;border:0;" align="left">:</td><td style="padding:0 4px 0 6px;margin:0;border:0" align="right">4368</td><td style="padding:0;border:0" align="left">(</td><td style="padding:0 2px;margin:0;border:0" align="right">12.5%</td><td style="padding:0 4px 0 0;border:0" align="left">)</td></tr><tr style="background-color:transparent"><td style="padding:0 2px 0 7px;margin:0;border:0" align="right">8</td><td style="padding:0 2px;border:0;" align="left">:</td><td style="padding:0 4px 0 6px;margin:0;border:0" align="right">4368</td><td style="padding:0;border:0" align="left">(</td><td style="padding:0 2px;margin:0;border:0" align="right">12.5%</td><td style="padding:0 4px 0 0;border:0" align="left">)</td></tr></table></td>
+      <td align="left" style="vertical-align:middle;padding:0;background-color:transparent;"><img style="border:none;background-color:transparent;padding:0;max-width:max-content;" src="data:image/png;base64, iVBORw0KGgoAAAANSUhEUgAAACMAAADmBAMAAACt0iFtAAAAIGNIUk0AAHomAACAhAAA+gAAAIDoAAB1MAAA6mAAADqYAAAXcJy6UTwAAAAPUExURf////3+/aampvDw8P///7GHRIEAAAACdFJOUwAAdpPNOAAAAAFiS0dEAIgFHUgAAAAHdElNRQfoBhIRHxpuT2dYAAAATUlEQVRYw+3SsQ0AIAhEUUbQDYyO4P672RhpKCEB86987X0R303duLT2G5SSjNO6rgUQmRSk4ExooiDRBEQTEE1ANAElb4JM/iDjNK8dZmu96oeqV8kAAAAASUVORK5CYII="></td>
+      <td align="center">34944
+(100.0%)</td>
+      <td align="center">0
+(0.0%)</td>
+    </tr>
+    <tr>
+      <td align="center">5</td>
+      <td align="left">Ccol
+[numeric]</td>
+      <td align="left" style="padding:8;vertical-align:middle"><table style="border-collapse:collapse;border:none;margin:0"><tr style="background-color:transparent"><td style="padding:0;margin:0;border:0" align="left">Mean (sd) : 4.5 (2.3)</td></tr><tr style="background-color:transparent"><td style="padding:0;margin:0;border:0" align="left">min &le; med &le; max:</td></tr><tr style="background-color:transparent"><td style="padding:0;margin:0;border:0" align="left">1 &le; 4.5 &le; 8</td></tr><tr style="background-color:transparent"><td style="padding:0;margin:0;border:0" align="left">IQR (CV) : 3.5 (0.5)</td></tr></table></td>
+      <td align="left" style="padding:0;vertical-align:middle"><table style="border-collapse:collapse;border:none;margin:0"><tr style="background-color:transparent"><td style="padding:0 2px 0 7px;margin:0;border:0" align="right">1</td><td style="padding:0 2px;border:0;" align="left">:</td><td style="padding:0 4px 0 6px;margin:0;border:0" align="right">4368</td><td style="padding:0;border:0" align="left">(</td><td style="padding:0 2px;margin:0;border:0" align="right">12.5%</td><td style="padding:0 4px 0 0;border:0" align="left">)</td></tr><tr style="background-color:transparent"><td style="padding:0 2px 0 7px;margin:0;border:0" align="right">2</td><td style="padding:0 2px;border:0;" align="left">:</td><td style="padding:0 4px 0 6px;margin:0;border:0" align="right">4368</td><td style="padding:0;border:0" align="left">(</td><td style="padding:0 2px;margin:0;border:0" align="right">12.5%</td><td style="padding:0 4px 0 0;border:0" align="left">)</td></tr><tr style="background-color:transparent"><td style="padding:0 2px 0 7px;margin:0;border:0" align="right">3</td><td style="padding:0 2px;border:0;" align="left">:</td><td style="padding:0 4px 0 6px;margin:0;border:0" align="right">4368</td><td style="padding:0;border:0" align="left">(</td><td style="padding:0 2px;margin:0;border:0" align="right">12.5%</td><td style="padding:0 4px 0 0;border:0" align="left">)</td></tr><tr style="background-color:transparent"><td style="padding:0 2px 0 7px;margin:0;border:0" align="right">4</td><td style="padding:0 2px;border:0;" align="left">:</td><td style="padding:0 4px 0 6px;margin:0;border:0" align="right">4368</td><td style="padding:0;border:0" align="left">(</td><td style="padding:0 2px;margin:0;border:0" align="right">12.5%</td><td style="padding:0 4px 0 0;border:0" align="left">)</td></tr><tr style="background-color:transparent"><td style="padding:0 2px 0 7px;margin:0;border:0" align="right">5</td><td style="padding:0 2px;border:0;" align="left">:</td><td style="padding:0 4px 0 6px;margin:0;border:0" align="right">4368</td><td style="padding:0;border:0" align="left">(</td><td style="padding:0 2px;margin:0;border:0" align="right">12.5%</td><td style="padding:0 4px 0 0;border:0" align="left">)</td></tr><tr style="background-color:transparent"><td style="padding:0 2px 0 7px;margin:0;border:0" align="right">6</td><td style="padding:0 2px;border:0;" align="left">:</td><td style="padding:0 4px 0 6px;margin:0;border:0" align="right">4368</td><td style="padding:0;border:0" align="left">(</td><td style="padding:0 2px;margin:0;border:0" align="right">12.5%</td><td style="padding:0 4px 0 0;border:0" align="left">)</td></tr><tr style="background-color:transparent"><td style="padding:0 2px 0 7px;margin:0;border:0" align="right">7</td><td style="padding:0 2px;border:0;" align="left">:</td><td style="padding:0 4px 0 6px;margin:0;border:0" align="right">4368</td><td style="padding:0;border:0" align="left">(</td><td style="padding:0 2px;margin:0;border:0" align="right">12.5%</td><td style="padding:0 4px 0 0;border:0" align="left">)</td></tr><tr style="background-color:transparent"><td style="padding:0 2px 0 7px;margin:0;border:0" align="right">8</td><td style="padding:0 2px;border:0;" align="left">:</td><td style="padding:0 4px 0 6px;margin:0;border:0" align="right">4368</td><td style="padding:0;border:0" align="left">(</td><td style="padding:0 2px;margin:0;border:0" align="right">12.5%</td><td style="padding:0 4px 0 0;border:0" align="left">)</td></tr></table></td>
+      <td align="left" style="vertical-align:middle;padding:0;background-color:transparent;"><img style="border:none;background-color:transparent;padding:0;max-width:max-content;" src="data:image/png;base64, iVBORw0KGgoAAAANSUhEUgAAACMAAADmBAMAAACt0iFtAAAAIGNIUk0AAHomAACAhAAA+gAAAIDoAAB1MAAA6mAAADqYAAAXcJy6UTwAAAAPUExURf////3+/aampvDw8P///7GHRIEAAAACdFJOUwAAdpPNOAAAAAFiS0dEAIgFHUgAAAAHdElNRQfoBhIRHxpuT2dYAAAATUlEQVRYw+3SsQ0AIAhEUUbQDYyO4P672RhpKCEB86987X0R303duLT2G5SSjNO6rgUQmRSk4ExooiDRBEQTEE1ANAElb4JM/iDjNK8dZmu96oeqV8kAAAAASUVORK5CYII="></td>
+      <td align="center">34944
+(100.0%)</td>
+      <td align="center">0
+(0.0%)</td>
+    </tr>
+    <tr>
+      <td align="center">6</td>
+      <td align="left">L
+[numeric]</td>
+      <td align="left" style="padding:8;vertical-align:middle"><table style="border-collapse:collapse;border:none;margin:0"><tr style="background-color:transparent"><td style="padding:0;margin:0;border:0" align="left">Mean (sd) : 56 (14.2)</td></tr><tr style="background-color:transparent"><td style="padding:0;margin:0;border:0" align="left">min &le; med &le; max:</td></tr><tr style="background-color:transparent"><td style="padding:0;margin:0;border:0" align="left">17.8 &le; 54.5 &le; 95.2</td></tr><tr style="background-color:transparent"><td style="padding:0;margin:0;border:0" align="left">IQR (CV) : 16 (0.3)</td></tr></table></td>
+      <td align="left" style="vertical-align:middle">33107 distinct values</td>
+      <td align="left" style="vertical-align:middle;padding:0;background-color:transparent;"><img style="border:none;background-color:transparent;padding:0;max-width:max-content;" src="data:image/png;base64, iVBORw0KGgoAAAANSUhEUgAAALEAAAB/BAMAAABS5T4yAAAAIGNIUk0AAHomAACAhAAA+gAAAIDoAAB1MAAA6mAAADqYAAAXcJy6UTwAAAAPUExURf////3+/aampvDw8P///7GHRIEAAAACdFJOUwAAdpPNOAAAAAFiS0dEAIgFHUgAAAAHdElNRQfoBhIRHxpuT2dYAAAAx0lEQVRo3u3aYQqDMAyG4R5h8wROb7Dc/25iwAShs4Jf3Qbv97OYB7Fqg7YUcleezUxr2odFHqfl2czeyMjIyMjIyMjIyMjIyMjIyMjIyMjIyP1l/9j96iGvQ4bcU/bJ6yI7+h9y/K6Ry7adODIyMjLyd+VsVtRyFqcci6tcDhRZIQ/7Nkgp74uR9bJP3hTF0dIK5IqAfFYeKtugRLKPt+S4LeTyJwH5l+Rc69VyPjybXOsrNHKOdJEP35aX5EPh0nWWZizkrixeLo13adFqHQAAAABJRU5ErkJggg=="></td>
+      <td align="center">34944
+(100.0%)</td>
+      <td align="center">0
+(0.0%)</td>
+    </tr>
+    <tr>
+      <td align="center">7</td>
+      <td align="left">a
+[numeric]</td>
+      <td align="left" style="padding:8;vertical-align:middle"><table style="border-collapse:collapse;border:none;margin:0"><tr style="background-color:transparent"><td style="padding:0;margin:0;border:0" align="left">Mean (sd) : 7.7 (16.3)</td></tr><tr style="background-color:transparent"><td style="padding:0;margin:0;border:0" align="left">min &le; med &le; max:</td></tr><tr style="background-color:transparent"><td style="padding:0;margin:0;border:0" align="left">-43.5 &le; 9.5 &le; 57</td></tr><tr style="background-color:transparent"><td style="padding:0;margin:0;border:0" align="left">IQR (CV) : 14.8 (2.1)</td></tr></table></td>
+      <td align="left" style="vertical-align:middle">25872 distinct values</td>
+      <td align="left" style="vertical-align:middle;padding:0;background-color:transparent;"><img style="border:none;background-color:transparent;padding:0;max-width:max-content;" src="data:image/png;base64, iVBORw0KGgoAAAANSUhEUgAAALEAAAB/BAMAAABS5T4yAAAAIGNIUk0AAHomAACAhAAA+gAAAIDoAAB1MAAA6mAAADqYAAAXcJy6UTwAAAAPUExURf////3+/aampvDw8P///7GHRIEAAAACdFJOUwAAdpPNOAAAAAFiS0dEAIgFHUgAAAAHdElNRQfoBhIRHxpuT2dYAAAAyklEQVRo3u3ZUQ6CMBBFUZagrAB1B3T/e5NJ5oXRVKjSMTHelzT96OSE9oeBDgP5Vs77uS65NNR5Tu3yrZSCjIyMjIyMjIyMjIyM3Edu/Hr7QG58dmRkZGRkZOS/kK3nyJGXMSMjIyMjIyMjZ8jWweTIYSAjIyMjI/+mHC8X+sp6vdfkjSuNg3JcCxnXbqC3/KgelMfw4+WFrBLNNVnnq0bItXlDtjIvUalkW5pcrrRWe3LxUZFtjvLzVnPksNU3Ze18CufcN5JJfu4IQDrOkeABzQAAAABJRU5ErkJggg=="></td>
+      <td align="center">34944
+(100.0%)</td>
+      <td align="center">0
+(0.0%)</td>
+    </tr>
+    <tr>
+      <td align="center">8</td>
+      <td align="left">b
+[numeric]</td>
+      <td align="left" style="padding:8;vertical-align:middle"><table style="border-collapse:collapse;border:none;margin:0"><tr style="background-color:transparent"><td style="padding:0;margin:0;border:0" align="left">Mean (sd) : 11.8 (21.6)</td></tr><tr style="background-color:transparent"><td style="padding:0;margin:0;border:0" align="left">min &le; med &le; max:</td></tr><tr style="background-color:transparent"><td style="padding:0;margin:0;border:0" align="left">-48.5 &le; 12.2 &le; 89.7</td></tr><tr style="background-color:transparent"><td style="padding:0;margin:0;border:0" align="left">IQR (CV) : 19 (1.8)</td></tr></table></td>
+      <td align="left" style="vertical-align:middle">30638 distinct values</td>
+      <td align="left" style="vertical-align:middle;padding:0;background-color:transparent;"><img style="border:none;background-color:transparent;padding:0;max-width:max-content;" src="data:image/png;base64, iVBORw0KGgoAAAANSUhEUgAAALEAAAB/BAMAAABS5T4yAAAAIGNIUk0AAHomAACAhAAA+gAAAIDoAAB1MAAA6mAAADqYAAAXcJy6UTwAAAAPUExURf////3+/aampvDw8P///7GHRIEAAAACdFJOUwAAdpPNOAAAAAFiS0dEAIgFHUgAAAAHdElNRQfoBhIRHxpuT2dYAAAAsklEQVRo3u3aUQqCQBAGYI+QnaDsBu397xY2SUOC7JZa0Pc/7IPMfOwiLq7YdbJX+qUchzHnvimHKrmMIZPJZDKZTA55aHvraJAvbTMnk8lkMplMJpPJZPIX5OpTYbNcPXMymUwmk8lkMpn8q3IcGLaQ781XcrU8uxWrybMSMvk/5PxBJNrSY7Yox29985wect4Ooq2k5kW5PMtzyV5yrCPLceVzObeV1/FNeVg9kyzb5wYSDoU0AUoB+wAAAABJRU5ErkJggg=="></td>
+      <td align="center">34944
+(100.0%)</td>
+      <td align="center">0
+(0.0%)</td>
+    </tr>
+    <tr>
+      <td align="center">9</td>
+      <td align="left">Field
+[numeric]</td>
+      <td align="left" style="padding:8;vertical-align:middle"><table style="border-collapse:collapse;border:none;margin:0"><tr style="background-color:transparent"><td style="padding:0;margin:0;border:0" align="left">Mean (sd) : 32.5 (18.5)</td></tr><tr style="background-color:transparent"><td style="padding:0;margin:0;border:0" align="left">min &le; med &le; max:</td></tr><tr style="background-color:transparent"><td style="padding:0;margin:0;border:0" align="left">1 &le; 32.5 &le; 64</td></tr><tr style="background-color:transparent"><td style="padding:0;margin:0;border:0" align="left">IQR (CV) : 31.5 (0.6)</td></tr></table></td>
+      <td align="left" style="vertical-align:middle">64 distinct values</td>
+      <td align="left" style="vertical-align:middle;padding:0;background-color:transparent;"><img style="border:none;background-color:transparent;padding:0;max-width:max-content;" src="data:image/png;base64, iVBORw0KGgoAAAANSUhEUgAAALEAAAB/BAMAAABS5T4yAAAAIGNIUk0AAHomAACAhAAA+gAAAIDoAAB1MAAA6mAAADqYAAAXcJy6UTwAAAAPUExURf////3+/aampvDw8P///7GHRIEAAAACdFJOUwAAdpPNOAAAAAFiS0dEAIgFHUgAAAAHdElNRQfoBhIRHxsZSFfOAAAAbklEQVRo3u3asQ2AIBBAUUbADYxuIPvvRhQKLQgNaEzeLygul1dTXAh6q21gy1Ws8p7OjtubmqPeLplMJpPJ5H/J5W+wTpDLiEwmk8lkMplMJpPJZDKZTCaTyWQymUwmk8lkMvk7eeTt5fPKQvPLKDdgZDBr7usAAAAASUVORK5CYII="></td>
+      <td align="center">34944
+(100.0%)</td>
+      <td align="center">0
+(0.0%)</td>
+    </tr>
+  </tbody>
+</table>
+<p>Generated by <a href='https://github.com/dcomtois/summarytools'>summarytools</a> 1.0.1 (<a href='https://www.r-project.org/'>R</a> version 4.3.1)<br/>2024-06-18</p>
+</div>
 </div>
 <div id="objectives" class="section level2 hasAnchor" number="1.3">
 <h2><span class="header-section-number">1.3</span> Objectives<a href="#objectives" class="anchor-section" aria-label="Anchor link to header"></a></h2>
@@ -171,14 +482,16 @@
 <p>In this section, we investigate the relationships between S values and Lab values by correlation.</p>
 <p>Examining S values reveals that brownish colors tend to have higher S values. The left side of the gradient—from black to white—shows an S value of 0. This observation suggests that luminance has minimal, if any, influence on S values.
 The tile plots below visualizes this relationship. It illustrates how S values vary across different color points in the dataset.</p>
+<p><strong>Why is there one brown color field without S?</strong></p>
 <p><img src="report_files/figure-html/S%20tile%20plot-1.png" width="768" /></p>
 <p>Next, we examine the correlations between individual Lab dimensions (L, a, b, Chroma) and S.</p>
 <p><img src="report_files/figure-html/Lab%20correlations%20with%20S-1.png" width="960" /></p>
-<p>The L dimension appears to correlate strongly with S values, when excluding cases where S equals 0. However, this correlation is misleading as our analysis indicates that L values do not significantly influence S values.</p>
+<p>The L dimension appears to correlate strongly with S values, when excluding cases where S equals 0. <strong>However, this correlation is misleading as our analysis indicates that L values do not significantly influence S values. (Which analysis?)</strong></p>
 <p>Notably, the S values also show strong correlations with ‘a’ and ‘b’ and the strongest correlation with Chroma. Chroma in the Lab color space quantifies the saturation or colorfulness of a color. It measures how far a color is from being neutral (gray). Chroma in the Lab color space is calculated using the formula:</p>
 <p><span class="math display">\[ C = \sqrt{a^2 + b^2} \]</span></p>
 <p>where ‘a’ and ‘b’ represent the color opponent dimensions in the Lab color model.
 Pearson correlations tend to be higher than Spearman rank correlations, implying a predominantly linear relationship between S and Lab values. However, outliers significantly influence Pearson coefficients, challenging the assumption of a straightforward linear dependency between S and Lab values across all data points. Moreover, upon examining the scatter plots, a strict linear relationship is not evident.</p>
+<p><strong>From my pattern detection feeling I’ld say that L and S might be correlated quadratically and that the trend for a,b and chroma should be pritty streight upwards (in the point dense clouds).</strong></p>
 <p>From this analysis, we conclude that the color values ‘a’ and ‘b’ exert a stronger influence on S than luminance.</p>
 </div>
 <div id="analysis-of-relationship-with-machine-learning-models" class="section level4 hasAnchor" number="1.4.1.2">
@@ -192,9 +505,9 @@ Pearson correlations tend to be higher than Spearman rank correlations, implying
 <h2><span class="header-section-number">1.5</span> Color difference<a href="#color-difference" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>One can analyse difference in color in at least three ways:</p>
 <ol style="list-style-type: decimal">
-<li>Qualitative: Looking at them - but this takes a while if thee are many colors</li>
+<li>Qualitative: Looking at them - but this takes a while if there are many colors and is depending on subjective perception and lighting or screen</li>
 <li>Quantitative: Compare the numeric values of each color space dimension</li>
-<li>Quantitative: Compare all color space dimensions at once with a proper function (i. e. <span class="math inline">\(\Delta\)</span> E)</li>
+<li>Quantitative: Compare all color space dimensions at once with a proper function (i. e. <span class="math inline">\(\Delta\)</span>E)</li>
 </ol>
 <div id="comparing-color-space-dimensions-one-by-one" class="section level3 hasAnchor" number="1.5.1">
 <h3><span class="header-section-number">1.5.1</span> Comparing color space dimensions one by one<a href="#comparing-color-space-dimensions-one-by-one" class="anchor-section" aria-label="Anchor link to header"></a></h3>
@@ -222,9 +535,9 @@ Overall, it is evident that the mean of the color cards approximately matches th
 </div>
 <div id="comparing-colors-with-distance-function" class="section level3 hasAnchor" number="1.5.2">
 <h3><span class="header-section-number">1.5.2</span> Comparing colors with distance function<a href="#comparing-colors-with-distance-function" class="anchor-section" aria-label="Anchor link to header"></a></h3>
-<p>A function to compare two colors given in Lab color space is <span class="math inline">\(\Delta\)</span> E - also called dE in this report. Actually there are multiple versions of <a href="https://zschuessler.github.io/DeltaE/learn/">Delta E</a>. The first was given 1976 and just calculates the euclidean distance in the Lab color space:</p>
+<p>A function to compare two colors given in Lab color space is <span class="math inline">\(\Delta\)</span>E - also called dE in this report. Actually there are multiple versions of <a href="https://zschuessler.github.io/DeltaE/learn/">Delta E</a>. The first was given 1976 and just calculates the euclidean distance in the Lab color space:</p>
 <p><span class="math display">\[\Delta E_{ab}=\sqrt{(L_2-L_1)^2+(a_2-a_1)^2+(b_2-b_1)^2}\]</span></p>
-<p>In this report we use the most recent <span class="math inline">\(\Delta\)</span> E formula from 2000. It is much more complex but solves problems when calculating color difference for colors with high lightness value.</p>
+<p>In this report we use the most recent <span class="math inline">\(\Delta\)</span>E formula from 2000. It is much more complex but solves problems when calculating color difference for colors with high lightness value.</p>
 <p>The aim of dE is that the calculated distance value can be interpreted in a meaningful way for humans. The following table can be a taken as a guide but there exceptions are possible.</p>
 <table>
 <thead>
@@ -278,11 +591,12 @@ Overall, it is evident that the mean of the color cards approximately matches th
 <p>Finally we have a look at which color pairs should be no visible difference. Here we found no exception to the rule of thumb given.</p>
 <p><img src="report_files/figure-html/dE_colorcard_4-1.png" width="768" /></p>
 </div>
-<div id="correlation-delta-e-with-lab-dimensions" class="section level4 hasAnchor" number="1.5.2.2">
-<h4><span class="header-section-number">1.5.2.2</span> Correlation <span class="math inline">\(\Delta\)</span> E with Lab Dimensions<a href="#correlation-delta-e-with-lab-dimensions" class="anchor-section" aria-label="Anchor link to header"></a></h4>
-<p>In the previous chapter, we analyzed the difference of <span class="math inline">\(\Delta\)</span> E across various color fields. This chapter explores the influence of channels on <span class="math inline">\(\Delta\)</span> E.</p>
+<div id="correlation-deltae-with-lab-dimensions" class="section level4 hasAnchor" number="1.5.2.2">
+<h4><span class="header-section-number">1.5.2.2</span> Correlation <span class="math inline">\(\Delta\)</span>E with Lab Dimensions<a href="#correlation-deltae-with-lab-dimensions" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<p>In the previous chapter, we analyzed the difference of <span class="math inline">\(\Delta\)</span>E across various color fields. This chapter explores the influence of channels on <span class="math inline">\(\Delta\)</span>E.</p>
 <p><img src="report_files/figure-html/Lab%20correlations%20with%20deltaE-1.png" width="672" /></p>
-<p>From the scatter plots, it is evident that there is generally no or very weak linear correlation between <span class="math inline">\(\Delta\)</span> E and the Lab dimensions. Interestingly, the Spearman coefficient highlights a notable correlation between L and <span class="math inline">\(\Delta\)</span> E values. This suggests that the perception of color differences may not be solely tied to the individual color channels a and b in a straightforward linear manner. Rather, factors influencing the perception of lightness differences appear to be more intricate and multifaceted. These findings prompt further exploration into the nuanced aspects of color perception beyond basic channel influences.</p>
+<p><strong>maybe we should fix the y coordinate here or exclude the point 18</strong></p>
+<p>From the scatter plots, it is evident that there is generally no or very weak linear correlation between <span class="math inline">\(\Delta\)</span>E and the Lab dimensions. Interestingly, the Spearman coefficient highlights a notable correlation between L and <span class="math inline">\(\Delta\)</span>E values. This suggests that the perception of color differences may not be solely tied to the individual color channels a and b in a straightforward linear manner. Rather, factors influencing the perception of lightness differences appear to be more intricate and multifaceted. These findings prompt further exploration into the nuanced aspects of color perception beyond basic channel influences.</p>
 </div>
 <div id="color-variance-among-cards" class="section level4 hasAnchor" number="1.5.2.3">
 <h4><span class="header-section-number">1.5.2.3</span> Color variance among cards<a href="#color-variance-among-cards" class="anchor-section" aria-label="Anchor link to header"></a></h4>
@@ -290,11 +604,13 @@ Overall, it is evident that the mean of the color cards approximately matches th
 <p>Looking at all color cards in a specific position among all 13 sheets shows little difference. Looking at all 42 color cards of a single sheet shows that there might be two slight patterns. One might find a) a light diagonal from bottom left to top right (see cards in first row) or b) a dark diagonal from top left to bottom right (see cards in last row). We will investigate this further with other visualization techniques.</p>
 <p><img src="report_files/figure-html/dE_colorcards_topleft_all_sheets-1.png" width="768" /></p>
 <p><img src="report_files/figure-html/dE_colorcards_1st_sheet-1.png" width="768" /></p>
+<p>When we are looking at the <span class="math inline">\(\Delta\)</span>E values for the color cards at target 1-1 and sheet 1 we find that the color difference tends to be noticeably higher for the color fields at target 1-1 in 20 cases and lower in 10 cases. Especially for the grey fields. The height of the boxes in contrast seems to be lower which is cautiously interpreted as a lower color variance. One has to keep in mind that the boxplots of target 1-1 consist of 13 data points and those of the sheet 1 of 42 data points.</p>
 <p><img src="report_files/figure-html/unnamed-chunk-3-1.png" width="768" /></p>
-<p><strong>Color variety in general lower within a target position than over a sheet. Makes sense to generate QR code to inform app which color a printed square is actually closer to (instead of master color).</strong></p>
+<p>In the following graph we show boxplots of the MAD value of color difference comparing the generalized color variance among sheets and targets. Thus we find 13 values for the sheet boxplot and 42 values for the target boxplot this time. We count 25 noticeably higher MAD values for sheets compared with targets MAD values. We find only three color fields where the opposite is the case. Thus we conclude that the color variance among the color cards on a sheet is higher than within color cards at the same target. It seems consequent to generate QR codes to inform the app which color card is scanned. This way the app can compare the detected color of the printed square with a target specific reference color (instead of the master color) for that field.</p>
 <p><img src="report_files/figure-html/unnamed-chunk-5-1.png" width="768" /></p>
-<p><strong>No real difference in median color distances. color distances more spread for targets. (Less individual values per group for target 13 vs 42 over sheets and more groups could explain wider box and whisker)</strong></p>
+<p>To complete the analysis we will have a look at the median color differences grouped by sheets and targets as well. Here we find no generalizable trends to report. The means of the median color difference is very close for all color fields. One might point out that median color distances are more spread for targets than for sheets. But this might be explained by the regression to the mean. For the target medians only 13 individual values are used whereas for the sheets 42 values are used. Thus it is less likely to find extreme differences for the sheets medians.</p>
 <p><img src="report_files/figure-html/unnamed-chunk-6-1.png" width="768" /></p>
+<p>We found no good way to show median color difference and MAD of color variance in one plot. But we think these boxplots might not be very fancy but a classical visualization form that was established for a good reason.</p>
 </div>
 </div>
 </div>
@@ -306,11 +622,11 @@ Overall, it is evident that the mean of the color cards approximately matches th
 <h2><span class="header-section-number">1.7</span> Douglas CMYKS-Formula<a href="#douglas-cmyks-formula" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>The Douglas master color data yields colors in a unique CMYKS space. Here S stands for special. Ignoring this value is a bad idea if one wants to match the reference color. Converting just the CMYK values leads to:</p>
 <p><img src="report_files/figure-html/colors_only_CMYK-1.png" width="768" /></p>
-<p>With a multivariate multiple linear regression we find 39 colors that should be different on first glimpse. The median color difference is 3.13 (MAD = 2.84).</p>
+<p>With a multivariate multiple linear regression we find 39 colors that should be different on first glimpse. The median color difference is 3.1266561 (MAD = 2.8404679).</p>
 <p><img src="report_files/figure-html/unnamed-chunk-8-1.png" width="768" /></p>
-<p>With a multivariate multiple polynomial regression with degree 3 we find 37 colors that should be different on first glimpse. (38 colors with 2nd degree polynomials.) This are almost as many as with the linear regression. We even find some colors that have been matched better with linear regression. The median color difference is 2.2 (MAD = 1.11).</p>
+<p>With a multivariate multiple polynomial regression with degree 3 we find 37 colors that should be different on first glimpse. (38 colors with 2nd degree polynomials.) This are almost as many as with the linear regression. We even find some colors that have been matched better with linear regression. The median color difference is 2.196175 (MAD = 1.1074245).</p>
 <p><img src="report_files/figure-html/unnamed-chunk-10-1.png" width="768" /></p>
-<p>With a multivariate multiple linear regression including interaction terms up to 3rd order we find 1 colors that should be different on first glimpse. (Five colors with only 2nd order interaction terms.) The median color difference is 0.28 (MAD = 0.26).</p>
+<p>With a multivariate multiple linear regression including interaction terms up to 3rd order we find 1 colors that should be different on first glimpse. (Five colors with only 2nd order interaction terms.) The median color difference is 0.2813583 (MAD = 0.2569398).</p>
 <p><img src="report_files/figure-html/unnamed-chunk-12-1.png" width="768" /></p>
 <p><strong>Train on part of data and assess performance on testdata (with bootstrap?)</strong></p>
 <p><strong>Discuss parameter number and learning data: 25 vs 64 for 3rd order interaction (15 vs 64 in 2nd order interaction; 15 vs 64 in 3rd degree polinomial)</strong></p>
