@@ -1,3 +1,14 @@
+skin_color <- c(
+  F, F, F, F, F, F, F, F,
+  F, T, T, T, T, T, T, F,
+  F, T, T, T, T, T, T, F,
+  F, T, F, F, F, F, T, F,
+  F, T, T, F, F, T, T, F,
+  F, T, T, T, T, T, T, F,
+  F, F, T, T, T, T, F, F,
+  F, F, F, F, F, F, F, F
+)
+
 # color_dispersion_over_sheets <- color_differences %>% group_by(Sheet, Field) %>% 
 #   summarise(median_dE = median(Difference)) %>% mutate(Aggregated_by = "Sheet") %>% 
 #   ungroup()
@@ -46,6 +57,59 @@ color_dispersion_on_sheet1 %>% bind_rows(
 #   geom_boxplot(aes(group = Sheet, y = median_dE)) +
 #   facet_wrap(facets = Field ~ ., scales = "free")
 
+color_dispersion_over_sheets <- color_differences %>% group_by(Sheet, Field) %>% 
+  summarise(median_dE = median(Difference), count = n(), mad_dE = mad(Difference)) %>% 
+  mutate(Aggregated_by = "Sheet") %>% 
+  ungroup()
+
+color_dispersion_over_targets <- color_differences %>% group_by(Field, Row, Column) %>% 
+  summarise(median_dE = median(Difference), count = n(), mad_dE = mad(Difference)) %>% 
+  mutate(Aggregated_by = "Target") %>% 
+  ungroup()
+
+color_dispersion_compare <- color_dispersion_over_sheets %>% bind_rows(
+  color_dispersion_over_targets
+)
+
+# color_dispersion_compare %>% left_join(
+#   color_differences %>% select(Field, Crow, Ccol) %>% unique()
+# ) %>% filter(Field != 18) %>% ggplot() +
+#   geom_point(aes(x = Field, y = median_dE, color = Aggregated_by, size = mad_dE), alpha = 0.5)
+# 
+# color_dispersion_compare %>% left_join(
+#   color_differences %>% select(Field, Crow, Ccol) %>% unique()
+# ) %>% filter(Field != 18) %>% ggplot() +
+#   geom_jitter(aes(x = Crow, y = Ccol, color = Aggregated_by, size = median_dE), alpha = 0.5)
+
+color_dispersion_compare %>% left_join(
+  color_differences %>% select(Field, Crow, Ccol) %>% unique()
+) %>% #filter(Field != 18) %>% 
+  ggplot() +
+  geom_boxplot(aes(x = Aggregated_by, y = mad_dE)) +
+  facet_grid(Crow ~ Ccol, as.table = FALSE)
+
+color_dispersion_compare %>% left_join(
+  color_differences %>% select(Field, Crow, Ccol) %>% unique()
+) %>% filter(Field != 18) %>% 
+  ggplot() +
+  geom_boxplot(aes(x = Aggregated_by, y = median_dE)) +
+  geom_jitter(aes(x = Aggregated_by, y = median_dE), alpha = 0.5) +
+  facet_grid(Crow ~ Ccol, as.table = FALSE)
+
+##### linear regression on color differences ####
+
+lm1a <- lm(data = color_differences, Difference ~ Sheet)
+summary(lm1a)
+lm1b <- lm(data = color_differences, Difference ~ factor(Sheet))
+summary(lm1b)
+
+lm2a <- lm(data = color_differences, Difference ~ Row + Column)
+summary(lm2a)
+lm2b <- lm(data = color_differences, Difference ~ factor(Row) + factor(Column))
+summary(lm2b)
+lm2c <- lm(data = color_differences, Difference ~ factor(Row)*factor(Column))
+summary(lm2c)
+
 # Questions:
 # Is the color difference greater within a sheet (among positions) or across sheets?
 # Are there colors that are very far off the master target? <- Field 18 (Why; see Lab values)
@@ -55,10 +119,11 @@ color_dispersion_on_sheet1 %>% bind_rows(
 # How is the color special used (regression)?
 
 color_regression_linear <- lm(data = master_colors, cbind(L, a, b) ~ C + M + Y + K + S)
-color_regression_poly <- lm(data = master_colors, cbind(L, a, b) ~ poly(C, 2) + poly(M, 2) + poly(Y, 2) + poly(K, 2) + poly(S, 2))
+color_regression_poly <- lm(data = master_colors, cbind(L, a, b) ~ poly(C, 3) + poly(M, 3) + poly(Y, 3) + poly(K, 3) + poly(S, 3))
 # color_regression_interaction <- lm(data = master_colors, cbind(L, a, b) ~ C * M * Y * K * S)
 color_regression_interaction_3terms <- lm(data = master_colors %>% select(C, M, Y, K, S, L, a, b), cbind(L, a, b) ~ .^3)
 # mean-delta-E?
+color_regression <- color_regression_linear
 color_regression <- color_regression_interaction_3terms
 color_differences_regression <- dE(predict(color_regression), master_colors %>% select("L", "a", "b")) %>% 
   data.frame(Difference = .)
@@ -69,21 +134,37 @@ color_differences %>%
   ) %>% mutate(Color = lab_to_rgb(L, a, b)) %>% 
   ggplot() +
   geom_tile(aes(fill = Difference, x = Crow, y = Ccol)) +
-  geom_point(aes(x = Crow+0.25, y = Ccol, color = Color), size = 12) +
+  geom_point(aes(x = Crow+0.175, y = Ccol, color = Color), size = 13) +
   scale_color_identity() +
   geom_point(
     data = master_colors %>% rowwise() %>% mutate(Color = lab_to_rgb(L, a, b)),
-    aes(x = Crow-0.25, y = Ccol, color = Color), size = 12
+    aes(x = Crow-0.175, y = Ccol, color = Color), size = 13
   ) +
   coord_fixed()
 
-skin_color <- c(
-  F, F, F, F, F, F, F, F,
-  F, T, T, T, T, T, T, F,
-  F, T, T, T, T, T, T, F,
-  F, T, F, F, F, F, T, F,
-  F, T, T, F, F, T, T, F,
-  F, T, T, T, T, T, T, F,
-  F, F, T, T, T, T, F, F,
-  F, F, F, F, F, F, F, F
+# master cmyk vs cmyks
+mastercolor_cmyk_difference <- master_colors %>% rowwise() %>% mutate(rgb_by_cmyk = cmyk_to_rgb(C,M,Y,K)) %>% 
+  bind_cols(
+    map_dfr(srgb_to_Lab, .x = .$rgb_by_cmyk) 
+  ) %>% bind_cols(
+    dE(.[c("L", "a", "b")], .[c("Lab.L", "Lab.a", "Lab.b")]) %>% as.data.frame() %>% setNames("Difference")
+  )
+
+mastercolor_cmyk_difference %>% 
+  ggplot() +
+  geom_tile(aes(fill = Difference, x = Ccol, y = Crow, color = Difference > 2),
+            lwd = 1.5, linetype = 1, width=0.9, height=0.9) +
+  ggnewscale::new_scale_colour() +
+  geom_point(aes(x = Ccol+0.175, y = Crow, color = rgb_by_cmyk), size = 14) +
+  scale_color_identity() +
+  geom_point(
+    aes(x = Ccol-0.175, y = Crow, color = Color), size = 14
+  ) +
+  coord_fixed() +
+  labs(caption = "Left circle: master color; Right circle: sample color") +
+  xlab("Column") + ylab("Row") +
+  theme(
+    axis.text=element_text(size=12),
+    axis.title=element_text(size=14,face="bold"),
+    plot.caption = element_text(size=12, hjust = 0)
   )

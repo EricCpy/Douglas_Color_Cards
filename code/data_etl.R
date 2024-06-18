@@ -12,7 +12,7 @@ master_colors <- master_colors %>%
   ) %>% 
   rowwise() %>% 
   mutate(Color = lab_to_rgb(L, a, b)) %>% 
-  ungroup()
+  as.data.frame()
 
 #### sample color measurements ####
 

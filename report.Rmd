@@ -8,31 +8,58 @@ output: bookdown::gitbook
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 source("code/setup.R")
+full_refit = FALSE
 ```
 
 # Douglas color cards
 
 The Douglas color cards are used to determine someones skin color to find the most appropriate cosmetics products - e.g. the perfect foundation. They show 64 squares of various colors. The center four squares get punched out.
 
-```{r colorcard, echo=FALSE, warning=FALSE}
+```{r colorcard, echo=FALSE, warning=FALSE, cache=!full_refit}
 display_color_card(master_colors, "Crow", "Ccol", "Lab", 2)
 ```
 
 The color cards are placed in front of ones facial skin and a photo is taken. The visual information about the skin color (visible at the four center squares) and the reference color squares is evaluated by an app and the closest skin color type is calculated.
 
-While production 42 color cards are printed on each single sheet. On each color card is a QR code that is used by the app to determine where on a sheet the color card was printed.
+Each sheet contains 42 color cards, each with a QR code. The QR codes allow the app to identify the precise location of each color card on the sheet. Below is a visualization of the first sheet in our dataset.
+
+```{r colorcard first sheet, echo=FALSE, warning=FALSE, cache=!full_refit}
+display_color_sheet(lab_colors, color_sheet_idx = 1)
+```
 
 ## Quality assurance
 
 To assure the best skin color typification it is crucial to assure a consistent production of the color cards. Especially the reference color squares colors variance should be as low as possible.
 
-The existence of QR codes indicating the position on a sheet reduces the requirements to meet because thus only the variance of reference color squares at the same position of the sheets have to be as low as possible. Differnces between reference color squares among different positions on a sheet can be taken care of in the app once the positional information is evaluated from the QR code.
+The existence of QR codes indicating the position on a sheet reduces the requirements to meet because thus only the variance of reference color squares at the same position of the sheets have to be as low as possible. Differences between reference color squares among different positions on a sheet can be taken care of in the app once the positional information is evaluated from the QR code.
 
 ## Data description
 
 The data given consists of two files. One file holds the master color information given in the Lab colorspace as well as in the CMYKS color space. In the latter S stands for special and might be some kind of skin color pigment.
 
-The second file holds color information obtained from 13 printed sheets. Thus we find the Lab color information for all 64 squares for 42 color cards for 13 sheets resulting in `r format(64*42*13*3, scientific=FALSE)` numeric values.
+```{r master_color_data_overview, echo=FALSE, cache=!full_refit}
+print(
+  summarytools::dfSummary(
+    master_colors, 
+    plain.ascii = FALSE, 
+    style = "grid",
+    graph.magnif = 1.18
+    ), 
+  method = 'render')
+```
+
+The second file holds color information obtained from 13 printed sheets. Thus we find the Lab color information for all 64 squares for 42 color cards for 13 sheets resulting in `r format(64*42*13*3, scientific=FALSE)` numeric values. We transformed the data into long format so we can easily match the colors of each field with those of the master colors.
+
+```{r lab_color_data_overview, echo=FALSE, cache=!full_refit}
+print(
+  summarytools::dfSummary(
+    lab_colors_master_shape, 
+    plain.ascii = FALSE, 
+    style = "grid",
+    graph.magnif = 1.18
+    ), 
+  method = 'render')
+```
 
 ## Objectives
 
@@ -42,19 +69,20 @@ The second file holds color information obtained from 13 printed sheets. Thus we
 
 ### Questions (formulated before exploration)
 
-1. Is the color difference greater within a sheet (among positions) or across sheets?  (Simon Schäfer)
-1. Is there a difference in dE regarding skin or non skin color?  (Simon Schäfer)
-1. How is the color special used (regression)?  (Simon Schäfer)
-1. What dE value can be seen on our screen? (Simon Schäfer)
-1. Color difference of mean over all cards to master target: is it in some uncertainty area? (Eric Jonas: R-Code ✔)
-1. Are some Lab values more often in master than in mean? (Eric Jonas: R-Code ✔)
-1. How close are CMYK and Lab values? (Eric Jonas: R-Code ✔)
-1. Is there a correlation between dE(CMYK colors, Lab colors) and S? (Eric Jonas)
+1. Is the color difference greater within a sheet (among positions) or across sheets?  (Simon Schäfer: R-Code ✔, Text ✔)
+1. Is there a difference in dE regarding skin or non skin color / calibration color?  (Pavlov)
+1. How is the color special used (regression)? (Nico)
+1. What dE value can be seen on our screen? (Simon Schäfer: R-Code ✔, Text ✔)
+1. Color difference of mean over all cards to master target: is it in some uncertainty area? (Eric Jonas: R-Code ✔, Text ✔)
+1. Are some Lab values more often in master than in mean? (Eric Jonas: R-Code ✔, Text ✔)
+1. How close are CMYK and Lab values? (Eric Jonas: R-Code ✔, Text ✔)
+1. Is there a correlation between dE(CMYK colors, Lab colors) and S? (Eric Jonas: R-Code ✔, Text ✔))
 1. Are there colors that are very far off the master target? <- Field 18 (Why; see Lab values)
 1. Are findings on L, a or b also there in dE? (On the subjective meaning)?
 1. Can colors on cards be differentiated visually?
+1. Are there especially good / bad cards? (Consistently / target specific) (Pavlo)
 
-## Color spaces
+## Color spaces (Pavlo)
 
 Today there are many systems that are used to describe colors. Some of them are device-dependent, such as CMYK and RGB, - they use predefined original colors (for example, ink colors) to create the palette,
 others, such as CIE Lab try to approximate human perception of color.
@@ -78,25 +106,130 @@ CIELAB found use in many applications - it is used when a conversion between col
 
 CMYK, as any other additive or subtractive model, can be further modified with additional components - new dyes. For Douglas color system CMYKS, they add additional dye ("Special" for S in CMYKS) that helps to create more accurate skin colors. 
 
+### Analysis of S in CMYKS
+
+How does the S value, representing skin tone, influence CMYK values? When comparing the Lab Master with the CMYK Master excluding S, a notable difference emerges, suggesting that the S value significantly impacts CMYK values when converted to Lab.
+
+```{r CMYK and Lab master colorcard, echo=FALSE, warning=FALSE, cache=!full_refit}
+grid.arrange(display_color_card(master_colors, "Crow", "Ccol", "CMYK", 2, 12), 
+             display_color_card(master_colors, "Crow", "Ccol", "Lab", 2, 12), 
+             ncol = 2)
+```
+
+A detailed examination is depicted in the graphic below:
+
+```{r CMYK and Lab master colorcard difference, echo=FALSE, warning=FALSE, fig.width=8, fig.height=8, cache=!full_refit}
+master_colors_cmyk <- master_colors %>%
+  rowwise() %>%
+  mutate(L = cmyk_to_lab(C, M, Y, K)[1],
+         a = cmyk_to_lab(C, M, Y, K)[2],
+         b = cmyk_to_lab(C, M, Y, K)[3]) %>%
+  as.data.frame()
+master_colors_cmyk_differences <- generate_color_difference_df(master_colors, master_colors_cmyk)
+plot_card_differences_to_master(master_colors_cmyk_differences, master_colors)
+```
+
+Given the ambiguity in the CMYK-to-Lab conversion method, this chapter explores correlations between Lab values and S values, employing machine learning models to enhance our understanding of S values and their role in CMYK conversion.
+
+**TODO: ADD CONCLUSION (Nico)**
+
+#### Analysis of Lab Correlations with S
+
+In this section, we investigate the relationships between S values and Lab values by correlation.
+
+Examining S values reveals that brownish colors tend to have higher S values. The left side of the gradient—from black to white—shows an S value of 0. The tile plots below visualizes this relationship. It illustrates how S values vary across different color points in the dataset.
+
+```{r S tile plot, echo=FALSE, warning=FALSE, message=FALSE, fig.width=8, fig.height=8, cache=!full_refit}
+ggplot(master_colors, aes(x = Ccol, y = Crow)) +
+  geom_tile(aes(fill = S), color = "white") +
+  scale_fill_gradient(low = "white", high = "#4682B4", name = "S-value") +
+  labs(title = "Tile Plot of S-values",
+       x = "Column",
+       y = "Row") +
+  theme_minimal() +
+  ggnewscale::new_scale_colour() +
+  geom_point(aes(x = Ccol, y = Crow, color = Color), size = 13) +
+  scale_color_identity() +
+  geom_text(aes(label = S), color = "black")
+```
+
+In row 7, column 6 of our master card, we observe brown values with an S value of 0. This suggests that the S value is not crucial for conversion. We hypothesize that the S value might have been used to reduce printing costs. Perhaps it was more economical to use a brown shade for printer cartridges than other CMYK colors and then integrate it into the CMYK color space. The 0 value in row 7, column 6 could be due to the cheapest color mix not being automatically calculated, but manually distributed. However, there is also the possibility of an error in our dataset.
+
+Next, we examine the correlations between individual Lab dimensions (L, a, b, Chroma) and S.
+
+```{r Lab correlations with S, echo=FALSE, warning=FALSE, message=FALSE, fig.width=10, fig.height=8, cache=!full_refit}
+grid.arrange(plot_correlation_with_categories(master_colors, "L", "S"),
+             plot_correlation_with_categories(master_colors, "a", "S"),
+             plot_correlation_with_categories(master_colors, "b", "S"),
+             plot_correlation_with_categories(master_colors, "Chroma", "S"),
+             ncol = 2, nrow = 2)
+```
+
+The L dimension appears to correlate strongly with S values, when excluding cases where S equals 0.
+Notably, the S values also show strong correlations with 'a' and 'b' and the strongest correlation with Chroma. Chroma in the Lab color space quantifies the saturation or colorfulness of a color. It measures how far a color is from being neutral (gray). Chroma in the Lab color space is calculated using the formula:
+
+\[ C = \sqrt{a^2 + b^2} \]
+
+where 'a' and 'b' represent the color opponent dimensions in the Lab color model.
+Pearson correlations tend to be higher than Spearman rank correlations, implying a predominantly linear relationship between S and Lab values. However, outliers significantly influence Pearson coefficients, challenging the assumption of a straightforward linear dependency between S and Lab values across all data points. Moreover, upon examining the point clouds inside the scatter plots, a quadratic relationship appears to explain the correlation between L and S, while a linear relationship seems to explain the correlation between a and b with S.
+
+From this analysis, we conclude that the color values 'a' and 'b' exert a stronger influence on S than luminance.
+
+#### Analysis of relationship with machine learning models
+
+**TODO (Nico)**
+
+Also see 1.6.
+
 ## Color difference
 
 One can analyse difference in color in at least three ways:
 
-1. Qualitative: Looking at them - but this takes a while if thee are many colors
+1. Qualitative: Looking at them - but this takes a while if there are many colors and is depending on subjective perception and lighting or screen
 1. Quantitative: Compare the numeric values of each color space dimension
-1. Quantitative: Compare all color space dimensions at once with a proper function (i. e. \( \Delta \) E)
+1. Quantitative: Compare all color space dimensions at once with a proper function (i. e. \( \Delta \)E)
 
 ### Comparing color space dimensions one by one
 
-blub
+In this chapter, we will compare the colorspaces with the master based on their different dimensions. 
 
-### Compaing colors with distance function
+To compare the color spaces, we generated a mean color card derived from all color cards in our *Lab_Measurement* dataset. 
+This mean color card serves as a baseline against the reference data of the master. Below is a representation of the mean color card.
+```{r mean colorcard, echo=FALSE, warning=FALSE, cache=!full_refit}
+display_color_card(mean_lab_color_card, "Row", "Col", "Lab", 2)
+```
 
-A function to compare two colors given in Lab color space is \( \Delta \) E - also called dE in this report. Actually there are multiple versions of [Delta E](https://zschuessler.github.io/DeltaE/learn/). The first was given 1976 and just calculates the Euclidean distance in the Lab color space:
+#### Analysis of field discrepancies
+
+```{r colorcard mean vs master, echo=FALSE, warning=FALSE, fig.width=8, fig.height=10, cache=!full_refit}
+plot_card_vs_master(mean_lab_color_card, master_colors)
+```
+
+Our examination reveals notable fluctuations across various fields. Particularly, the 18th field exhibits significant deviations from the master's data. Additionally, a trend is observed where decreases in 'a' and 'b' values coincide with increases in 'L' values, notably in fields 54 to 56.
+Overall, it is evident that the mean of the color cards approximately matches the master in most other fields.
+
+#### Analysis of density distributions
+
+Examining the distribution of values across individual channels provides insights into the predominant brightness and color characteristics. The following graphic displays the median density of all cards along with the 95% confidence interval.
+
+```{r colorcard distributions, echo=FALSE, fig.height=6, warning=FALSE, fig.align='center', cache=!full_refit}
+plots <- plot_density_vs_master(lab_colors_master_shape, master_colors)
+grid.arrange(plots[["L"]], plots[["a"]], plots[["b"]], nrow = 3)
+```
+
+The distributions reveal distinct characteristics across the channels: 
+
+- **L dimension:** Notably, there is a leftward shift in values compared to the master, indicating that the dataset tends to have higher brightness levels than the master reference. Additionally, the L channel shows significantly higher variability compared to the other dimensions, where variability is notably low.
+- **a dimension:** There is a noticeable deviation from the master particularly around 'a' values near zero, suggesting limitations in accurately representing subtle color variations within this range.
+- **b dimension:** Similar to 'a', deviations are observed especially around 'b' values between -10 and 40, indicating representations that differ from the master inside this range.
+
+### Comparing colors with distance function
+
+A function to compare two colors given in Lab color space is \( \Delta \)E - also called dE in this report. Actually there are multiple versions of [Delta E](https://zschuessler.github.io/DeltaE/learn/). The first was given 1976 and just calculates the euclidean distance in the Lab color space:
 
 \[\Delta E_{ab}=\sqrt{(L_2-L_1)^2+(a_2-a_1)^2+(b_2-b_1)^2}\]
 
-In this report we use the most recent \( \Delta \) E formula from 2000. It is much more complex but solves problems when calculating color difference for colors with high lightness value.
+In this report we use the most recent \( \Delta \)E formula from 2000. It is much more complex but solves problems when calculating color difference for colors with high lightness value.
 
 The aim of dE is that the calculated distance value can be interpreted in a meaningful way for humans. The following table can be a taken as a guide but there exceptions are possible.
 
@@ -118,7 +251,7 @@ Comparing the first color cards colors with the master colors shows that there i
 
 The visualization used to compare the colors shows the 64 colors of the color cards according to their position on the color card. In each tile there are two colored circles which show the master color (left circle) and the sample color (right circle). The background color of the tiles corresponds to the dE-value. Light blue indicates a high dE-value. Dark blue ones a low dE-value.
 
-```{r, echo=FALSE}
+```{r, echo=FALSE, cache=!full_refit}
 color_compar_tiles <- function(spotsize, spotdistance, tilesize = 1, tilehighlightcolor = "#000000", lwd = 1) {
   color_differences %>% 
   filter(Sheet == 1, Row == 1, Column == 1) %>% 
@@ -144,14 +277,14 @@ color_compar_tiles <- function(spotsize, spotdistance, tilesize = 1, tilehighlig
 }
 ```
 
-```{r dE_colorcard, echo=FALSE, fig.width=8, fig.height=8}
+```{r dE_colorcard, echo=FALSE, fig.width=8, fig.height=8, cache=!full_refit}
 color_compar_tiles(spotsize = 11, spotdistance = 0.25)
 ```
 
 To spot the color difference it is very helpful to let the colors to compare overlap. Thus we can find more colors that are distinguishable by us on our screen. Almost all grey colors are separable from their master color. So are most of the brown colors. Most of the other colors seem to be equal. An exception is the red color (3rd row, 8th column).
 
 
-```{r dE_colorcard_2, echo=FALSE, fig.width=8, fig.height=8}
+```{r dE_colorcard_2, echo=FALSE, fig.width=8, fig.height=8, cache=!full_refit}
 color_compar_tiles(spotsize = 13, spotdistance = 0.175)
 ```
 
@@ -161,37 +294,11 @@ In order to check if the cut off value of 2 holds for our example we show the sa
 * olive: 1st row, 2nd column
 * lavender: 1st row, 5th column
 
-```{r dE_colorcard_3, echo=FALSE, fig.width=8, fig.height=8}
+```{r dE_colorcard_3, echo=FALSE, fig.width=8, fig.height=8, cache=!full_refit}
 color_differences %>% 
   filter(Sheet == 1, Row == 1, Column == 1) %>% 
   ggplot() +
   geom_tile(aes(fill = Difference, x = Ccol, y = Crow, color = Difference > 2),
-            lwd = 1.5, width=0.95, height=0.95) +
-  scale_color_manual(values = c("#FFFFFF00", "#88CC00")) +
-  ggnewscale::new_scale_colour() +
-  geom_point(aes(x = Ccol+0.175, y = Crow, color = Color), size = 13) +
-  scale_color_identity() +
-  geom_point(
-    data = master_colors %>% rowwise() %>% mutate(Color = lab_to_rgb(L, a, b)),
-    aes(x = Ccol-0.175, y = Crow, color = Color), size = 13
-    ) +
-  coord_fixed() +
-  labs(caption = "Left circle: master color; Right circle: sample color") +
-  xlab("Column") + ylab("Row") +
-  theme(
-    axis.text=element_text(size=12),
-    axis.title=element_text(size=14,face="bold"),
-    plot.caption = element_text(size=12, hjust = 0)
-    )
-```
-
-Finally we have a look at which color pairs should be no visible difference. Here we found no exception to the rule of thumb given.
-
-```{r dE_colorcard_4, echo=FALSE, fig.width=8, fig.height=8}
-color_differences %>% 
-  filter(Sheet == 1, Row == 1, Column == 1) %>% 
-  ggplot() +
-  geom_tile(aes(fill = Difference, x = Ccol, y = Crow, color = Difference < 1),
             lwd = 1.5, width=0.95, height=0.95) +
   scale_color_manual(values = c("#FFFFFF00", "#CC3333")) +
   ggnewscale::new_scale_colour() +
@@ -211,15 +318,56 @@ color_differences %>%
     )
 ```
 
-#### color variance among cards
+Finally we have a look at which color pairs should be no visible difference. Here we found no exception to the rule of thumb given.
 
-```{r, echo=FALSE}
+```{r dE_colorcard_4, echo=FALSE, fig.width=8, fig.height=8, cache=!full_refit}
+color_differences %>% 
+  filter(Sheet == 1, Row == 1, Column == 1) %>% 
+  ggplot() +
+  geom_tile(aes(fill = Difference, x = Ccol, y = Crow, color = Difference < 1),
+            lwd = 1.5, width=0.95, height=0.95) +
+  scale_color_manual(values = c("#FFFFFF00", "#88CC00")) +
+  ggnewscale::new_scale_colour() +
+  geom_point(aes(x = Ccol+0.175, y = Crow, color = Color), size = 13) +
+  scale_color_identity() +
+  geom_point(
+    data = master_colors %>% rowwise() %>% mutate(Color = lab_to_rgb(L, a, b)),
+    aes(x = Ccol-0.175, y = Crow, color = Color), size = 13
+    ) +
+  coord_fixed() +
+  labs(caption = "Left circle: master color; Right circle: sample color") +
+  xlab("Column") + ylab("Row") +
+  theme(
+    axis.text=element_text(size=12),
+    axis.title=element_text(size=14,face="bold"),
+    plot.caption = element_text(size=12, hjust = 0)
+    )
+```
+
+#### Correlation \( \Delta \)E with Lab Dimensions
+
+In the previous chapter, we analyzed the difference of \( \Delta \)E across various color fields. This chapter explores the influence of channels on \( \Delta \)E. For the following scatter plots, we chose to exclude field 18 because its \( \Delta \)E value significantly deviates from the other fields, which would disproportionately influence the results.
+
+```{r Lab correlations with deltaE, echo=FALSE, warning=FALSE, message=FALSE, cache=!full_refit}
+mean_lab_color_differences_exlcude_18 <- mean_lab_color_differences %>% 
+                                          filter(!(Row == 3 & Column == 2))
+
+grid.arrange(plot_correlation(mean_lab_color_differences, "L", "Difference"),
+             plot_correlation(mean_lab_color_differences, "a", "Difference"),
+             plot_correlation(mean_lab_color_differences, "b", "Difference"),
+             nrow = 3)
+```
+
+From the scatter plots, it is evident that there is generally no or very weak linear correlation between \( \Delta \)E and the ab dimensions. This suggests that the perception of color differences may not be solely tied to the individual color channels a and b in a straightforward linear manner. Interestingly, the coefficients highlight a notable correlation between L and \( \Delta \)E values, indicating that brightness differences appear to influence perception in a linear manner.
+
+#### Color variance among cards
+
+```{r, echo=FALSE, cache=!full_refit}
 DeltaE_map_for_sheet <- function(data) {
   data %>% 
     ggplot() +
     geom_tile(aes(fill = Difference, x = Ccol, y = Crow)) +
     coord_fixed() +
-    xlab("Column on sheet") + ylab("Row on sheet") +
     theme(
       axis.text=element_text(size=12),
       axis.title=element_text(size=14,face="bold"),
@@ -230,21 +378,27 @@ DeltaE_map_for_sheet <- function(data) {
 
 In order to get a feeling if the color difference compared to the masters colors varies more or less regarding to the color cards position on the sheet or among the sheets at the same position one can have a look at small multiples for both cases. Displaying all color cards of all sheets is possible on a huge screen but not in this report. Anyhow - as one can see - comparing the separated dE tile maps visually is not easy.
 
-Looking at all color cards in a specific position among all sheets shows little difference. Looking at all color cards of a single sheet shows that there might be two slight patterns. One might find 1) a light diagonal from bottom left to top right (see cards in first row) or 2) a dark diagonal from top left to bottom right (see cards in last row). We will investigate this further with other visualization techniques.
+Looking at all color cards in a specific position among all 13 sheets shows little difference. Looking at all 42 color cards of a single sheet shows that there might be two slight patterns. One might find a) a light diagonal from bottom left to top right (see cards in first row) or b) a dark diagonal from top left to bottom right (see cards in last row). We will investigate this further with other visualization techniques.
 
-```{r dE_colorcards_topleft_all_sheets, echo=FALSE, fig.width=8, fig.height=8}
+```{r dE_colorcards_topleft_all_sheets, echo=FALSE, fig.width=8, fig.height=8, cache=!full_refit}
 DeltaE_map_for_sheet(color_differences %>% filter(Row == 1, Column == 1)) +
   labs(caption = "dE for all color cards at the top left position of all sheets") +
-  facet_wrap(Sheet ~.)
+  facet_wrap(Sheet ~.) +
+  theme(
+    axis.title = element_blank()
+  )
 ```
 
-```{r dE_colorcards_1st_sheet, echo=FALSE, fig.width=8, fig.height=8}
+```{r dE_colorcards_1st_sheet, echo=FALSE, fig.width=8, fig.height=8, cache=!full_refit}
 DeltaE_map_for_sheet(color_differences %>% filter(Sheet == 1)) +
   labs(caption = "dE for all color cards of the first sheet") +
-  facet_grid(Row ~ Column)
+  facet_grid(Row ~ Column) +
+  xlab("Column on sheet") + ylab("Row on sheet")
 ```
 
-```{r, echo=FALSE, echo=FALSE, fig.width=8, fig.height=12}
+When we are looking at the \( \Delta \)E values for the color cards at target 1-1 and sheet 1 we find that the color difference tends to be noticeably higher for the color fields at target 1-1 in 20 cases and lower in 10 cases. Especially for the grey fields. The height of the boxes in contrast seems to be lower which is cautiously interpreted as a lower color variance. One has to keep in mind that the boxplots of target 1-1 consist of 13 data points and those of the sheet 1 of 42 data points.
+
+```{r, echo=FALSE, echo=FALSE, fig.width=8, fig.height=12, cache=!full_refit}
 color_dispersion_on_sheet1 <- color_differences %>%
   filter(Sheet == 1) %>% 
   mutate(Aggregated_by = "Sheet")
@@ -261,3 +415,201 @@ color_dispersion_on_sheet1 %>% bind_rows(
   facet_grid(Crow ~ Ccol, switch = "both", as.table=FALSE) +
   coord_cartesian(ylim = c(0, 6.5))
 ```
+
+```{r, echo=FALSE, message=FALSE, cache=!full_refit}
+color_dispersion_over_sheets <- color_differences %>% group_by(Sheet, Field) %>% 
+  summarise(median_dE = median(Difference), count = n(), mad_dE = mad(Difference)) %>% 
+  mutate(Aggregated_by = "Sheet") %>% 
+  ungroup()
+
+color_dispersion_over_targets <- color_differences %>% group_by(Field, Row, Column) %>% 
+  summarise(median_dE = median(Difference), count = n(), mad_dE = mad(Difference)) %>% 
+  mutate(Aggregated_by = "Target") %>% 
+  ungroup()
+
+color_dispersion_compare <- color_dispersion_over_sheets %>% bind_rows(
+  color_dispersion_over_targets
+)
+```
+
+In the following graph we show boxplots of the MAD value of color difference comparing the generalized color variance among sheets and targets. Thus we find 13 values for the sheet boxplot and 42 values for the target boxplot this time. We count 25 noticeably higher MAD values for sheets compared with targets MAD values. We find only three color fields where the opposite is the case. Thus we conclude that the color variance among the color cards on a sheet is higher than within color cards at the same target. It seems consequent to generate QR codes to inform the app which color card is scanned. This way the app can compare the detected color of the printed square with a target specific reference color (instead of the master color) for that field.
+
+```{r, echo=FALSE, echo=FALSE, fig.width=8, fig.height=12, cache=!full_refit}
+color_dispersion_compare %>% left_join(
+  color_differences %>% select(Field, Crow, Ccol) %>% unique(),
+  by = join_by(Field)
+) %>% #filter(Field != 18) %>% 
+  ggplot() +
+  geom_boxplot(aes(x = Aggregated_by, y = mad_dE), alpha = 0.5) +
+  facet_grid(Crow ~ Ccol, as.table = FALSE, switch = "both")
+```
+
+To complete the analysis we will have a look at the median color differences grouped by sheets and targets as well. Here we find no generalizable trends to report. The means of the median color difference is very close for all color fields. One might point out that median color distances are more spread for targets than for sheets. But this might be explained by the regression to the mean. For the target medians only 13 individual values are used whereas for the sheets 42 values are used. Thus it is less likely to find extreme differences for the sheets medians.
+
+```{r, echo=FALSE, echo=FALSE, fig.width=8, fig.height=12, cache=!full_refit}
+color_dispersion_compare %>% left_join(
+  color_differences %>% select(Field, Crow, Ccol) %>% unique(),
+  by = join_by(Field)
+) %>% filter(Field != 18) %>% 
+  ggplot() +
+  geom_boxplot(aes(x = Aggregated_by, y = median_dE), alpha = 0.5) +
+  facet_grid(Crow ~ Ccol, as.table = FALSE, switch = "both")
+```
+
+We found no good way to show median color difference and MAD of color variance in one plot. But we think these boxplots might not be very fancy but a classical visualization form that was established for a good reason.
+
+## New Reference colors by targets
+
+**Colors vary less among targets. What is the the "new" reference color the colors are scattered around? Compare to master color for one target.**
+
+## Douglas CMYKS-Formula
+
+The Douglas master color data yields colors in a unique CMYKS space. Here S stands for special. Ignoring this value is a bad idea if one wants to match the reference color. Converting just the CMYK values leads to:
+
+```{r colors_only_CMYK, echo=FALSE, fig.width=8, fig.height=8, cache=!full_refit}
+mastercolor_cmyk_difference <- master_colors %>% rowwise() %>% mutate(rgb_by_cmyk = cmyk_to_rgb(C,M,Y,K)) %>% 
+  bind_cols(
+    map_dfr(srgb_to_Lab, .x = .$rgb_by_cmyk) 
+  ) %>% bind_cols(
+    dE(.[c("L", "a", "b")], .[c("Lab.L", "Lab.a", "Lab.b")]) %>% as.data.frame() %>% setNames("Difference")
+  )
+
+mastercolor_cmyk_difference %>% 
+  ggplot() +
+  geom_tile(aes(fill = Difference, x = Ccol, y = Crow, color = Difference > 2),
+            lwd = 1.5, linetype = 1, width=0.9, height=0.9) +
+  scale_color_manual(values = c("#FFFFFF00", "#CC3333")) +
+  ggnewscale::new_scale_colour() +
+  geom_point(aes(x = Ccol+0.175, y = Crow, color = rgb_by_cmyk), size = 14) +
+  scale_color_identity() +
+  geom_point(
+    aes(x = Ccol-0.175, y = Crow, color = Color), size = 14
+  ) +
+  coord_fixed() +
+  labs(caption = "Left circle: master color; Right circle: sample color") +
+  xlab("Column") + ylab("Row") +
+  theme(
+    axis.text=element_text(size=12),
+    axis.title=element_text(size=14,face="bold"),
+    plot.caption = element_text(size=12, hjust = 0)
+  )
+```
+
+```{r, echo=FALSE, cache=!full_refit}
+options(scipen = 1, digits = 2)
+
+color_regression_linear <- lm(data = master_colors, cbind(L, a, b) ~ C + M + Y + K + S)
+color_regression <- color_regression_linear
+color_differences_regression <- dE(predict(color_regression), master_colors %>% select("L", "a", "b")) %>% 
+  data.frame(Difference = .)
+
+# summary(color_regression)
+```
+
+With a multivariate multiple linear regression we find `r sum(color_differences_regression > 2)` colors that should be different on first glimpse. The median color difference is `r median(color_differences_regression$Difference)` (MAD = `r mad(color_differences_regression$Difference)`).
+
+```{r, echo=FALSE, fig.width=8, fig.height=8, cache=!full_refit}
+color_differences %>% 
+  filter(Sheet == 1, Row == 1, Column == 1) %>% select(-Difference, -L, -a, -b) %>% bind_cols(
+    color_differences_regression, predict(color_regression)
+  ) %>% rowwise() %>% mutate(Color = lab_to_rgb(L, a, b)) %>% 
+  ggplot() +
+  geom_tile(aes(fill = Difference, x = Ccol, y = Crow, color = Difference > 2),
+            lwd = 1.5, width=0.95, height=0.95) +
+  scale_color_manual(values = c("#FFFFFF00", "#CC3333")) +
+  ggnewscale::new_scale_colour() +
+  geom_point(aes(x = Ccol+0.175, y = Crow, color = Color), size = 13) +
+  scale_color_identity() +
+  geom_point(
+    data = master_colors %>% rowwise() %>% mutate(Color = lab_to_rgb(L, a, b)),
+    aes(x = Ccol-0.175, y = Crow, color = Color), size = 13
+    ) +
+  coord_fixed() +
+  labs(caption = "Left circle: master color; Right circle: sample color") +
+  xlab("Column") + ylab("Row") +
+  theme(
+    axis.text=element_text(size=12),
+    axis.title=element_text(size=14,face="bold"),
+    plot.caption = element_text(size=12, hjust = 0)
+    )
+```
+
+```{r, echo=FALSE, cache=!full_refit}
+degree <- 3
+color_regression_poly <- lm(data = master_colors, cbind(L, a, b) ~ poly(C, degree) + poly(M, degree) + poly(Y, degree) + poly(K, degree) + poly(S, degree))
+color_regression <- color_regression_poly
+color_differences_regression <- dE(predict(color_regression), master_colors %>% select("L", "a", "b")) %>% 
+  data.frame(Difference = .)
+
+# summary(color_regression)
+```
+
+With a multivariate multiple polynomial regression with degree `r degree`  we find `r sum(color_differences_regression > 2)` colors that should be different on first glimpse. (38 colors with 2nd degree polynomials.) This are almost as many as with the linear regression. We even find some colors that have been matched better with linear regression. The median color difference is `r median(color_differences_regression$Difference)` (MAD = `r mad(color_differences_regression$Difference)`).
+
+```{r, echo=FALSE, fig.width=8, fig.height=8, cache=!full_refit}
+color_differences %>% 
+  filter(Sheet == 1, Row == 1, Column == 1) %>% select(-Difference, -L, -a, -b) %>% bind_cols(
+    color_differences_regression, predict(color_regression)
+  ) %>% rowwise() %>% mutate(Color = lab_to_rgb(L, a, b)) %>% 
+  ggplot() +
+  geom_tile(aes(fill = Difference, x = Ccol, y = Crow, color = Difference > 2),
+            lwd = 1.5, width=0.95, height=0.95) +
+  scale_color_manual(values = c("#FFFFFF00", "#CC3333")) +
+  ggnewscale::new_scale_colour() +
+  geom_point(aes(x = Ccol+0.175, y = Crow, color = Color), size = 13) +
+  scale_color_identity() +
+  geom_point(
+    data = master_colors %>% rowwise() %>% mutate(Color = lab_to_rgb(L, a, b)),
+    aes(x = Ccol-0.175, y = Crow, color = Color), size = 13
+    ) +
+  coord_fixed() +
+  labs(caption = "Left circle: master color; Right circle: sample color") +
+  xlab("Column") + ylab("Row") +
+  theme(
+    axis.text=element_text(size=12),
+    axis.title=element_text(size=14,face="bold"),
+    plot.caption = element_text(size=12, hjust = 0)
+    )
+```
+
+```{r, echo=FALSE, cache=!full_refit}
+color_regression_interaction_3terms <- lm(data = master_colors %>% select(C, M, Y, K, S, L, a, b), cbind(L, a, b) ~ .^3)
+color_regression <- color_regression_interaction_3terms
+color_differences_regression <- dE(predict(color_regression), master_colors %>% select("L", "a", "b")) %>% 
+  data.frame(Difference = .)
+
+# summary(color_regression)
+```
+
+With a multivariate multiple linear regression including interaction terms up to 3rd order we find `r sum(color_differences_regression > 2)` colors that should be different on first glimpse. (Five colors with only 2nd order interaction terms.) The median color difference is `r median(color_differences_regression$Difference)` (MAD = `r mad(color_differences_regression$Difference)`).
+
+```{r, echo=FALSE, fig.width=8, fig.height=8, cache=!full_refit}
+color_differences %>% 
+  filter(Sheet == 1, Row == 1, Column == 1) %>% select(-Difference, -L, -a, -b) %>% bind_cols(
+    color_differences_regression, predict(color_regression)
+  ) %>% rowwise() %>% mutate(Color = lab_to_rgb(L, a, b)) %>% 
+  ggplot() +
+  geom_tile(aes(fill = Difference, x = Ccol, y = Crow, color = Difference > 2),
+            lwd = 1.5, width=0.95, height=0.95) +
+  scale_color_manual(values = c("#FFFFFF00", "#CC3333")) +
+  ggnewscale::new_scale_colour() +
+  geom_point(aes(x = Ccol+0.175, y = Crow, color = Color), size = 13) +
+  scale_color_identity() +
+  scale_fill_continuous(limits = c(0, 10)) +
+  geom_point(
+    data = master_colors %>% rowwise() %>% mutate(Color = lab_to_rgb(L, a, b)),
+    aes(x = Ccol-0.175, y = Crow, color = Color), size = 13
+    ) +
+  coord_fixed() +
+  labs(caption = "Left circle: master color; Right circle: sample color") +
+  xlab("Column") + ylab("Row") +
+  theme(
+    axis.text=element_text(size=12),
+    axis.title=element_text(size=14,face="bold"),
+    plot.caption = element_text(size=12, hjust = 0)
+    )
+```
+
+**Train on part of data and assess performance on testdata (with bootstrap?)**
+
+**Discuss parameter number and learning data: 25 vs 64 for 3rd order interaction (15 vs 64 in 2nd order interaction; 15 vs 64 in 3rd degree polinomial)**
