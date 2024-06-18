@@ -6,6 +6,7 @@ library(spacesXYZ)
 library(OpenImageR)
 library(broman)
 library(broom)
+library(summarytools)
 
 source("code/helper_functions.R")
 source("code/display_functions.R")
