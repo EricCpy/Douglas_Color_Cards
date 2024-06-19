@@ -168,3 +168,34 @@ mastercolor_cmyk_difference %>%
     axis.title=element_text(size=14,face="bold"),
     plot.caption = element_text(size=12, hjust = 0)
   )
+
+# average colors target 1-1
+
+average_color_card_target_1_1 <- lab_colors_master_shape %>% filter(Row == 1, Column == 1) %>% 
+  group_by(Ccol, Crow, Field) %>% 
+  summarise(L = mean(L), a = mean(a), b = mean(b)) %>% ungroup() %>% 
+  arrange(Field) %>% 
+  mutate(Difference = generate_color_difference_df(master_colors, .)$Difference) %>% 
+  rowwise() %>% mutate(
+    Color = lab_to_rgb(L, a, b)
+    )
+
+average_color_card_target_1_1 %>% 
+  ggplot() +
+  geom_tile(aes(fill = Difference, x = Ccol, y = Crow, color = Difference > 2),
+            lwd = 1.5, linetype = 1, width=0.9, height=0.9) +
+  scale_color_manual(values = c("#FFFFFF00", "#CC3333")) +
+  ggnewscale::new_scale_colour() +
+  geom_point(aes(x = Ccol+0.175, y = Crow, color = Color), size = 14) +
+  scale_color_identity() +
+  geom_point(
+    aes(x = Ccol-0.175, y = Crow, color = master_colors$Color), size = 14
+  ) +
+  coord_fixed() +
+  labs(caption = "Left circle: master color; Right circle: sample color") +
+  xlab("Column") + ylab("Row") +
+  theme(
+    axis.text=element_text(size=12),
+    axis.title=element_text(size=14,face="bold"),
+    plot.caption = element_text(size=12, hjust = 0)
+  )
