@@ -108,7 +108,6 @@ plot_card_differences_to_master <- function(card_colors, master_colors, spotsize
       aes(x = Ccol-spotdistance, y = Crow, color = Color), size = spotsize
     ) +
     coord_fixed() +
-    labs(caption = "Left circle: master color; Right circle: sample color") +
     xlab("Column") + ylab("Row") +
     theme(
       axis.text=element_text(size=12),
@@ -151,4 +150,39 @@ plot_correlation_with_categories <- function(data, x_var, y_var, exclude_below=1
     scale_color_manual(values = c("Above" = "blue", "Below" = "red"), name = y_var) +
     scale_linetype_manual(values = c("Total" = "dotted", "Excluded" = "solid"), name = "Regression Line") +
     guides(color = guide_legend(order = 1), linetype = guide_legend(order = 2))
+}
+
+color_compar_tiles <- function(spotsize, spotdistance, tilesize = 1, tilehighlightcolor = "#000000", lwd = 1) {
+  color_differences %>% 
+    filter(Sheet == 1, Row == 1, Column == 1) %>% 
+    ggplot() +
+    geom_tile(aes(fill = Difference, x = Ccol, y = Crow),
+              lwd = lwd, width=tilesize, height=tilesize) +
+    scale_color_manual(values = c("#FFFFFF00", tilehighlightcolor)) +
+    ggnewscale::new_scale_colour() +
+    geom_point(aes(x = Ccol+spotdistance, y = Crow, color = Color), size = spotsize) +
+    scale_color_identity() +
+    geom_point(
+      data = master_colors %>% rowwise() %>% mutate(Color = lab_to_rgb(L, a, b)),
+      aes(x = Ccol-spotdistance, y = Crow, color = Color), size = spotsize
+    ) +
+    coord_fixed() +
+    xlab("Column") + ylab("Row") +
+    theme(
+      axis.text=element_text(size=12),
+      axis.title=element_text(size=14,face="bold"),
+      plot.caption = element_text(size=12, hjust = 0)
+    )
+}
+
+DeltaE_map_for_sheet <- function(data) {
+  data %>% 
+    ggplot() +
+    geom_tile(aes(fill = Difference, x = Ccol, y = Crow)) +
+    coord_fixed() +
+    theme(
+      axis.text=element_text(size=12),
+      axis.title=element_text(size=14,face="bold"),
+      plot.caption = element_text(size=12, hjust = 0)
+    )
 }

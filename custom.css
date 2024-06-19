@@ -1,0 +1,8 @@
+div.figure>p.caption {
+    text-align: center !important;
+    font-style: italic;
+}
+
+div.st-container>p {
+    display: none;
+}
