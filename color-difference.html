@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>2 Color difference | Douglas color cards</title>
+  <meta name="description" content="2 Color difference | Douglas color cards" />
+  <meta name="generator" content="bookdown 0.39 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="2 Color difference | Douglas color cards" />
+  <meta property="og:type" content="book" />
+  
+  
+  
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="2 Color difference | Douglas color cards" />
+  
+  
+  
+
+<meta name="author" content="Nicolas Hahn, Eric Jonas, Pavlo Kravets, Simon Schäfer" />
+
+
+<meta name="date" content="2024-06-19" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="introduction.html"/>
+<link rel="next" href="analysis-of-s-in-cmyks.html"/>
+<script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+<link href="libs/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
+<link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
+
+
+
+<style type="text/css">
+  
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+</style>
+
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li class="chapter" data-level="1" data-path="introduction.html"><a href="introduction.html"><i class="fa fa-check"></i><b>1</b> Introduction</a>
+<ul>
+<li class="chapter" data-level="1.1" data-path="introduction.html"><a href="introduction.html#quality-assurance"><i class="fa fa-check"></i><b>1.1</b> Quality assurance</a></li>
+<li class="chapter" data-level="1.2" data-path="introduction.html"><a href="introduction.html#data-description"><i class="fa fa-check"></i><b>1.2</b> Data description</a></li>
+<li class="chapter" data-level="1.3" data-path="introduction.html"><a href="introduction.html#color-spaces-pavlo"><i class="fa fa-check"></i><b>1.3</b> Color spaces (Pavlo)</a>
+<ul>
+<li class="chapter" data-level="1.3.1" data-path="introduction.html"><a href="introduction.html#rgb"><i class="fa fa-check"></i><b>1.3.1</b> RGB</a></li>
+<li class="chapter" data-level="1.3.2" data-path="introduction.html"><a href="introduction.html#cmyk"><i class="fa fa-check"></i><b>1.3.2</b> CMYK</a></li>
+<li class="chapter" data-level="1.3.3" data-path="introduction.html"><a href="introduction.html#cielab"><i class="fa fa-check"></i><b>1.3.3</b> CIELAB</a></li>
+<li class="chapter" data-level="1.3.4" data-path="introduction.html"><a href="introduction.html#cmyks"><i class="fa fa-check"></i><b>1.3.4</b> CMYKS</a></li>
+</ul></li>
+<li class="chapter" data-level="1.4" data-path="introduction.html"><a href="introduction.html#objectives"><i class="fa fa-check"></i><b>1.4</b> Objectives</a></li>
+</ul></li>
+<li class="chapter" data-level="2" data-path="color-difference.html"><a href="color-difference.html"><i class="fa fa-check"></i><b>2</b> Color difference</a>
+<ul>
+<li class="chapter" data-level="2.1" data-path="color-difference.html"><a href="color-difference.html#comparing-color-space-dimensions-one-by-one"><i class="fa fa-check"></i><b>2.1</b> Comparing color space dimensions one by one</a>
+<ul>
+<li class="chapter" data-level="2.1.1" data-path="color-difference.html"><a href="color-difference.html#analysis-of-field-discrepancies"><i class="fa fa-check"></i><b>2.1.1</b> Analysis of field discrepancies</a></li>
+<li class="chapter" data-level="2.1.2" data-path="color-difference.html"><a href="color-difference.html#analysis-of-density-distributions"><i class="fa fa-check"></i><b>2.1.2</b> Analysis of density distributions</a></li>
+</ul></li>
+<li class="chapter" data-level="2.2" data-path="color-difference.html"><a href="color-difference.html#comparing-colors-with-distance-function"><i class="fa fa-check"></i><b>2.2</b> Comparing colors with distance function</a>
+<ul>
+<li class="chapter" data-level="2.2.1" data-path="color-difference.html"><a href="color-difference.html#color-difference-on-a-single-card"><i class="fa fa-check"></i><b>2.2.1</b> Color difference on a single card</a></li>
+<li class="chapter" data-level="2.2.2" data-path="color-difference.html"><a href="color-difference.html#correlation-deltae-with-lab-dimensions"><i class="fa fa-check"></i><b>2.2.2</b> Correlation <span class="math inline">\(\Delta\)</span>E with Lab Dimensions</a></li>
+<li class="chapter" data-level="2.2.3" data-path="color-difference.html"><a href="color-difference.html#color-variance-among-cards"><i class="fa fa-check"></i><b>2.2.3</b> Color variance among cards</a></li>
+<li class="chapter" data-level="2.2.4" data-path="color-difference.html"><a href="color-difference.html#new-reference-colors-by-targets"><i class="fa fa-check"></i><b>2.2.4</b> New Reference colors by targets</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="analysis-of-s-in-cmyks.html"><a href="analysis-of-s-in-cmyks.html"><i class="fa fa-check"></i><b>3</b> Analysis of S in CMYKS</a>
+<ul>
+<li class="chapter" data-level="3.1" data-path="analysis-of-s-in-cmyks.html"><a href="analysis-of-s-in-cmyks.html#analysis-of-lab-correlations-with-s"><i class="fa fa-check"></i><b>3.1</b> Analysis of Lab Correlations with S</a></li>
+<li class="chapter" data-level="3.2" data-path="analysis-of-s-in-cmyks.html"><a href="analysis-of-s-in-cmyks.html#douglas-cmyks-formula"><i class="fa fa-check"></i><b>3.2</b> Douglas CMYKS-Formula</a></li>
+<li class="chapter" data-level="3.3" data-path="analysis-of-s-in-cmyks.html"><a href="analysis-of-s-in-cmyks.html#analysis-of-relationship-with-machine-learning-models"><i class="fa fa-check"></i><b>3.3</b> Analysis of relationship with machine learning models</a></li>
+</ul></li>
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Douglas color cards</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="color-difference" class="section level1 hasAnchor" number="2">
+<h1><span class="header-section-number">2</span> Color difference<a href="color-difference.html#color-difference" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<p>One can analyse difference in color in at least three ways:</p>
+<ol style="list-style-type: decimal">
+<li>Qualitative: Looking at them - but this takes a while if there are many colors and is depending on subjective perception and lighting or screen</li>
+<li>Quantitative: Compare the numeric values of each color space dimension</li>
+<li>Quantitative: Compare all color space dimensions at once with a proper function (i. e. <span class="math inline">\(\Delta\)</span>E)</li>
+</ol>
+<div id="comparing-color-space-dimensions-one-by-one" class="section level2 hasAnchor" number="2.1">
+<h2><span class="header-section-number">2.1</span> Comparing color space dimensions one by one<a href="color-difference.html#comparing-color-space-dimensions-one-by-one" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>In this chapter, we will compare the colorspaces with the master based on their different dimensions.</p>
+<p>To compare the color spaces, we generated a mean color card derived from all color cards in our <em>Lab_Measurement</em> dataset.
+This mean color card serves as a baseline against the reference data of the master. Below is a representation of the mean color card.
+<img src="report_files/figure-html/mean%20colorcard-1.png" width="672" /></p>
+<div id="analysis-of-field-discrepancies" class="section level3 hasAnchor" number="2.1.1">
+<h3><span class="header-section-number">2.1.1</span> Analysis of field discrepancies<a href="color-difference.html#analysis-of-field-discrepancies" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p><img src="report_files/figure-html/colorcard%20mean%20vs%20master-1.png" width="768" /></p>
+<p>Our examination reveals notable fluctuations across various fields. Particularly, the 18th field exhibits significant deviations from the master’s data.
+Overall, it is evident that the mean of the color cards approximately matches the master in most other fields.</p>
+</div>
+<div id="analysis-of-density-distributions" class="section level3 hasAnchor" number="2.1.2">
+<h3><span class="header-section-number">2.1.2</span> Analysis of density distributions<a href="color-difference.html#analysis-of-density-distributions" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>Examining the distribution of values across individual channels provides insights into the predominant brightness and color characteristics. The following graphic displays the median density of all cards along with the 95% confidence interval.</p>
+<p><img src="report_files/figure-html/colorcard%20distributions-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>The distributions reveal distinct characteristics across the channels:</p>
+<ul>
+<li><strong>L dimension:</strong> Notably, there is a leftward shift in values compared to the master, indicating that the dataset tends to have higher brightness levels than the master reference. Additionally, the L channel shows significantly higher variability compared to the other dimensions, where variability is notably low.</li>
+<li><strong>a dimension:</strong> There is a noticeable deviation from the master particularly around ‘a’ values near zero, suggesting limitations in accurately representing subtle color variations within this range.</li>
+<li><strong>b dimension:</strong> Similar to ‘a’, deviations are observed especially around ‘b’ values between -10 and 40, indicating representations that differ from the master inside this range.</li>
+</ul>
+</div>
+</div>
+<div id="comparing-colors-with-distance-function" class="section level2 hasAnchor" number="2.2">
+<h2><span class="header-section-number">2.2</span> Comparing colors with distance function<a href="color-difference.html#comparing-colors-with-distance-function" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>A function to compare two colors given in Lab color space is <span class="math inline">\(\Delta\)</span>E - also called dE in this report. Actually there are multiple versions of <a href="https://zschuessler.github.io/DeltaE/learn/">Delta E</a>. The first was given 1976 and just calculates the euclidean distance in the Lab color space:</p>
+<p><span class="math display">\[\Delta E_{ab}=\sqrt{(L_2-L_1)^2+(a_2-a_1)^2+(b_2-b_1)^2}\]</span></p>
+<p>In this report we use the most recent <span class="math inline">\(\Delta\)</span>E formula from 2000. It is much more complex but solves problems when calculating color difference for colors with high lightness value.</p>
+<p>The aim of dE is that the calculated distance value can be interpreted in a meaningful way for humans. The following table can be a taken as a guide but there exceptions are possible.</p>
+<table>
+<thead>
+<tr class="header">
+<th>Delta E</th>
+<th>Perception</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>&lt;= 1.0</td>
+<td>Not perceptible by human eyes.</td>
+</tr>
+<tr class="even">
+<td>1 - 2</td>
+<td>Perceptible through close observation.</td>
+</tr>
+<tr class="odd">
+<td>2 - 10</td>
+<td>Perceptible at a glance.</td>
+</tr>
+<tr class="even">
+<td>11 - 49</td>
+<td>Colors are more similar than opposite</td>
+</tr>
+<tr class="odd">
+<td>100</td>
+<td>Colors are exact opposite</td>
+</tr>
+</tbody>
+</table>
+<div id="color-difference-on-a-single-card" class="section level3 hasAnchor" number="2.2.1">
+<h3><span class="header-section-number">2.2.1</span> Color difference on a single card<a href="color-difference.html#color-difference-on-a-single-card" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>Comparing the first color cards colors with the master colors shows that there is one color that is pretty far from the master color (3rd row, 2nd column). There are some more fields where we spotted a difference at first glimpse:</p>
+<ul>
+<li>lilac: 8th row, 5th column</li>
+<li>blue: 8th row, 7th column</li>
+<li>dark grey: 7th row, 1st column</li>
+</ul>
+<p>The visualization used to compare the colors shows the 64 colors of the color cards according to their position on the color card. In each tile there are two colored circles which show the master color (left circle) and the sample color (right circle). The background color of the tiles corresponds to the dE-value. Light blue indicates a high dE-value. Dark blue ones a low dE-value.</p>
+<p><img src="report_files/figure-html/dE_colorcard-1.png" width="768" /></p>
+<p>To spot the color difference it is very helpful to let the colors to compare overlap. Thus we can find more colors that are distinguishable by us on our screen. Almost all grey colors are separable from their master color. So are most of the brown colors. Most of the other colors seem to be equal. An exception is the red color (3rd row, 8th column).</p>
+<p><img src="report_files/figure-html/dE_colorcard_2-1.png" width="768" /></p>
+<p>In order to check if the cut off value of 2 holds for our example we show the same picture again but highlight which colors should be distinguishable in theory. It tells us that we sould be able to spot the difference for the following colors but we did not:</p>
+<ul>
+<li>magenta: 4th row, 8th column</li>
+<li>olive: 1st row, 2nd column</li>
+<li>lavender: 1st row, 5th column</li>
+</ul>
+<p><img src="report_files/figure-html/dE_colorcard_3-1.png" width="768" /></p>
+<p>Finally we have a look at which color pairs should be no visible difference. Here we found no exception to the rule of thumb given.</p>
+<p><img src="report_files/figure-html/dE_colorcard_4-1.png" width="768" /></p>
+</div>
+<div id="correlation-deltae-with-lab-dimensions" class="section level3 hasAnchor" number="2.2.2">
+<h3><span class="header-section-number">2.2.2</span> Correlation <span class="math inline">\(\Delta\)</span>E with Lab Dimensions<a href="color-difference.html#correlation-deltae-with-lab-dimensions" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>In the previous chapter, we analyzed the difference of <span class="math inline">\(\Delta\)</span>E across various color fields. This chapter explores the influence of channels on <span class="math inline">\(\Delta\)</span>E. For the following scatter plots, we chose to exclude field 18 because its <span class="math inline">\(\Delta\)</span>E value significantly deviates from the other fields, which would disproportionately influence the results.</p>
+<p><img src="report_files/figure-html/Lab%20correlations%20with%20deltaE-1.png" width="672" /></p>
+<p>From the scatter plots, it is evident that there is generally no or very weak linear correlation between <span class="math inline">\(\Delta\)</span>E and the ab dimensions. This suggests that the perception of color differences may not be solely tied to the individual color channels a and b in a straightforward linear manner. Interestingly, the coefficients highlight a notable correlation between L and <span class="math inline">\(\Delta\)</span>E values, indicating that brightness differences appear to influence perception in a linear manner.</p>
+</div>
+<div id="color-variance-among-cards" class="section level3 hasAnchor" number="2.2.3">
+<h3><span class="header-section-number">2.2.3</span> Color variance among cards<a href="color-difference.html#color-variance-among-cards" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>In order to get a feeling if the color difference compared to the masters colors varies more or less regarding to the color cards position on the sheet or among the sheets at the same position one can have a look at small multiples for both cases. Displaying all color cards of all sheets is possible on a huge screen but not in this report. Anyhow - as one can see - comparing the separated dE tile maps visually is not easy.</p>
+<p>Looking at all color cards in a specific position among all 13 sheets shows little difference. Looking at all 42 color cards of a single sheet shows that there might be two slight patterns. One might find a) a light diagonal from bottom left to top right (see cards in first row) or b) a dark diagonal from top left to bottom right (see cards in last row). We will investigate this further with other visualization techniques.</p>
+<p><img src="report_files/figure-html/dE_colorcards_topleft_all_sheets-1.png" width="768" /></p>
+<p><img src="report_files/figure-html/dE_colorcards_1st_sheet-1.png" width="768" /></p>
+<p>When we are looking at the <span class="math inline">\(\Delta\)</span>E values for the color cards at target 1-1 and sheet 1 we find that the color difference tends to be noticeably higher for the color fields at target 1-1 in 20 cases and lower in 10 cases. Especially for the grey fields. The height of the boxes in contrast seems to be lower which is cautiously interpreted as a lower color variance. One has to keep in mind that the boxplots of target 1-1 consist of 13 data points and those of the sheet 1 of 42 data points.</p>
+<p><img src="report_files/figure-html/unnamed-chunk-3-1.png" width="768" /></p>
+<p>In the following graph we show boxplots of the MAD value of color difference comparing the generalized color variance among sheets and targets. Thus we find 13 values for the sheet boxplot and 42 values for the target boxplot this time. We count 25 noticeably higher MAD values for sheets compared with targets MAD values. We find only three color fields where the opposite is the case. Thus we conclude that the color variance among the color cards on a sheet is higher than within color cards at the same target. It seems consequent to generate QR codes to inform the app which color card is scanned. This way the app can compare the detected color of the printed square with a target specific reference color (instead of the master color) for that field.</p>
+<p><img src="report_files/figure-html/unnamed-chunk-5-1.png" width="768" /></p>
+<p>To complete the analysis we will have a look at the median color differences grouped by sheets and targets as well. Here we find no generalizable trends to report. The means of the median color difference is very close for all color fields. One might point out that median color distances are more spread for targets than for sheets. But this might be explained by the regression to the mean. For the target medians only 13 individual values are used whereas for the sheets 42 values are used. Thus it is less likely to find extreme differences for the sheets medians.</p>
+<p><img src="report_files/figure-html/unnamed-chunk-6-1.png" width="768" /></p>
+<p>We found no good way to show median color difference and MAD of color variance in one plot. But we think these boxplots might not be very fancy but a classical visualization form that was established for a good reason.</p>
+</div>
+<div id="new-reference-colors-by-targets" class="section level3 hasAnchor" number="2.2.4">
+<h3><span class="header-section-number">2.2.4</span> New Reference colors by targets<a href="color-difference.html#new-reference-colors-by-targets" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p><strong>Colors vary less among targets. What is the the “new” reference color the colors are scattered around? Compare to master color for one target.</strong></p>
+</div>
+</div>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="introduction.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="analysis-of-s-in-cmyks.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": false,
+"facebook": true,
+"twitter": true,
+"linkedin": false,
+"weibo": false,
+"instapaper": false,
+"vk": false,
+"whatsapp": false,
+"all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+},
+"fontsettings": {
+"theme": "white",
+"family": "sans",
+"size": 2
+},
+"edit": {
+"link": null,
+"text": null
+},
+"history": {
+"link": null,
+"text": null
+},
+"view": {
+"link": null,
+"text": null
+},
+"download": null,
+"search": false,
+"toc": {
+"collapse": "subsection"
+}
+});
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/latest.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+</body>
+
+</html>

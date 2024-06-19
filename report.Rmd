@@ -11,7 +11,7 @@ source("code/setup.R")
 full_refit = FALSE
 ```
 
-# Douglas color cards
+# Introduction
 
 The Douglas color cards are used to determine someones skin color to find the most appropriate cosmetics products - e.g. the perfect foundation. They show 64 squares of various colors. The center four squares get punched out.
 
@@ -40,7 +40,7 @@ The data given consists of two files. One file holds the master color informatio
 ```{r master_color_data_overview, echo=FALSE, cache=!full_refit}
 print(
   summarytools::dfSummary(
-    master_colors, 
+    master_colors %>% select(-c(Field, Crow, Ccol, Chroma, Color)), 
     plain.ascii = FALSE, 
     style = "grid",
     graph.magnif = 1.18
@@ -53,34 +53,13 @@ The second file holds color information obtained from 13 printed sheets. Thus we
 ```{r lab_color_data_overview, echo=FALSE, cache=!full_refit}
 print(
   summarytools::dfSummary(
-    lab_colors_master_shape, 
+    lab_colors_master_shape %>% select(-c(Field, Crow, Ccol, Sheet, Row, Column)), 
     plain.ascii = FALSE, 
     style = "grid",
     graph.magnif = 1.18
     ), 
   method = 'render')
 ```
-
-## Objectives
-
-* Analyse where variance or difference in color is noteworthy high / low
-* Visualize variance and differences in colors
-* Use the CMYKS color information to match the Lab color values
-
-### Questions (formulated before exploration)
-
-1. Is the color difference greater within a sheet (among positions) or across sheets?  (Simon Schäfer: R-Code ✔, Text ✔)
-1. Is there a difference in dE regarding skin or non skin color / calibration color?  (Pavlov)
-1. How is the color special used (regression)? (Nico)
-1. What dE value can be seen on our screen? (Simon Schäfer: R-Code ✔, Text ✔)
-1. Color difference of mean over all cards to master target: is it in some uncertainty area? (Eric Jonas: R-Code ✔, Text ✔)
-1. Are some Lab values more often in master than in mean? (Eric Jonas: R-Code ✔, Text ✔)
-1. How close are CMYK and Lab values? (Eric Jonas: R-Code ✔, Text ✔)
-1. Is there a correlation between dE(CMYK colors, Lab colors) and S? (Eric Jonas: R-Code ✔, Text ✔))
-1. Are there colors that are very far off the master target? <- Field 18 (Why; see Lab values)
-1. Are findings on L, a or b also there in dE? (On the subjective meaning)?
-1. Can colors on cards be differentiated visually?
-1. Are there especially good / bad cards? (Consistently / target specific) (Pavlo)
 
 ## Color spaces (Pavlo)
 
@@ -106,82 +85,30 @@ CIELAB found use in many applications - it is used when a conversion between col
 
 CMYK, as any other additive or subtractive model, can be further modified with additional components - new dyes. For Douglas color system CMYKS, they add additional dye ("Special" for S in CMYKS) that helps to create more accurate skin colors. 
 
-### Analysis of S in CMYKS
+## Objectives
 
-How does the S value, representing skin tone, influence CMYK values? When comparing the Lab Master with the CMYK Master excluding S, a notable difference emerges, suggesting that the S value significantly impacts CMYK values when converted to Lab.
+When we encountered the data we formulated three objectives:
 
-```{r CMYK and Lab master colorcard, echo=FALSE, warning=FALSE, cache=!full_refit}
-grid.arrange(display_color_card(master_colors, "Crow", "Ccol", "CMYK", 2, 12), 
-             display_color_card(master_colors, "Crow", "Ccol", "Lab", 2, 12), 
-             ncol = 2)
-```
+a) Analyse where variance or difference in color is noteworthy high / low
+b) Visualize variance and differences in colors
+c) Use the CMYKS color information to match the Lab color values
 
-A detailed examination is depicted in the graphic below:
+According to those objectives we formulated the following questions before exploration of the data:
 
-```{r CMYK and Lab master colorcard difference, echo=FALSE, warning=FALSE, fig.width=8, fig.height=8, cache=!full_refit}
-master_colors_cmyk <- master_colors %>%
-  rowwise() %>%
-  mutate(L = cmyk_to_lab(C, M, Y, K)[1],
-         a = cmyk_to_lab(C, M, Y, K)[2],
-         b = cmyk_to_lab(C, M, Y, K)[3]) %>%
-  as.data.frame()
-master_colors_cmyk_differences <- generate_color_difference_df(master_colors, master_colors_cmyk)
-plot_card_differences_to_master(master_colors_cmyk_differences, master_colors)
-```
+1. Are there especially good / bad cards? (Consistently / target specific) (Pavlo)
+1. Is the color difference greater within a sheet (among positions) or across sheets?  (Simon Schäfer: R-Code ✔, Text ✔)
+1. Is there a difference in dE regarding skin or non skin color / calibration color?  (Pavlov)
+1. How is the color special used (regression)? (Nico)
+1. What dE value can be seen on our screen? (Simon Schäfer: R-Code ✔, Text ✔)
+1. Color difference of mean over all cards to master target: is it in some uncertainty area? (Eric Jonas: R-Code ✔, Text ✔)
+1. Are some Lab values more often in master than in mean? (Eric Jonas: R-Code ✔, Text ✔)
+1. How close are CMYK and Lab values? (Eric Jonas: R-Code ✔, Text ✔)
+1. Is there a correlation between dE(CMYK colors, Lab colors) and S? (Eric Jonas: R-Code ✔, Text ✔))
+1. Are there colors that are very far off the master target? <- Field 18 (Why; see Lab values)
+1. Are findings on L, a or b also there in dE? (On the subjective meaning)?
+1. Can colors on cards be differentiated visually?
 
-Given the ambiguity in the CMYK-to-Lab conversion method, this chapter explores correlations between Lab values and S values, employing machine learning models to enhance our understanding of S values and their role in CMYK conversion.
-
-**TODO: ADD CONCLUSION (Nico)**
-
-#### Analysis of Lab Correlations with S
-
-In this section, we investigate the relationships between S values and Lab values by correlation.
-
-Examining S values reveals that brownish colors tend to have higher S values. The left side of the gradient—from black to white—shows an S value of 0. The tile plots below visualizes this relationship. It illustrates how S values vary across different color points in the dataset.
-
-```{r S tile plot, echo=FALSE, warning=FALSE, message=FALSE, fig.width=8, fig.height=8, cache=!full_refit}
-ggplot(master_colors, aes(x = Ccol, y = Crow)) +
-  geom_tile(aes(fill = S), color = "white") +
-  scale_fill_gradient(low = "white", high = "#4682B4", name = "S-value") +
-  labs(title = "Tile Plot of S-values",
-       x = "Column",
-       y = "Row") +
-  theme_minimal() +
-  ggnewscale::new_scale_colour() +
-  geom_point(aes(x = Ccol, y = Crow, color = Color), size = 13) +
-  scale_color_identity() +
-  geom_text(aes(label = S), color = "black")
-```
-
-In row 7, column 6 of our master card, we observe brown values with an S value of 0. This suggests that the S value is not crucial for conversion. We hypothesize that the S value might have been used to reduce printing costs. Perhaps it was more economical to use a brown shade for printer cartridges than other CMYK colors and then integrate it into the CMYK color space. The 0 value in row 7, column 6 could be due to the cheapest color mix not being automatically calculated, but manually distributed. However, there is also the possibility of an error in our dataset.
-
-Next, we examine the correlations between individual Lab dimensions (L, a, b, Chroma) and S.
-
-```{r Lab correlations with S, echo=FALSE, warning=FALSE, message=FALSE, fig.width=10, fig.height=8, cache=!full_refit}
-grid.arrange(plot_correlation_with_categories(master_colors, "L", "S"),
-             plot_correlation_with_categories(master_colors, "a", "S"),
-             plot_correlation_with_categories(master_colors, "b", "S"),
-             plot_correlation_with_categories(master_colors, "Chroma", "S"),
-             ncol = 2, nrow = 2)
-```
-
-The L dimension appears to correlate strongly with S values, when excluding cases where S equals 0.
-Notably, the S values also show strong correlations with 'a' and 'b' and the strongest correlation with Chroma. Chroma in the Lab color space quantifies the saturation or colorfulness of a color. It measures how far a color is from being neutral (gray). Chroma in the Lab color space is calculated using the formula:
-
-\[ C = \sqrt{a^2 + b^2} \]
-
-where 'a' and 'b' represent the color opponent dimensions in the Lab color model.
-Pearson correlations tend to be higher than Spearman rank correlations, implying a predominantly linear relationship between S and Lab values. However, outliers significantly influence Pearson coefficients, challenging the assumption of a straightforward linear dependency between S and Lab values across all data points. Moreover, upon examining the point clouds inside the scatter plots, a quadratic relationship appears to explain the correlation between L and S, while a linear relationship seems to explain the correlation between a and b with S.
-
-From this analysis, we conclude that the color values 'a' and 'b' exert a stronger influence on S than luminance.
-
-#### Analysis of relationship with machine learning models
-
-**TODO (Nico)**
-
-Also see 1.6.
-
-## Color difference
+# Color difference
 
 One can analyse difference in color in at least three ways:
 
@@ -189,7 +116,7 @@ One can analyse difference in color in at least three ways:
 1. Quantitative: Compare the numeric values of each color space dimension
 1. Quantitative: Compare all color space dimensions at once with a proper function (i. e. \( \Delta \)E)
 
-### Comparing color space dimensions one by one
+## Comparing color space dimensions one by one
 
 In this chapter, we will compare the colorspaces with the master based on their different dimensions. 
 
@@ -199,16 +126,16 @@ This mean color card serves as a baseline against the reference data of the mast
 display_color_card(mean_lab_color_card, "Row", "Col", "Lab", 2)
 ```
 
-#### Analysis of field discrepancies
+### Analysis of field discrepancies
 
 ```{r colorcard mean vs master, echo=FALSE, warning=FALSE, fig.width=8, fig.height=10, cache=!full_refit}
 plot_card_vs_master(mean_lab_color_card, master_colors)
 ```
 
-Our examination reveals notable fluctuations across various fields. Particularly, the 18th field exhibits significant deviations from the master's data. Additionally, a trend is observed where decreases in 'a' and 'b' values coincide with increases in 'L' values, notably in fields 54 to 56.
+Our examination reveals notable fluctuations across various fields. Particularly, the 18th field exhibits significant deviations from the master's data.
 Overall, it is evident that the mean of the color cards approximately matches the master in most other fields.
 
-#### Analysis of density distributions
+### Analysis of density distributions
 
 Examining the distribution of values across individual channels provides insights into the predominant brightness and color characteristics. The following graphic displays the median density of all cards along with the 95% confidence interval.
 
@@ -223,7 +150,7 @@ The distributions reveal distinct characteristics across the channels:
 - **a dimension:** There is a noticeable deviation from the master particularly around 'a' values near zero, suggesting limitations in accurately representing subtle color variations within this range.
 - **b dimension:** Similar to 'a', deviations are observed especially around 'b' values between -10 and 40, indicating representations that differ from the master inside this range.
 
-### Comparing colors with distance function
+## Comparing colors with distance function
 
 A function to compare two colors given in Lab color space is \( \Delta \)E - also called dE in this report. Actually there are multiple versions of [Delta E](https://zschuessler.github.io/DeltaE/learn/). The first was given 1976 and just calculates the euclidean distance in the Lab color space:
 
@@ -241,7 +168,7 @@ The aim of dE is that the calculated distance value can be interpreted in a mean
 | 11 - 49   | Colors are more similar than opposite     |
 | 100       |	Colors are exact opposite                 |
 
-#### Color difference on a single card
+### Color difference on a single card
 
 Comparing the first color cards colors with the master colors shows that there is one color that is pretty far from the master color (3rd row, 2nd column). There are some more fields where we spotted a difference at first glimpse:
 
@@ -344,7 +271,7 @@ color_differences %>%
     )
 ```
 
-#### Correlation \( \Delta \)E with Lab Dimensions
+### Correlation \( \Delta \)E with Lab Dimensions
 
 In the previous chapter, we analyzed the difference of \( \Delta \)E across various color fields. This chapter explores the influence of channels on \( \Delta \)E. For the following scatter plots, we chose to exclude field 18 because its \( \Delta \)E value significantly deviates from the other fields, which would disproportionately influence the results.
 
@@ -360,7 +287,7 @@ grid.arrange(plot_correlation(mean_lab_color_differences, "L", "Difference"),
 
 From the scatter plots, it is evident that there is generally no or very weak linear correlation between \( \Delta \)E and the ab dimensions. This suggests that the perception of color differences may not be solely tied to the individual color channels a and b in a straightforward linear manner. Interestingly, the coefficients highlight a notable correlation between L and \( \Delta \)E values, indicating that brightness differences appear to influence perception in a linear manner.
 
-#### Color variance among cards
+### Color variance among cards
 
 ```{r, echo=FALSE, cache=!full_refit}
 DeltaE_map_for_sheet <- function(data) {
@@ -458,9 +385,78 @@ color_dispersion_compare %>% left_join(
 
 We found no good way to show median color difference and MAD of color variance in one plot. But we think these boxplots might not be very fancy but a classical visualization form that was established for a good reason.
 
-## New Reference colors by targets
+### New Reference colors by targets
 
 **Colors vary less among targets. What is the the "new" reference color the colors are scattered around? Compare to master color for one target.**
+
+# Analysis of S in CMYKS
+
+How does the S value, representing skin tone, influence CMYK values? When comparing the Lab Master with the CMYK Master excluding S, a notable difference emerges, suggesting that the S value significantly impacts CMYK values when converted to Lab.
+
+```{r CMYK and Lab master colorcard, echo=FALSE, warning=FALSE, cache=!full_refit}
+grid.arrange(display_color_card(master_colors, "Crow", "Ccol", "CMYK", 2, 12), 
+             display_color_card(master_colors, "Crow", "Ccol", "Lab", 2, 12), 
+             ncol = 2)
+```
+
+A detailed examination is depicted in the graphic below:
+
+```{r CMYK and Lab master colorcard difference, echo=FALSE, warning=FALSE, fig.width=8, fig.height=8, cache=!full_refit}
+master_colors_cmyk <- master_colors %>%
+  rowwise() %>%
+  mutate(L = cmyk_to_lab(C, M, Y, K)[1],
+         a = cmyk_to_lab(C, M, Y, K)[2],
+         b = cmyk_to_lab(C, M, Y, K)[3]) %>%
+  as.data.frame()
+master_colors_cmyk_differences <- generate_color_difference_df(master_colors, master_colors_cmyk)
+plot_card_differences_to_master(master_colors_cmyk_differences, master_colors)
+```
+
+Given the ambiguity in the CMYK-to-Lab conversion method, this chapter explores correlations between Lab values and S values, employing machine learning models to enhance our understanding of S values and their role in CMYK conversion.
+
+**TODO: ADD CONCLUSION (Nico)**
+
+## Analysis of Lab Correlations with S
+
+In this section, we investigate the relationships between S values and Lab values by correlation.
+
+Examining S values reveals that brownish colors tend to have higher S values. The left side of the gradient—from black to white—shows an S value of 0. The tile plots below visualizes this relationship. It illustrates how S values vary across different color points in the dataset.
+
+```{r S tile plot, echo=FALSE, warning=FALSE, message=FALSE, fig.width=8, fig.height=8, cache=!full_refit}
+ggplot(master_colors, aes(x = Ccol, y = Crow)) +
+  geom_tile(aes(fill = S), color = "white") +
+  scale_fill_gradient(low = "white", high = "#4682B4", name = "S-value") +
+  labs(title = "Tile Plot of S-values",
+       x = "Column",
+       y = "Row") +
+  theme_minimal() +
+  ggnewscale::new_scale_colour() +
+  geom_point(aes(x = Ccol, y = Crow, color = Color), size = 13) +
+  scale_color_identity() +
+  geom_text(aes(label = S), color = "black")
+```
+
+In row 7, column 6 of our master card, we observe brown values with an S value of 0. This suggests that the S value is not crucial for conversion. We hypothesize that the S value might have been used to reduce printing costs. Perhaps it was more economical to use a brown shade for printer cartridges than other CMYK colors and then integrate it into the CMYK color space. The 0 value in row 7, column 6 could be due to the cheapest color mix not being automatically calculated, but manually distributed. However, there is also the possibility of an error in our dataset.
+
+Next, we examine the correlations between individual Lab dimensions (L, a, b, Chroma) and S.
+
+```{r Lab correlations with S, echo=FALSE, warning=FALSE, message=FALSE, fig.width=10, fig.height=8, cache=!full_refit}
+grid.arrange(plot_correlation_with_categories(master_colors, "L", "S"),
+             plot_correlation_with_categories(master_colors, "a", "S"),
+             plot_correlation_with_categories(master_colors, "b", "S"),
+             plot_correlation_with_categories(master_colors, "Chroma", "S"),
+             ncol = 2, nrow = 2)
+```
+
+The L dimension appears to correlate strongly with S values, when excluding cases where S equals 0.
+Notably, the S values also show strong correlations with 'a' and 'b' and the strongest correlation with Chroma. Chroma in the Lab color space quantifies the saturation or colorfulness of a color. It measures how far a color is from being neutral (gray). Chroma in the Lab color space is calculated using the formula:
+
+\[ C = \sqrt{a^2 + b^2} \]
+
+where 'a' and 'b' represent the color opponent dimensions in the Lab color model.
+Pearson correlations tend to be higher than Spearman rank correlations, implying a predominantly linear relationship between S and Lab values. However, outliers significantly influence Pearson coefficients, challenging the assumption of a straightforward linear dependency between S and Lab values across all data points. Moreover, upon examining the point clouds inside the scatter plots, a quadratic relationship appears to explain the correlation between L and S, while a linear relationship seems to explain the correlation between a and b with S.
+
+From this analysis, we conclude that the color values 'a' and 'b' exert a stronger influence on S than luminance.
 
 ## Douglas CMYKS-Formula
 
@@ -609,6 +605,10 @@ color_differences %>%
     plot.caption = element_text(size=12, hjust = 0)
     )
 ```
+
+## Analysis of relationship with machine learning models
+
+**TODO (Nico)**
 
 **Train on part of data and assess performance on testdata (with bootstrap?)**
 
