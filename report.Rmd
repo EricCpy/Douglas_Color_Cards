@@ -279,9 +279,9 @@ In the previous chapter, we analyzed the difference of \( \Delta \)E across vari
 mean_lab_color_differences_exlcude_18 <- mean_lab_color_differences %>% 
                                           filter(!(Row == 3 & Col == 2))
 
-grid.arrange(plot_correlation(mean_lab_color_differences, "L", "Difference"),
-             plot_correlation(mean_lab_color_differences, "a", "Difference"),
-             plot_correlation(mean_lab_color_differences, "b", "Difference"),
+grid.arrange(plot_correlation(mean_lab_color_differences_exlcude_18, "L", "Difference"),
+             plot_correlation(mean_lab_color_differences_exlcude_18, "a", "Difference"),
+             plot_correlation(mean_lab_color_differences_exlcude_18, "b", "Difference"),
              nrow = 3)
 ```
 
