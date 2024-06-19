@@ -95,18 +95,27 @@ c) Use the CMYKS color information to match the Lab color values
 
 According to those objectives we formulated the following questions before exploration of the data:
 
+**ad a)**
+
 1. Are there especially good / bad cards? (Consistently / target specific) (Pavlo)
 1. Is the color difference greater within a sheet (among positions) or across sheets?  (Simon Schäfer: R-Code ✔, Text ✔)
 1. Is there a difference in dE regarding skin or non skin color / calibration color?  (Pavlov)
-1. How is the color special used (regression)? (Nico)
-1. What dE value can be seen on our screen? (Simon Schäfer: R-Code ✔, Text ✔)
 1. Color difference of mean over all cards to master target: is it in some uncertainty area? (Eric Jonas: R-Code ✔, Text ✔)
 1. Are some Lab values more often in master than in mean? (Eric Jonas: R-Code ✔, Text ✔)
 1. How close are CMYK and Lab values? (Eric Jonas: R-Code ✔, Text ✔)
-1. Is there a correlation between dE(CMYK colors, Lab colors) and S? (Eric Jonas: R-Code ✔, Text ✔))
 1. Are there colors that are very far off the master target? <- Field 18 (Why; see Lab values)
 1. Are findings on L, a or b also there in dE? (On the subjective meaning)?
+
+**ad b)**
+
+1. What dE value can be seen on our screen? (Simon Schäfer: R-Code ✔, Text ✔)
 1. Can colors on cards be differentiated visually?
+
+**ad c**
+
+1. Is there a correlation between dE(CMYK colors, Lab colors) and S? (Eric Jonas: R-Code ✔, Text ✔))
+1. How is the color special used (regression)? (Simon / Nico)
+
 
 # Color difference
 
@@ -409,7 +418,7 @@ master_colors_cmyk <- master_colors %>%
          b = cmyk_to_lab(C, M, Y, K)[3]) %>%
   as.data.frame()
 master_colors_cmyk_differences <- generate_color_difference_df(master_colors, master_colors_cmyk)
-plot_card_differences_to_master(master_colors_cmyk_differences, master_colors)
+plot_card_differences_to_master(master_colors_cmyk_differences, master_colors, spotsize = 13, spotdistance = 0.175)
 ```
 
 Given the ambiguity in the CMYK-to-Lab conversion method, this chapter explores correlations between Lab values and S values, employing machine learning models to enhance our understanding of S values and their role in CMYK conversion.
