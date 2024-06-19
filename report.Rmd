@@ -129,9 +129,10 @@ One can analyse difference in color in at least three ways:
 
 In this chapter, we will compare the colorspaces with the master based on their different dimensions. 
 
-To compare the color spaces, we generated a mean color card derived from all color cards in our *Lab_Measurement* dataset. 
-This mean color card serves as a baseline against the reference data of the master. Below is a representation of the mean color card.
-```{r mean colorcard, echo=FALSE, warning=FALSE, cache=!full_refit}
+To compare the color spaces, we generated a average color card derived from all color cards in our *Lab_Measurement* dataset. 
+This average color card serves as a baseline against the reference data of the master. Below is a representation of the average color card. Since the Lab space was created in such a way that linear changes correspond with the changes humans expect we can simply average colors in this space by averaging their three dimensions separately. (For RGB for example one gets a better result using a sum of squares approach.)
+
+```{r average colorcard, echo=FALSE, warning=FALSE, cache=!full_refit}
 display_color_card(mean_lab_color_card, "Row", "Col", "Lab", 2)
 ```
 
@@ -347,9 +348,12 @@ color_dispersion_on_sheet1 %>% bind_rows(
   color_dispersion_on_target1_1
 ) %>% filter(Field != 18) %>% 
   ggplot() +
+  geom_point(aes(x = 1.5, y = 6, color = Color), size = 8) +
+  scale_color_identity() +
+  scale_x_discrete() +
+  coord_cartesian(ylim = c(0, 6.5)) +
   geom_boxplot(aes(x = Aggregated_by, y = Difference)) +
-  facet_grid(Crow ~ Ccol, switch = "both", as.table=FALSE) +
-  coord_cartesian(ylim = c(0, 6.5))
+  facet_grid(Crow ~ Ccol, switch = "both", as.table=FALSE)
 ```
 
 ```{r, echo=FALSE, message=FALSE, cache=!full_refit}
@@ -372,11 +376,15 @@ In the following graph we show boxplots of the MAD value of color difference com
 
 ```{r, echo=FALSE, echo=FALSE, fig.width=8, fig.height=12, cache=!full_refit}
 color_dispersion_compare %>% left_join(
-  color_differences %>% select(Field, Crow, Ccol) %>% unique(),
+  color_differences %>% select(Field, Crow, Ccol, Color) %>% unique(),
   by = join_by(Field)
 ) %>% #filter(Field != 18) %>% 
   ggplot() +
-  geom_boxplot(aes(x = Aggregated_by, y = mad_dE), alpha = 0.5) +
+  geom_point(aes(x = 1.5, y = 2, color = Color), size = 8) +
+  scale_color_identity() +
+  scale_x_discrete() +
+  coord_cartesian(ylim = c(0, 2.5)) +
+  geom_boxplot(aes(x = Aggregated_by, y = mad_dE)) +
   facet_grid(Crow ~ Ccol, as.table = FALSE, switch = "both")
 ```
 
@@ -384,11 +392,15 @@ To complete the analysis we will have a look at the median color differences gro
 
 ```{r, echo=FALSE, echo=FALSE, fig.width=8, fig.height=12, cache=!full_refit}
 color_dispersion_compare %>% left_join(
-  color_differences %>% select(Field, Crow, Ccol) %>% unique(),
+  color_differences %>% select(Field, Crow, Ccol, Color) %>% unique(),
   by = join_by(Field)
 ) %>% filter(Field != 18) %>% 
   ggplot() +
-  geom_boxplot(aes(x = Aggregated_by, y = median_dE), alpha = 0.5) +
+  geom_point(aes(x = 1.5, y = 6, color = Color), size = 8) +
+  scale_color_identity() +
+  scale_x_discrete() +
+  coord_cartesian(ylim = c(0, 6.5)) +
+  geom_boxplot(aes(x = Aggregated_by, y = median_dE)) +
   facet_grid(Crow ~ Ccol, as.table = FALSE, switch = "both")
 ```
 
@@ -397,6 +409,39 @@ We found no good way to show median color difference and MAD of color variance i
 ### New Reference colors by targets
 
 **Colors vary less among targets. What is the the "new" reference color the colors are scattered around? Compare to master color for one target.**
+
+Difference from a colorcard to this avarage color card smaller than to master card?
+
+```{r}
+average_color_card_target_1_1 <- lab_colors_master_shape %>% filter(Row == 1, Column == 1) %>% 
+  group_by(Ccol, Crow, Field) %>% 
+  summarise(L = mean(L), a = mean(a), b = mean(b)) %>% ungroup() %>% 
+  arrange(Field) %>% 
+  mutate(Difference = generate_color_difference_df(master_colors, .)$Difference) %>% 
+  rowwise() %>% mutate(
+    Color = lab_to_rgb(L, a, b)
+    )
+
+average_color_card_target_1_1 %>% 
+  ggplot() +
+  geom_tile(aes(fill = Difference, x = Ccol, y = Crow, color = Difference > 2),
+            lwd = 1.5, linetype = 1, width=0.9, height=0.9) +
+  scale_color_manual(values = c("#FFFFFF00", "#CC3333")) +
+  ggnewscale::new_scale_colour() +
+  geom_point(aes(x = Ccol+0.175, y = Crow, color = Color), size = 14) +
+  scale_color_identity() +
+  geom_point(
+    aes(x = Ccol-0.175, y = Crow, color = master_colors$Color), size = 14
+  ) +
+  coord_fixed() +
+  labs(caption = "Left circle: master color; Right circle: sample color") +
+  xlab("Column") + ylab("Row") +
+  theme(
+    axis.text=element_text(size=12),
+    axis.title=element_text(size=14,face="bold"),
+    plot.caption = element_text(size=12, hjust = 0)
+  )
+```
 
 # Analysis of S in CMYKS
 
