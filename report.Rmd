@@ -7,6 +7,8 @@ output: bookdown::gitbook
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+options(scipen = 1, digits = 2)
+
 source("code/setup.R")
 full_refit = FALSE
 ```
@@ -212,6 +214,9 @@ color_compar_tiles <- function(spotsize, spotdistance, tilesize = 1, tilehighlig
     plot.caption = element_text(size=12, hjust = 0)
     )
 }
+
+color_differences_sample_1_1 <- color_differences %>% 
+  filter(Sheet == 1, Row == 1, Column == 1)
 ```
 
 ```{r dE_colorcard, echo=FALSE, fig.width=8, fig.height=8, cache=!full_refit}
@@ -232,8 +237,7 @@ In order to check if the cut off value of 2 holds for our example we show the sa
 * lavender: 1st row, 5th column
 
 ```{r dE_colorcard_3, echo=FALSE, fig.width=8, fig.height=8, cache=!full_refit}
-color_differences %>% 
-  filter(Sheet == 1, Row == 1, Column == 1) %>% 
+color_differences_sample_1_1 %>% 
   ggplot() +
   geom_tile(aes(fill = Difference, x = Ccol, y = Crow, color = Difference > 2),
             lwd = 1.5, width=0.95, height=0.95) +
@@ -258,8 +262,7 @@ color_differences %>%
 Finally we have a look at which color pairs should be no visible difference. Here we found no exception to the rule of thumb given.
 
 ```{r dE_colorcard_4, echo=FALSE, fig.width=8, fig.height=8, cache=!full_refit}
-color_differences %>% 
-  filter(Sheet == 1, Row == 1, Column == 1) %>% 
+color_differences_sample_1_1 %>% 
   ggplot() +
   geom_tile(aes(fill = Difference, x = Ccol, y = Crow, color = Difference < 1),
             lwd = 1.5, width=0.95, height=0.95) +
@@ -408,11 +411,7 @@ We found no good way to show median color difference and MAD of color variance i
 
 ### New Reference colors by targets
 
-**Colors vary less among targets. What is the the "new" reference color the colors are scattered around? Compare to master color for one target.**
-
-Difference from a colorcard to this avarage color card smaller than to master card?
-
-```{r}
+```{r, echo=FALSE, cache=!full_refit}
 average_color_card_target_1_1 <- lab_colors_master_shape %>% filter(Row == 1, Column == 1) %>% 
   group_by(Ccol, Crow, Field) %>% 
   summarise(L = mean(L), a = mean(a), b = mean(b)) %>% ungroup() %>% 
@@ -422,6 +421,41 @@ average_color_card_target_1_1 <- lab_colors_master_shape %>% filter(Row == 1, Co
     Color = lab_to_rgb(L, a, b)
     )
 
+color_differences_from_average_card <- color_differences_sample_1_1 %>% 
+  select(-Difference) %>% 
+  mutate(Difference = generate_color_difference_df(average_color_card_target_1_1 %>% select(-Difference), .)$Difference)
+```
+
+In the following three graphics we want to look at one example on how the average color cards colors differ from the master and from a sample card at the corresponding target position. We begin with a duplicate of graphic where we compare the sampe color card with the master color card.
+
+We find `r sum(color_differences_sample_1_1$Difference > 2)` colors that should be different on first glimpse. The median color difference is `r median(color_differences_sample_1_1$Difference)` (MAD = `r mad(color_differences_sample_1_1$Difference)`).
+
+```{r, echo=FALSE, echo=FALSE, fig.width=8, fig.height=8, cache=!full_refit}
+color_differences_sample_1_1 %>% 
+  ggplot() +
+  geom_tile(aes(fill = Difference, x = Ccol, y = Crow, color = Difference > 2),
+            lwd = 1.5, width=0.95, height=0.95) +
+  scale_color_manual(values = c("#FFFFFF00", "#CC3333")) +
+  ggnewscale::new_scale_colour() +
+  geom_point(aes(x = Ccol+0.175, y = Crow, color = Color), size = 13) +
+  scale_color_identity() +
+  geom_point(
+    data = master_colors %>% rowwise() %>% mutate(Color = lab_to_rgb(L, a, b)),
+    aes(x = Ccol-0.175, y = Crow, color = Color), size = 13
+    ) +
+  coord_fixed() +
+  labs(caption = "Left circle: master color; Right circle: sample color") +
+  xlab("Column") + ylab("Row") +
+  theme(
+    axis.text=element_text(size=12),
+    axis.title=element_text(size=14,face="bold"),
+    plot.caption = element_text(size=12, hjust = 0)
+    )
+```
+
+When comparing the master cards and the average cards color we find pretty similar - even a bit higher values. `r sum(average_color_card_target_1_1$Difference > 2)` colors should be different on first glimpse. The median color difference is `r median(average_color_card_target_1_1$Difference)` (MAD = `r mad(average_color_card_target_1_1$Difference)`).
+
+```{r, echo=FALSE, echo=FALSE, fig.width=8, fig.height=8, cache=!full_refit}
 average_color_card_target_1_1 %>% 
   ggplot() +
   geom_tile(aes(fill = Difference, x = Ccol, y = Crow, color = Difference > 2),
@@ -434,13 +468,38 @@ average_color_card_target_1_1 %>%
     aes(x = Ccol-0.175, y = Crow, color = master_colors$Color), size = 14
   ) +
   coord_fixed() +
-  labs(caption = "Left circle: master color; Right circle: sample color") +
+  labs(caption = "Left circle: master color; Right circle: average colors target 1-1") +
   xlab("Column") + ylab("Row") +
   theme(
     axis.text=element_text(size=12),
     axis.title=element_text(size=14,face="bold"),
     plot.caption = element_text(size=12, hjust = 0)
   )
+```
+
+But when we finally compare the color distance from the average color card and a corresponding sample we can see that we are much closer. We find `r sum(color_differences_from_average_card$Difference > 2)` colors that should be different on first glimpse. The median color difference is `r median(color_differences_from_average_card$Difference)` (MAD = `r mad(color_differences_from_average_card$Difference)`). On our screen we couldn't identify any difference at all. Thus the use of the QR code would pay off in this specific example.
+
+```{r, echo=FALSE, echo=FALSE, fig.width=8, fig.height=8, cache=!full_refit}
+color_differences_from_average_card %>% 
+  ggplot() +
+  geom_tile(aes(fill = Difference, x = Ccol, y = Crow, color = Difference > 2),
+            lwd = 1.5, width=0.95, height=0.95) +
+  scale_color_manual(values = c("#FFFFFF00", "#CC3333")) +
+  ggnewscale::new_scale_colour() +
+  geom_point(aes(x = Ccol+0.175, y = Crow, color = Color), size = 13) +
+  scale_color_identity() +
+  geom_point(
+    data = average_color_card_target_1_1,
+    aes(x = Ccol-0.175, y = Crow, color = Color), size = 13
+    ) +
+  coord_fixed() +
+  labs(caption = "Left circle: average colors target 1-1; Right circle: sample color") +
+  xlab("Column") + ylab("Row") +
+  theme(
+    axis.text=element_text(size=12),
+    axis.title=element_text(size=14,face="bold"),
+    plot.caption = element_text(size=12, hjust = 0)
+    )
 ```
 
 # Analysis of S in CMYKS
@@ -546,8 +605,6 @@ mastercolor_cmyk_difference %>%
 ```
 
 ```{r, echo=FALSE, cache=!full_refit}
-options(scipen = 1, digits = 2)
-
 color_regression_linear <- lm(data = master_colors, cbind(L, a, b) ~ C + M + Y + K + S)
 color_regression <- color_regression_linear
 color_differences_regression <- dE(predict(color_regression), master_colors %>% select("L", "a", "b")) %>% 
