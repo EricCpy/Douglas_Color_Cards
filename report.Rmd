@@ -393,6 +393,50 @@ color_dispersion_compare %>% left_join(
 
 We found no good way to show median color difference and MAD of color variance in one plot. But we think these boxplots might not be very fancy but a classical visualization form that was established for a good reason.
 
+### Comparative analysis \( \Delta \)E for skin- and non-skin colors
+
+The Douglas color card is not uniform, but rather it consists of 3 distinct areas:
+
+1. Outer rows and columns (rows 1 and 8, columns 1 and 8), as well as well as cells [2;2], [2;7], [3;5] and [6;5] that contain non-skin colors.
+2. Central 4 cells (intersection of rows 4 and 5 with columns 4 and 5) that are grey, and would be removed in the finished product.
+3. The rest of the card, which contains actual skin colors.
+
+As part of the evaluation of the printing process, it may be interesting to compare the results of the printing for skin versus non-skin colors, as Douglas printing process specializes on the former.
+
+```{r, echo=FALSE, echo=FALSE, fig.width=8, fig.height=6, cache=!full_refit}
+color_diff = color_differences %>%
+  mutate(is_calibration = (Crow == 1 | Crow == 8 | Ccol == 1 | Ccol == 8) 
+         | (Crow == 2 & Ccol == 2) | (Crow == 2 & Ccol == 7) | (Crow == 3 & Ccol == 5) 
+         | (Crow == 6 & Ccol == 5) ) %>%
+  mutate(is_center = ((Crow == 4 | Crow == 5) & (Ccol == 4 | Ccol == 5))) %>%
+  mutate(is_outlier = (Crow == 3 & Ccol == 2))
+
+boxplot(Difference ~ is_calibration, color_diff %>%
+          filter(is_center == FALSE) %>%
+          select(Difference, is_calibration, Row, Column, Sheet),
+         names=c("Skin","Non-skin"),
+         xlab=''
+)
+```
+
+As we can see, there is a group of outlier cells that contain skin colors that have wildly higher \( \Delta \)E. From our previous analysis, we know that cell [3;2] consistently performs poorly across cards. If we remove it, we get the following:
+
+```{r, echo=FALSE, echo=FALSE, fig.width=8, fig.height=6, cache=!full_refit}
+
+boxplot(Difference ~ is_calibration, color_diff %>%
+          filter(is_center == FALSE) %>%
+          filter(is_outlier == FALSE) %>%
+          select(Difference, is_calibration, Row, Column, Sheet),
+         names=c("Skin","Non-skin"),
+         xlab=''
+)
+```
+
+Our assumption was correct, it was the the cell [3;2]. Here we can make following observations:
+
+1. \( \Delta \)E for skin colors is generally slightly lower, but has slightly higher variation than for non-skin colors. This is expected, as Douglas printing process is supposed to produce better skin colors.
+2. Cell [3;2] is a consistent outlier across multiple cards.  This may indicate a problem either with a printer or dataset itself, depending on the reliability of the latter.
+
 ### New Reference colors by targets
 
 ```{r, echo=FALSE, cache=!full_refit}
