@@ -136,7 +136,7 @@ In this chapter, we will compare the colorspaces with the master based on their 
 To compare the color spaces, we generated a average color card derived from all color cards in our *Lab_Measurement* dataset. 
 This average color card serves as a baseline against the reference data of the master. Below is a representation of the average color card. Since the Lab space was created in such a way that linear changes correspond with the changes humans expect we can simply average colors in this space by averaging their three dimensions separately. (For RGB for example one gets a better result using a sum of squares approach.)
 
-```{r averageColorCard, echo=FALSE, warning=FALSE, cache=!full_refit, fig.cap="Average color card", fig.align='center}
+```{r averageColorCard, echo=FALSE, warning=FALSE, cache=!full_refit, fig.cap="Average color card", fig.align='center'}
 display_color_card(mean_lab_color_card, "Row", "Col", "Lab", 2)
 ```
 
