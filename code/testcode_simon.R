@@ -103,12 +103,16 @@ summary(lm1a)
 lm1b <- lm(data = color_differences, Difference ~ factor(Sheet))
 summary(lm1b)
 
+anova(lm1a, lm1b)
+
 lm2a <- lm(data = color_differences, Difference ~ Row + Column)
 summary(lm2a)
 lm2b <- lm(data = color_differences, Difference ~ factor(Row) + factor(Column))
 summary(lm2b)
 lm2c <- lm(data = color_differences, Difference ~ factor(Row)*factor(Column))
 summary(lm2c)
+
+anova(lm1a, lm1b, lm2a, lm2b, lm2c)
 
 # Questions:
 # Is the color difference greater within a sheet (among positions) or across sheets?
@@ -199,3 +203,79 @@ average_color_card_target_1_1 %>%
     axis.title=element_text(size=14,face="bold"),
     plot.caption = element_text(size=12, hjust = 0)
   )
+
+#### regression lap cmyks ####
+
+color_regression_linear <- lm(data = master_colors, cbind(L, a, b) ~ C + M + Y + K + S)
+summary(color_regression_linear)
+
+unique_master_colors <- master_colors %>% select(C, M, Y, K, S, L, a, b) %>% unique()
+
+color_regression_linear <- lm(data = unique_master_colors, cbind(L, a, b) ~ C + M + Y + K + S)
+color_regression <- color_regression_linear
+color_differences_regression <- dE(predict(color_regression), unique_master_colors %>% select("L", "a", "b")) %>% 
+  data.frame(Difference = .)
+
+sum(color_differences_regression > 2)
+
+color_regression_interaction_3terms <- lm(data = master_colors %>% select(C, M, Y, K, S, L, a, b), cbind(L, a, b) ~ .^3)
+color_regression <- color_regression_interaction_3terms
+color_differences_regression <- dE(predict(color_regression), master_colors %>% select("L", "a", "b")) %>% 
+  data.frame(Difference = .)
+
+
+
+test_indizes <- sample(1:49, 16)
+train_data <- unique_master_colors[-test_indizes,]
+test_data <- unique_master_colors[test_indizes,]
+
+color_regression_interaction_3terms <- lm(data = train_data %>% select(C, M, Y, K, S, L, a, b), cbind(L, a, b) ~ .^3)
+color_regression <- color_regression_interaction_3terms
+color_differences_regression <- dE(predict(color_regression, test_data), test_data %>% select("L", "a", "b")) %>% 
+  data.frame(Difference = .)
+
+color_regression$coefficients
+
+library(boot)
+
+color_difference <- function(formula, data, indices)
+{
+  train_data <- data[indices,]
+  fit <- lm(data = train_data %>% select(C, M, Y, K, S, L, a, b), formula)
+  return(
+    dE(predict(fit, test_data), test_data %>% select("L", "a", "b")) %>% 
+      median()
+  )
+}
+
+results <- boot(data=train_data, statistic=color_difference,
+                R=1000, formula=cbind(L, a, b) ~ C + M + Y + K + S)
+median(results$t)
+boot.ci(results, type="perc")
+
+results <- boot(data=train_data, statistic=color_difference,
+                R=1000, formula=cbind(L, a, b) ~ .^3)
+boot.ci(results)
+
+custom_boot <- function(formula) {
+  results <- c()
+  for (i in 1:1000) {
+    test_indizes <- sample(1:49, 16)
+    train_data <- unique_master_colors[-test_indizes,]
+    test_data <- unique_master_colors[test_indizes,]
+    
+    fit <- lm(data = train_data %>% select(C, M, Y, K, S, L, a, b), formula)
+    results[i] <- dE(predict(fit, test_data), test_data %>% select("L", "a", "b")) %>% 
+      median()
+  }  
+  
+  return(results)
+}
+
+results <- custom_boot(cbind(L, a, b) ~ C + M + Y + K + S)
+quantile(results, c(.05, .5, .95))
+mad(results)
+
+results <- custom_boot(cbind(L, a, b) ~ .^3)
+quantile(results, c(.05, .5, .95))
+mad(results)
