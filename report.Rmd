@@ -393,7 +393,7 @@ color_dispersion_compare %>% left_join(
 
 We found no good way to show median color difference and MAD of color variance in one plot. But we think these boxplots might not be very fancy but a classical visualization form that was established for a good reason.
 
-### Comparative analysis \( \Delta \)E for skin- and non-skin colors
+### Comparative analysis of \( \Delta \)E for skin- and non-skin colors
 
 The Douglas color card is not uniform, but rather it consists of 3 distinct areas:
 
