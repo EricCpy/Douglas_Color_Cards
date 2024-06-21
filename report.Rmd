@@ -302,9 +302,49 @@ From the scatter plots, it is evident that there is generally no or very weak li
 
 ### Color variance among cards
 
-In order to get a feeling if the color difference compared to the masters colors varies more or less regarding to the color cards position on the sheet or among the sheets at the same position one can have a look at small multiples for both cases. Displaying all color cards of all sheets is possible on a huge screen but not in this report. Anyhow - as one can see - comparing the separated dE tile maps visually is not easy.
+```{r, echo=FALSE, cache=!full_refit}
+DeltaE_map_for_sheet <- function(data) {
+  data %>% 
+    ggplot() +
+    geom_tile(aes(fill = Difference, x = Ccol, y = Crow)) +
+    coord_fixed() +
+    theme(
+      axis.text=element_text(size=12),
+      axis.title=element_text(size=14,face="bold"),
+      plot.caption = element_text(size=12, hjust = 0)
+      )
+}
+```
 
-Looking at all color cards in a specific position among all 13 sheets shows little difference. Looking at all 42 color cards of a single sheet shows that there might be two slight patterns. One might find a) a light diagonal from bottom left to top right (see cards in first row) or b) a dark diagonal from top left to bottom right (see cards in last row). We will investigate this further with other visualization techniques.
+In order to get a feeling if the color difference compared to the masters colors varies more or less regarding to the color cards position on the sheet or among the sheets at the same position one can have a look at small multiples for both cases. Displaying all color cards of all sheets is possible on a huge screen but not in this report. Anyhow - as one can see - comparing the separated dE tile maps visually is not easy. What we can do, instead, is to look at the mean values of dE of specific card position across all sheets.
+
+First, it would be smart to check if there is any meaningful difference in mean dE between different card positions on sheet. For that, we perform an ANOVA test.
+
+```{r, echo=FALSE, cache=!full_refit}
+diff_by_card = color_differences %>%
+  select(Difference, Row, Column, Sheet) %>%
+  group_by(Row, Column, Sheet) %>%
+  summarise(mean_diff = mean(Difference), .groups = "drop") %>%
+  mutate(card_number = (Column-1) * 7 + Row)
+
+anova_result <- aov(mean_diff ~ card_number, data = diff_by_card)
+summary(anova_result)
+```
+
+As we can see, there is a significant evidence, that the mean dE is different at different card positions. Now, let's visualize it. 
+
+```{r, echo=FALSE, cache=!full_refit}
+diff_by_card %>% 
+  group_by(Row, Column) %>%
+  summarise(mean_diff = mean(mean_diff), .groups = "drop") %>%
+  ggplot() +
+  geom_tile(aes(fill = mean_diff, x = Column, y = Row),
+             width=1, height=1)
+```
+
+Exact meaning of the obtained information depends on the printing process involved. We can see, that dE generally goes up the further down we go, and that there are three columns of higher dE values.
+
+Looking at all 42 color cards of a single sheet shows that there might be two slight patterns. One might find a) a light diagonal from bottom left to top right (see cards in first row) or b) a dark diagonal from top left to bottom right (see cards in last row). We will investigate this further with other visualization techniques.
 
 ```{r dEColorcardsTopLeftAllSheets, echo=FALSE, fig.width=8, fig.height=8, cache=!full_refit, fig.cap="dE for all color cards at the top left position of all sheets", fig.align='center'}
 DeltaE_map_for_sheet(color_differences %>% filter(Row == 1, Column == 1)) +
