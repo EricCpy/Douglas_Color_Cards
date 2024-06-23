@@ -18,6 +18,16 @@ theme_update(
   legend.position="bottom"
 )
 
+scale_fill_gradien2_green_red <- scale_fill_gradient2(
+    low = "#88CC00",
+    mid = "white",
+    high = "#CC3333",
+    midpoint = 2,
+    transform = "log2",
+    limits = c(0.25, 2^4),
+    oob = scales::squish
+  )
+
 full_refit = F
 ```
 
@@ -480,15 +490,7 @@ color_differences_sample_1_1 %>%
     axis.title=element_text(size=14,face="bold"),
     plot.caption = element_text(size=12, hjust = 0)
     ) +
-  scale_fill_gradient2(
-    low = "#88CC00",
-    mid = "white",
-    high = "#CC3333",
-    midpoint = 2,
-    transform = "log2",
-    limits = c(0.125, 2^5),
-    oob = scales::squish
-  )
+  scale_fill_gradien2_green_red
 ```
 
 When comparing the master cards and the average cards color we find pretty similar results, even a bit higher values. `r sum(average_color_card_target_1_1$Difference > 2)` colors should be different on first glimpse. The median color difference is `r median(average_color_card_target_1_1$Difference)` (MAD = `r mad(average_color_card_target_1_1$Difference)`).
@@ -512,15 +514,7 @@ average_color_card_target_1_1 %>%
     axis.title=element_text(size=14,face="bold"),
     plot.caption = element_text(size=12, hjust = 0)
   ) +
-  scale_fill_gradient2(
-    low = "#88CC00",
-    mid = "white",
-    high = "#CC3333",
-    midpoint = 2,
-    transform = "log2",
-    limits = c(0.125, 2^5),
-    oob = scales::squish
-  )
+  scale_fill_gradien2_green_red
 ```
 
 But when we compare the color distance from the average color card and a corresponding sample we can see that we are much closer. We find `r sum(color_differences_from_average_card$Difference > 2)` colors that should be different on first glimpse. The median color difference is `r median(color_differences_from_average_card$Difference)` (MAD = `r mad(color_differences_from_average_card$Difference)`). On our screen we couldn't identify any difference at all. Thus the use of the QR code would pay off in this specific example.
@@ -545,15 +539,7 @@ color_differences_from_average_card %>%
     axis.title=element_text(size=14,face="bold"),
     plot.caption = element_text(size=12, hjust = 0)
     ) +
-  scale_fill_gradient2(
-    low = "#88CC00",
-    mid = "white",
-    high = "#CC3333",
-    midpoint = 2,
-    transform = "log2",
-    limits = c(0.125, 2^5),
-    oob = scales::squish
-  )
+  scale_fill_gradien2_green_red
 ```
 
 ## Further color difference related analysis
@@ -722,15 +708,7 @@ color_differences %>%
     axis.title=element_text(size=14,face="bold"),
     plot.caption = element_text(size=12, hjust = 0)
     ) +
-  scale_fill_gradient2(
-    low = "#88CC00",
-    mid = "white",
-    high = "#CC3333",
-    midpoint = 2,
-    transform = "log2",
-    limits = c(0.125, 2^5),
-    oob = scales::squish
-  )
+  scale_fill_gradien2_green_red
 ```
 
 ```{r, echo=FALSE, cache=!full_refit, class.source = 'fold-hide'}
@@ -766,15 +744,7 @@ color_differences %>%
     axis.title=element_text(size=14,face="bold"),
     plot.caption = element_text(size=12, hjust = 0)
     ) +
-  scale_fill_gradient2(
-    low = "#88CC00",
-    mid = "white",
-    high = "#CC3333",
-    midpoint = 2,
-    transform = "log2",
-    limits = c(0.125, 2^5),
-    oob = scales::squish
-  )
+  scale_fill_gradien2_green_red
 ```
 
 ```{r, echo=FALSE, cache=!full_refit, class.source = 'fold-hide'}
@@ -810,15 +780,7 @@ color_differences %>%
     axis.title=element_text(size=14,face="bold"),
     plot.caption = element_text(size=12, hjust = 0)
     ) +
-  scale_fill_gradient2(
-    low = "#88CC00",
-    mid = "white",
-    high = "#CC3333",
-    midpoint = 2,
-    transform = "log2",
-    limits = c(0.125, 2^5),
-    oob = scales::squish
-  )
+  scale_fill_gradien2_green_red
 ```
 
 This result is not surprising. The 3rd order interaction model has 26 parameters to predict the 49 colors. Thus it is not surprising that it performs better predicting the data it was trained on compared to the simple linear model with only 6 parameters. More interesting is the comparison of the 2nd order interaction model and the 3rd degree polynomial regression since both have 16 parameters to estimate. Here the 2nd order interaction term performs much better with only 5 colors that show a color difference above 2 (compared to 39).
@@ -965,7 +927,7 @@ ggpubr::ggarrange(
 
 In this case we prefer the box plots for presentation over the violin plots. Because the points are distributed unimodal the box plot representation is well suited. But for analysis if the density is really normal-ish the violin plots are helpful.
 
-A visual disadvantage of the box plots seem to be the stacked outlier points. With less bootstrap results this would be a lesser problem. Here the black line of the violin plot shows that there are some extreme values on a nicer way. Thus one could add jiiter plots without confusing those with the box plot extreme points.
+A visual disadvantage of the box plots seem to be the stacked outlier points. With less bootstrap results this would be a lesser problem. Here the black line of the violin plot shows that there are some extreme values on a nicer way. But this also has its own disadvantage: the long streched violin plot gets very slim and thus it becomes hard to spot the quartile lines.
 
 A visual advantage of the box plots is that they show faster if a T test would be significant or not. We'ld like to show this with the violin plots as well and had the idea to remove the filling outside of the quartiles. Unfortunatly ggplot has no built in option for this and solutions found on stack overflow work only for equally long violin plots. 
 
@@ -976,6 +938,63 @@ We found multiple approaches:
 1. Drawing colored lines on each evaluated density row with geom_segment and ggplot_build.[1](https://stackoverflow.com/questions/41087157/gradient-fill-violin-plots-using-ggplot2), [2](https://stackoverflow.com/questions/67077580/how-to-make-a-violin-plot-gradient-fill-as-a-colour-scale-based-on-y-axis)
 1. Advanced to drawing colored rects on each evaluated density row with geom_rect and ggplot_build using lag and lead.
 1. Drawing a polygon based on the evaluated density rows with geom_poly and ggplot_build. [1](https://stackoverflow.com/questions/34261038/ggplot2-violin-plot-fill-central-95-only), [2](https://stackoverflow.com/questions/36203195/fill-specific-regions-in-geom-violin-plot)
+
+```{r, echo=FALSE}
+mywidth <- .225 # bit of trial and error
+
+df_input <- bootstrap_results %>% mutate(group = str_c(formula, method))
+quantiles <- df_input %>% group_by(formula, method) %>% summarise(q25 = quantile(value, .25), q75 = quantile(value, .75))
+
+p <- ggplot(df_input, aes(x=factor(formula, levels = c("linear", "interaction 2nd order", "interaction 3nd order")),y=value, fill = method, group = group)) + stat_ydensity() + scale_y_continuous(limits = c(0, 10), 
+                                                                                                                   oob = scales::oob_keep)
+
+# all you need for the gradient fill
+vl_fill <- ggplot_build(p)$data[[1]] %>% select(x, violinwidth, y, group, fill) %>% 
+  mutate(
+    xnew = x - mywidth * violinwidth, 
+    xend = x + mywidth * violinwidth,
+    xnewlast = lag(xnew, 1),
+    xendlast = lag(xend, 1),
+    ylast = lag(y, 1),
+    
+  ) %>% 
+  rowwise() %>% 
+  mutate(
+    col = if_else(y >= quantiles$q25[group] && y <= quantiles$q75[group], "ja", "nein"),
+    col = if_else(col == "ja", str_c(col, fill), col)
+  )
+```
+
+```{r violinsLineGradient, echo=FALSE}
+ggplot() +
+  geom_segment(data = vl_fill, aes(x = xnew, xend = xend, y = y, yend = y, color = col), show.legend = FALSE, linewidth = 1) +
+  # Re-use geom_violin to plot the outline
+  geom_violin(
+    data = df_input, 
+    aes(x = as.integer(factor(formula, levels = c("linear", "interaction 2nd order", "interaction 3nd order"))), y = value, fill = method, group = group), 
+    draw_quantiles = c(0.25, 0.5, 0.75), alpha = 0, show.legend = FALSE) + 
+  scale_color_manual(values = c("#FF00FF", "#00FFFF", "#FFFFFF00")) +
+  labs(x = "model", y = "median dE") +
+  coord_cartesian(ylim=c(0,10)) +
+  scale_x_continuous(breaks = 1:3, labels = c("linear", "interaction 2nd order", "interaction 3nd order"))
+```
+
+```{r violinsRectGradient, echo=FALSE}
+ggplot() +
+  geom_rect(data = vl_fill, aes(xmin = xnew, xmax = xend, ymin = ylast, ymax = y, fill = col), show.legend = FALSE) + 
+  # Re-use geom_violin to plot the outline
+  scale_fill_manual(values = c("#FF00FF", "#00FFFF", "#FFFFFF00")) +
+  ggnewscale::new_scale_fill() +
+  geom_violin(
+    data = df_input, aes(
+      x = as.integer(factor(formula, levels = c("linear", "interaction 2nd order", "interaction 3nd order"))), y = value, fill = method, group = group), 
+    draw_quantiles = c(0.25, 0.5, 0.75), alpha = 0, show.legend = FALSE) + 
+  labs(x = "model", y = "median dE") +
+  coord_cartesian(ylim=c(0,10)) +
+  scale_x_continuous(breaks = 1:3, labels = c("linear", "interaction 2nd order", "interaction 3nd order")) +
+  ggnewscale::new_scale_fill()
+```
+
 
 ### Fight the uncertainty with bootstrapping
 
