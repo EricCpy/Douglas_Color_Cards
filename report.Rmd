@@ -1185,15 +1185,14 @@ One should take the safer option (2nd order interaction model) if the colors sho
 
 # Conclusion
 
-The objectives of our report had been:
+Based on our analysis, we have identified significant variations in color reproduction across different fields. Especially field 18 consistently has notable perceptible differences from the master colors. This may be the result from printer errors or inaccuracies in the printing data. Additionally, colors such as lilac, blue, and darker shades have easily perceptible differences. Colors like magenta, olive, and lavender also show differences that should be perceivable but are not detectable on our devices.
+Furthermore, our report reveals that luminance strongly influences perceived color differences in the printed cards. This suggests a potential challenge in accurately reproducing luminance values.
 
-a) Analyse where variance or difference in color is noteworthy high / low
-b) Visualize variance and differences in colors
-c) Use the CMYKS color information to match the Lab color values
+We also observed that color variance among color cards on a sheet is higher than within color cards at the same target. To address this Douglas generates QR codes to inform the app which color card is being scanned. This approach seems useful because it enables the app to compare the detected color of the printed field with a target specific reference color for that field, rather than the master color.
 
-**a)**
+Moreover, our report emphasizes the importance of the S value in CMYKS for determining skin tones and converting CMYKS to the Lab color space. By leveraging advanced machine learning models such as multivariate multiple regression and polynomial regression, we have developed robust methods for predicting Lab values from CMYKS inputs. We would recommend employing a 2nd order interaction model, which effectively balances complexity and performance to deliver reliable results for our color samples.
 
-## Additional notes
+## Learnings and further notes
 
 * During our group work we all found some new details in the others R code. For example: I used the *ungroup* command after *summarise* but I learn from Pavlo that there is a *.groups = "drop"* parameter within the *summarise* command for this task. 
 * We found out how to display uncertainty areas with a ribbon instead of two CI lines. 
@@ -1206,9 +1205,4 @@ c) Use the CMYKS color information to match the Lab color values
 * New and fancy visualisations are not always better. We found violin plots to have some problems and tackeled one of those.
 * The heavy package is archived. To perform a outlier resistent regression (with T distributed errors) one could user bayesian regression with *brms*. But we didn't perform this analysis here. The trend spotted with ones eye can get disturbed realy quick by some off values.
 * We are not sure if our ordinary bootstrap approach is faulty or if the 3rd order interaction model does really overfit very strongly and the perumtative bootstrapping approch is wrong. We should contact an expert about this instead of hoping that the answer we like more is true or being too defensive with our decision.
-Based on our analysis, we have identified significant variations in color reproduction across different fields. Especially field 18 consistently has notable perceptible differences from the master colors. This may be the result from printer errors or inaccuracies in the printing data. Additionally, colors such as lilac, blue, and darker shades have slight perceptible differences. Colors like magenta, olive, and lavender also show differences that should be perceivable but are not detectable on our devices.
-Furthermore, our report reveals that luminance strongly influences perceived color differences in the printed cards. This suggests a potential challenge in accurately reproducing luminance values.
-
-We also observed that color variance among color cards on a sheet is higher than within color cards at the same target. To address this Douglas generates QR codes to inform the app which color card is being scanned. This approach seems useful because it enables the app to compare the detected color of the printed field with a target specific reference color for that field, rather than the master color.
-
-Moreover, our report emphasizes the importance of the S value in CMYKS for determining skin tones and converting CMYKS to the Lab color space. By leveraging advanced machine learning models such as multivariate multiple regression and polynomial regression, we have developed robust methods for predicting Lab values from CMYKS inputs. We would recommend employing a 2nd order interaction model, which effectively balances complexity and performance to deliver reliable results for our color samples.
+* We learned that it is easy to forget how to do some specific things with R / ggplot. Even though I worked on a visualisation package for bayesian models I forgot how to color geom_ridges differently. But once you know that it is possible one finds possible solutions on Stack Overflow fast. Maybe I should have tested an generative AI on this (or the violins) question? I think when I had to redo this I'ld ask a generative AI to help me with some coding tasks.
