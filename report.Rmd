@@ -1096,7 +1096,7 @@ violin_final
 
 But we find that coloring only the quartile area of the violin is a promising step for better interpretable alternative to classical box plots. Even though the problem with to slim violins was not solved this way.
 
-```{r violinPolygonGradientQuartilesVSboxplots, echo=FALSE, fig.width=8, fig.height=8, cache=!full_refit, fig.cap="Violin plots with geom_polygon with approximated quartile density", fig.align='center'}
+```{r violinPolygonGradientQuartilesVSboxplots, echo=FALSE, fig.width=8, fig.height=8, cache=!full_refit, fig.cap="Violin plots with quartile regeion filled compared with box plots", fig.align='center'}
 ggpubr::ggarrange(
   violin_final, b2,
   ncol = 2, nrow = 1,
