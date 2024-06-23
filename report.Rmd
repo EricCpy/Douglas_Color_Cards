@@ -486,7 +486,8 @@ color_differences_sample_1_1 %>%
     high = "#CC3333",
     midpoint = 2,
     transform = "log2",
-    limits = c(2^-5, 2^5)
+    limits = c(0.125, 2^5),
+    oob = scales::squish
   )
 ```
 
@@ -517,7 +518,8 @@ average_color_card_target_1_1 %>%
     high = "#CC3333",
     midpoint = 2,
     transform = "log2",
-    limits = c(2^-5, 2^5)
+    limits = c(0.125, 2^5),
+    oob = scales::squish
   )
 ```
 
@@ -549,7 +551,8 @@ color_differences_from_average_card %>%
     high = "#CC3333",
     midpoint = 2,
     transform = "log2",
-    limits = c(2^-5, 2^5)
+    limits = c(0.125, 2^5),
+    oob = scales::squish
   )
 ```
 
@@ -718,7 +721,16 @@ color_differences %>%
     axis.text=element_text(size=12),
     axis.title=element_text(size=14,face="bold"),
     plot.caption = element_text(size=12, hjust = 0)
-    )
+    ) +
+  scale_fill_gradient2(
+    low = "#88CC00",
+    mid = "white",
+    high = "#CC3333",
+    midpoint = 2,
+    transform = "log2",
+    limits = c(0.125, 2^5),
+    oob = scales::squish
+  )
 ```
 
 ```{r, echo=FALSE, cache=!full_refit, class.source = 'fold-hide'}
@@ -753,7 +765,16 @@ color_differences %>%
     axis.text=element_text(size=12),
     axis.title=element_text(size=14,face="bold"),
     plot.caption = element_text(size=12, hjust = 0)
-    )
+    ) +
+  scale_fill_gradient2(
+    low = "#88CC00",
+    mid = "white",
+    high = "#CC3333",
+    midpoint = 2,
+    transform = "log2",
+    limits = c(0.125, 2^5),
+    oob = scales::squish
+  )
 ```
 
 ```{r, echo=FALSE, cache=!full_refit, class.source = 'fold-hide'}
@@ -788,7 +809,16 @@ color_differences %>%
     axis.text=element_text(size=12),
     axis.title=element_text(size=14,face="bold"),
     plot.caption = element_text(size=12, hjust = 0)
-    )
+    ) +
+  scale_fill_gradient2(
+    low = "#88CC00",
+    mid = "white",
+    high = "#CC3333",
+    midpoint = 2,
+    transform = "log2",
+    limits = c(0.125, 2^5),
+    oob = scales::squish
+  )
 ```
 
 This result is not surprising. The 3rd order interaction model has 26 parameters to predict the 49 colors. Thus it is not surprising that it performs better predicting the data it was trained on compared to the simple linear model with only 6 parameters. More interesting is the comparison of the 2nd order interaction model and the 3rd degree polynomial regression since both have 16 parameters to estimate. Here the 2nd order interaction term performs much better with only 5 colors that show a color difference above 2 (compared to 39).
