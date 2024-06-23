@@ -347,7 +347,7 @@ quantile(results_all_bootstrap_perm$t[,1], c(.05, .5, .95))
 quantile(results_all_bootstrap_perm$t[,2], c(.05, .5, .95))
 quantile(results_all_bootstrap_perm$t[,3], c(.05, .5, .95))
 results_all_bootstrap_perm_differences <- results_all_bootstrap_perm$t %>% as_tibble() %>% 
-  mutate(lm_vs_i2 = V1-V2, lm_vs_i3 = V1-V3, i2_vs_i3 = V2-V3) %>%  select(-V1, -V2, -V3)
+  mutate("lm vs i2" = V1-V2, "lm vs i3" = V1-V3, "i2 vs i3" = V2-V3) %>%  select(-V1, -V2, -V3)
 results_all_bootstrap_perm_differences %>% summarise_all(~mean(.>0))
 
 bootstrap_results <- results_all_bootstrap_perm$t %>% as_tibble() %>% 
@@ -403,4 +403,17 @@ results_all_bootstrap_perm_differences %>%
   pivot_longer(names_to = "compare", cols = everything()) %>% 
   ggplot(aes(x = value, y = compare, fill = factor(after_stat(x) > 0))) +
   geom_density_ridges_gradient(scale = 0.9) +
-  coord_cartesian(xlim=c(-10,10))
+  coord_cartesian(xlim=c(-10,10)) +
+  geom_text(
+    data=tribble(
+      ~x, ~y, ~label, ~compare,
+      -2.5, 0.2, str_c(100-results_all_bootstrap_perm_differences_perc[[1]]*100, " %"), "lm vs i2",
+      2.5, 0.2, str_c(results_all_bootstrap_perm_differences_perc[[1]]*100, " %"), "lm vs i2",
+      -2.5, 0.2, str_c(100-results_all_bootstrap_perm_differences_perc[[2]]*100, " %"), "lm vs i3",
+      2.5, 0.2, str_c(results_all_bootstrap_perm_differences_perc[[2]]*100, " %"), "lm vs i3",
+      -2.5, 0.2, str_c(100-results_all_bootstrap_perm_differences_perc[[3]]*100, " %"), "i2 vs i3",
+      2.5, 0.2, str_c(results_all_bootstrap_perm_differences_perc[[3]]*100, " %"), "i2 vs i3",
+    ), aes(
+      x = x, y = compare, label = label
+    ), vjust = 1.5, hjust=.5
+    )
