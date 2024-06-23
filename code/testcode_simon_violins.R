@@ -167,14 +167,14 @@ library(viridisLite)
 
 mywidth <- .225 # bit of trial and error
 
-df_input <- bootstrap_results %>% mutate(group = str_c(formula, method))
+df_input <- bootstrap_results %>% mutate(group = as.integer(factor(str_c(formula, method))))
 quantiles <- df_input %>% group_by(formula, method) %>% summarise(q25 = quantile(value, .25), q75 = quantile(value, .75))
 
-p <- ggplot(df_input, aes(x=formula,y=value, fill = group)) + stat_ydensity() + scale_y_continuous(limits = c(0, 10), 
-                                                                                                oob = scales::oob_keep)
+p <- ggplot(df_input, aes(x=factor(formula),y=value, fill = method, group = group)) + stat_ydensity() + scale_y_continuous(limits = c(0, 10), 
+                                                                                                                   oob = scales::oob_keep)
 
 # all you need for the gradient fill
-vl_fill <- ggplot_build(p)$data[[1]] %>% select(x, violinwidth, y, group) %>% 
+vl_fill <- ggplot_build(p)$data[[1]] %>% select(x, violinwidth, y, group, fill) %>% 
   mutate(
     xnew = x - mywidth * violinwidth, 
     xend = x + mywidth * violinwidth,
@@ -184,20 +184,39 @@ vl_fill <- ggplot_build(p)$data[[1]] %>% select(x, violinwidth, y, group) %>%
     
   ) %>% 
   rowwise() %>% 
-  mutate(col = if_else(y >= quantiles$q25[group] && y <= quantiles$q75[group], "ja", "nein")) %>% 
-  
-  
-  ggplot() +
-  geom_segment(data = vl_fill, aes(x = xnew, xend = xend, y = y, yend = y, color = col), show.legend = FALSE, linewidth = 1) +
-  # geom_rect(data = vl_fill, aes(xmin = xnew, xmax = xend, ymin = ylast, ymax = y, fill = col)) + 
+  mutate(
+    col = if_else(y >= quantiles$q25[group] && y <= quantiles$q75[group], "ja", "nein"),
+    col = if_else(col == "ja", str_c(col, fill), col)
+  )
+
+ggplot() +
+  geom_rect(data = vl_fill, aes(xmin = xnew, xmax = xend, ymin = ylast, ymax = y, fill = col), show.legend = FALSE) + 
   # Re-use geom_violin to plot the outline
-  geom_violin(data = df_input, aes(x = as.integer(formula), y = value, group = group),
-              color = "black", alpha = 0, draw_quantiles = c(0.25, 0.5, 0.75),
-              show.legend = FALSE) +
-  scale_color_manual(values = c("#FF00FF", "#FFFFFF00")) +
-  scale_fill_manual(values = c("#FF00FF", "#FFFFFF00")) +
-  labs(x = "Cut", y = "Carat") +
-  coord_cartesian(ylim=c(0,10))
+  scale_fill_manual(values = c("#FF00FF", "#00FFFF", "#FFFFFF00")) +
+  ggnewscale::new_scale_fill() +
+  geom_violin(
+    data = df_input, aes(
+      x = as.integer(factor(formula)), y = value, fill = method, group = group), 
+    draw_quantiles = c(0.25, 0.5, 0.75), alpha = 0, show.legend = FALSE) + 
+  labs(x = "model", y = "median dE") +
+  coord_cartesian(ylim=c(0,10)) +
+  scale_x_continuous(breaks = 1:3, labels = c("linear", "interaction 2nd order", "interaction 3nd order")) +
+  ggnewscale::new_scale_fill()
+
+ggplot() +
+  geom_segment(data = vl_fill, aes(x = xnew, xend = xend, y = y, yend = y, color = col), show.legend = FALSE, linewidth = 1) +
+  # Re-use geom_violin to plot the outline
+  geom_violin(
+    data = df_input, 
+    aes(x = as.integer(factor(formula, levels = c("linear", "interaction 2nd order", "interaction 3nd order"))), y = value, fill = method, group = group), 
+    draw_quantiles = c(0.25, 0.5, 0.75), alpha = 0, show.legend = FALSE) + 
+  scale_color_manual(values = c("#FF00FF", "#00FFFF", "#FFFFFF00")) +
+  labs(x = "model", y = "median dE") +
+  coord_cartesian(ylim=c(0,10)) +
+  scale_x_continuous(breaks = 1:3, labels = c("linear", "interaction 2nd order", "interaction 3nd order"))
+
+d <- density(bootstrap_results %>% filter(formula == "linear", method == "permutation") %>% pull(value), n = 1024)
+approx(d$x, d$y, xout = c(0, 2, 4, 6))
 
 ##### https://stackoverflow.com/questions/36203195/fill-specific-regions-in-geom-violin-plot
 
@@ -205,63 +224,84 @@ library(ggplot2)
 # library(plyr)
 
 #Data setup
-set.seed(123)
-dat <- bootstrap_results %>% mutate(group = str_c(formula, method)) %>% dplyr::rename(y = "value")
 
-p <- ggplot() + 
-  geom_violin(data = dat,aes(x = factor(formula),y = y, fill = group))
+dat <- bootstrap_results %>% mutate(group = str_c(formula, method)) %>% dplyr::rename(y = "value")
+quantiles <- dat %>% group_by(formula, method) %>% summarise(q25 = quantile(y, .25), q75 = quantile(y, .75))
+
+p <- ggplot() + geom_violin(data = dat,aes(x = factor(formula),y = y, fill = method))
 p_build <- ggplot2::ggplot_build(p)$data[[1]]
 
-#This comes directly from the source of geom_violin
-p_build <- p_build %>% mutate(
-                     xminv = x - violinwidth * (x - xmin),
-                     xmaxv = x + violinwidth * (xmax - x)
-                     )
+for (i in 1:6) {
+  dx <- p_build %>% filter(group == i) %>% pull(y)
+  dv <- p_build %>% filter(group == i) %>% pull(violinwidth)
+  
+  quartils <- c(quantiles$q25[i], quantiles$q75[i])
+  
+  violin_width_approx <- approx(dx, dv, xout = quartils)
+  
+  new_rows <- (p_build %>% filter(group == i))[1:2,]
+  new_rows$violinwidth <- violin_width_approx$y
+  
+  dy <- p_build %>% filter(group == i) %>% pull(x)
+  x_approx <- approx(dx, dy, xout = quartils)
+  
+  new_rows$x <- x_approx$y
+  new_rows$y <- quartils
+  
+  p_build <- p_build %>% bind_rows(new_rows)
+}
 
-p_build <- rbind(plyr::arrange(transform(p_build, x = xminv), y),
-                 plyr::arrange(transform(p_build, x = xmaxv), -y))
+p_build <- p_build %>% 
+  mutate(
+    xminv = x - violinwidth * (x - xmin),
+    xmaxv = x + violinwidth * (xmax - x)
+    )
 
-quantiles <- dat %>% group_by(formula, method) %>% summarise(q25 = quantile(y, .25), q75 = quantile(y, .75))
-p_build <- p_build %>% mutate(
-                     c25 = quantiles$q25[group],
-                     c75 = quantiles$q75[group],
-                     fill_group = if_else((lag(y,1) >= c25 | lead(y,1) >= c25) & y <= c75,'ja','nein'),
-                     group1 = str_c(group, fill_group)
-)
+p_build <- bind_rows(
+  arrange(p_build %>% mutate(x = xminv), y),
+  arrange(p_build %>% mutate(x = xmaxv), -y)
+  ) %>% 
+  mutate(
+    c25 = quantiles$q25[group],
+    c75 = quantiles$q75[group],
+    fill_group = if_else(y >= c25 & y <= c75,'ja','nein'),
+    group1 = str_c(group, fill_group)
+    )
 
 #Note the use of the group aesthetic here with our computed version,
 # group1
-p_fill <- ggplot() + 
-  scale_fill_manual(values = c("#FF00FF", "#FFFFFF00")) +
-  geom_polygon(data = p_build,
-               aes(x = x,y = y,group = group1,fill = fill_group))+
+ggplot() + 
+  scale_fill_manual(values = c("#FF00FF", "#00FFFF", "#FFFFFF00")) +
+  # scale_fill_manual(values = c("#FF00FF", "#FFFFFF00")) +
+  geom_polygon(data = p_build %>% filter(fill_group == "ja"),
+               aes(x = x,y = y,group = group, fill = fill))+
   ggnewscale::new_scale_fill() +
-  geom_violin(data = dat, aes(x = as.integer(formula), y = y, fill = group), show.legend = F, color="black", alpha=1, draw_quantiles = c(0.25, 0.5, 0.75)) +
+  geom_violin(data = dat, aes(x = as.integer(factor(formula)), y = y, fill = group), show.legend = F, color="black", alpha=0, draw_quantiles = c(0.25, 0.5, 0.75)) +
   coord_cartesian(ylim = c(0,10))
-p_fill
 
 #####
 
-set.seed(20160229)
+p_build <- ggplot2::ggplot_build(p)$data[[1]]
 
-my_data = data.frame(
-  y=c(rnorm(1000), rnorm(1000, 0.5), rnorm(1000, 1), rnorm(1000, 1.5)),
-  x=c(rep('a', 2000), rep('b', 2000)),
-  m=c(rep('i', 1000), rep('j', 2000), rep('i', 1000))
-)
+for (i in 1:6) {
+  dx <- p_build %>% filter(group == i) %>% pull(y)
+  dv <- p_build %>% filter(group == i) %>% pull(violinwidth)
+  
+  quartils <- c(quantiles$q25[i], quantiles$q75[i])
+  
+  violin_width_approx <- approx(dx, dv, xout = quartils)
+  
+  new_rows <- (p_build %>% filter(group == i))[1:2,]
+  new_rows$violinwidth <- violin_width_approx$y
+  
+  dy <- p_build %>% filter(group == i) %>% pull(x)
+  x_approx <- approx(dx, dy, xout = quartils)
+  
+  new_rows$x <- x_approx$y
+  new_rows$y <- quartils
+  
+  p_build <- p_build %>% bind_rows(new_rows)
+}
 
-pdat <- my_data %>%
-  group_by(x, m) %>%
-  do(data.frame(loc = density(.$y)$x,
-                dens = density(.$y)$y))
-
-pdat$dens <- ifelse(pdat$m == 'i', pdat$dens * -1, pdat$dens)
-pdat$dens <- ifelse(pdat$x == 'b', pdat$dens + 1, pdat$dens)
-
-ggplot(pdat, aes(dens, loc, fill = m, group = interaction(m, x))) + 
-  geom_polygon() +
-  scale_x_continuous(breaks = 0:1, labels = c('a', 'b')) +
-  ylab('density') +
-  theme_minimal() +
-  theme(axis.title.x = element_blank())
+p_build %>% tail()
 
