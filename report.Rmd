@@ -219,7 +219,6 @@ color_compar_tiles <- function(spotsize, spotdistance, tilesize = 1, tilehighlig
     aes(x = Ccol-spotdistance, y = Crow, color = Color), size = spotsize
     ) +
   coord_fixed() +
-  labs(caption = "Left circle: master color; Right circle: sample color") +
   xlab("Column") + ylab("Row") +
   theme(
     axis.text=element_text(size=12),
@@ -341,10 +340,10 @@ diff_by_card %>%
     legend.position="right"
   ) +
   xlab("Column on sheet") + ylab("Row on sheet") +
-  scale_fill_gradientn(colours = rainbow(3))
+  scale_fill_gradientn(colours = rainbow(2)[2:1])
 ```
 
-We can see, that \( \Delta \)E generally goes up the further down we go and that there are three columns of higher \( \Delta \)E values. But those columns are not the high numbered but every second. Thus our hypothesis was not correct. But nevertheless: significant difference was found.
+We can see, that \( \Delta \)E generally goes up the further down we go and that there are three columns of higher \( \Delta \)E values. But those columns are not the high numbered but every second. Thus our hypothesis was not correct. Nevertheless a significant difference was found.
 
 The exact meaning of the obtained information depends on the printing process involved. Even though the difference in the means is pretty low one has to keep in mind that this is already the mean of color difference. Thus we feel that a small difference in the mean could be a sign for a meaningful change.
 
@@ -685,7 +684,7 @@ color_differences_regression <- dE(predict(color_regression, master_colors), mas
 
 With a multivariate multiple linear regression we find `r sum(color_differences_regression > 2)` colors that should be different on first glimpse. The median color difference is `r median(color_differences_regression$Difference)` (MAD = `r mad(color_differences_regression$Difference)`).
 
-```{r regression1, echo=FALSE, fig.width=8, fig.height=8, cache=!full_refit, fig.cap="Master multivariate multiple linear regression Lab (left circles) compared to first color card Lab (right circles)", fig.align='center'}
+```{r regression1, echo=FALSE, fig.width=8, fig.height=8, cache=!full_refit, fig.cap="Master multivariate multiple linear regression Lab (left circle) compared to first color card Lab (right circle)", fig.align='center'}
 color_differences %>% 
   filter(Sheet == 1, Row == 1, Column == 1) %>% select(-Difference, -L, -a, -b) %>% bind_cols(
     color_differences_regression, predict(color_regression, master_colors)
@@ -721,7 +720,7 @@ color_differences_regression <- dE(predict(color_regression, master_colors), mas
 
 With a multivariate multiple polynomial regression with degree `r degree`  we find `r sum(color_differences_regression > 2)` colors that should be different on first glimpse. (38 colors with 2nd degree polynomials.) These are almost as many as with the linear regression. We even find some colors that have been matched better with linear regression. The median color difference is `r median(color_differences_regression$Difference)` (MAD = `r mad(color_differences_regression$Difference)`).
 
-```{r regression2, echo=FALSE, fig.width=8, fig.height=8, cache=!full_refit, fig.cap="Master multivariate multiple polynomial regression Lab (left circles) compared to first color card Lab (right circles)", fig.align='center'}
+```{r regression2, echo=FALSE, fig.width=8, fig.height=8, cache=!full_refit, fig.cap="Master multivariate multiple polynomial regression Lab (left circle) compared to first color card Lab (right circle)", fig.align='center'}
 color_differences %>% 
   filter(Sheet == 1, Row == 1, Column == 1) %>% select(-Difference, -L, -a, -b) %>% bind_cols(
     color_differences_regression, predict(color_regression, master_colors)
@@ -756,7 +755,7 @@ color_differences_regression <- dE(predict(color_regression, master_colors), mas
 
 With a multivariate multiple linear regression including interaction terms up to 3rd order we find `r sum(color_differences_regression > 2)` colors that should be different on first glimpse. (Five colors with only 2nd order interaction terms.) The median color difference is `r median(color_differences_regression$Difference)` (MAD = `r mad(color_differences_regression$Difference)`).
 
-```{r regression3, echo=FALSE, fig.width=8, fig.height=8, cache=!full_refit, fig.cap="Master multivariate multiple linear regression with interactions Lab (left circles) compared to first color card Lab (right circles)", fig.align='center'}
+```{r regression3, echo=FALSE, fig.width=8, fig.height=8, cache=!full_refit, fig.cap="Master multivariate multiple linear regression with interactions Lab (left circle) compared to first color card Lab (right circle)", fig.align='center'}
 color_differences %>% 
   filter(Sheet == 1, Row == 1, Column == 1) %>% select(-Difference, -L, -a, -b) %>% bind_cols(
     color_differences_regression, predict(color_regression, master_colors)
@@ -885,7 +884,7 @@ results_all_bootstrap_perm_differences <- results_all_bootstrap_perm$t %>% as_ti
 results_all_bootstrap_perm_differences_perc <- results_all_bootstrap_perm_differences %>% summarise_all(~mean(.>0))
 ```
 
-```{r violinAndBoxplots, echo=FALSE, fig.width=8, fig.height=12, cache=!full_refit, warning=FALSE, fig.cap="Comparing median dE values from bootstrap analysis."}
+```{r violinAndBoxplots, echo=FALSE, fig.width=8, fig.height=12, cache=!full_refit, warning=FALSE, fig.cap="Comparing median dE values from bootstrap analysis"}
 bootstrap_results <- results_all_bootstrap_perm$t %>% as_tibble() %>% 
   rename(linear = V1, "interaction 2nd order" = V2, "interaction 3nd order" = V3) %>% 
   pivot_longer(cols = everything(), names_to = "formula") %>% mutate(method = "permutation") %>% 
@@ -1012,11 +1011,9 @@ We found from the ordinary bootstrap data:
 
 This suggests that one should pick the 2nd order interaction model if one wants to get better results compared to the simple linear model with a high chance. The 2nd order interaction model seems to bet better than the 3rd order interaction model in majority of the cases as well.
 
-In the following graphic one can see additionally that the densities for the color difference median has really thick tails to the negative side if the 3rd order interaction model is part of the comparison. This shows that the difference between the performance of the models can be really huge. One might not only get a over parameterized model that gets a little bit worse suggestions. It is possible to get a model that predicts realy weird colors.
+In the following graphic one can see additionally that the densities for the color difference median has really thick tails to the negative side if the 3rd order interaction model is part of the comparison. This shows that the difference between the performance of the models can be really huge. One might not only get a over parameterized model that gets a little bit worse suggestions. It is possible to get a model that predicts really weird colors.
 
-```{r, echo=FALSE, fig.width=8, fig.height=8, cache=!full_refit, warning=FALSE, message=FALSE, fig.cap="Comparing median dE difference values for competing models from ordinary bootstrap analysis."}
-library(ggridges)
-
+```{r, echo=FALSE, fig.width=8, fig.height=8, cache=!full_refit, warning=FALSE, message=FALSE, fig.cap="Comparing median dE difference values for competing models from ordinary bootstrap analysis"}
 results_all_bootstrap_differences %>% 
   pivot_longer(names_to = "compare", cols = everything()) %>% 
   ggplot(aes(x = value, y = compare, fill = factor(after_stat(x) > 0))) +
@@ -1045,9 +1042,9 @@ Repeating the process with the results from the full permutative bootstrapping w
 * In only `r 100-results_all_bootstrap_perm_differences_perc[3]*100` % of the cases the 2nd order interaction model yields a better result than the 3rd order interaction model.
 * In `r results_all_bootstrap_perm_differences_perc[2]*100` % of the cases the 3nd order interaction model yields a better result than the linear model.
 
-Choosing a 2nd or 3rd oder interaction model yields better results compared to the simple linear model with a comparable in most of the cases. Both options seem to be pretty safe. But in this analysis one gets better results with the 3rd order interaction model compared to the 2nd order interaction model with a chance of `r results_all_bootstrap_perm_differences_perc[3]*100` %. From this results we would recommend to go with a 3rd order interaction model. Since there are no fat tails in the corresponding density plot the thread to get a weird 3rd order interaction model seems lower than the possible benefit of a model that performs significantly better.
+Choosing a 2nd or 3rd order interaction model yields better results compared to the simple linear model with a comparable in most of the cases. Both options seem to be pretty safe. But in this analysis one gets better results with the 3rd order interaction model compared to the 2nd order interaction model with a chance of `r results_all_bootstrap_perm_differences_perc[3]*100` %. From this results we would recommend to go with a 3rd order interaction model. Since there are no fat tails in the corresponding density plot the thread to get a weird 3rd order interaction model seems lower than the possible benefit of a model that performs significantly better.
 
-```{r, echo=FALSE, fig.width=8, fig.height=8, cache=!full_refit, warning=FALSE, message=FALSE, fig.cap="Comparing median dE difference values for competing models from permutative bootstrap analysis."}
+```{r, echo=FALSE, fig.width=8, fig.height=8, cache=!full_refit, warning=FALSE, message=FALSE, fig.cap="Comparing median dE difference values for competing models from permutative bootstrap analysis"}
 results_all_bootstrap_perm_differences %>% 
   pivot_longer(names_to = "compare", cols = everything()) %>% 
   ggplot(aes(x = value, y = compare, fill = factor(after_stat(x) > 0))) +
@@ -1070,8 +1067,8 @@ results_all_bootstrap_perm_differences %>%
   labs(fill = "complexer model performs better")
 ```
 
-One possible explanation for these very different results could be that the chose train test split for the ordinary bootstraping was unlucky and non representative. It is also possible that resampling with replacement is a severe problem in this case because we have only few training data and it could happen very fast that all colors of one chroma segment of the color wheel are missing completely. Repeating the ordinary bootstrapping approach with four different seeds lead to one better, one similar and two worse result for the 3rd order interaction model. But we are not totally sure if there is a methodical flaw with the full resampling approach either.
+One possible explanation for these very different results could be that the chose train test split for the ordinary bootstrapping was unlucky and non representative. It is also possible that resampling with replacement is a severe problem in this case because we have only few training data and it could happen very fast that all colors of one chroma segment of the color wheel are missing completely. Repeating the ordinary bootstrapping approach with four different seeds lead to one better, one similar and two worse result for the 3rd order interaction model. But we are not totally sure if there is a methodical flaw with the full resampling approach either.
 
 In general for a case like this we would suggest to get more data and repeat the analysis again. Or to perform a sensitivity analysis with simulated data. If both is not possible one should inspect the predictions from a 3rd order interaction model before deployment. If this is not possible as well (e. g. because one redeploys often) it depends on how sensible the case of usage for this model might be.
 
-One should take the safer option (2nd order interaction model) if the colors should be used in a traffic light and wrong colors could lead to traffic accidents, injuries and death. If its just the color of an add in a video game it does not matter. But even here one would be totally fine with the 2nd order interaction model and it would be computative less costly as well. I challange the reader to come up with a use case where the small advantage of a good 3rd order interaction model could be crucial.
+One should take the safer option (2nd order interaction model) if the colors should be used in a traffic light and wrong colors could lead to traffic accidents, injuries and death. If its just the color of an add in a video game it does not matter. But even here one would be totally fine with the 2nd order interaction model and it would be computative less costly as well. I challenge the reader to come up with a use case where the small advantage of a good 3rd order interaction model could be crucial.

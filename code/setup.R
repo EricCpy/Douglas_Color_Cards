@@ -7,6 +7,8 @@ library(OpenImageR)
 library(broman)
 library(broom)
 library(summarytools)
+library(viridisLite)
+library(ggridges)
 
 source("code/helper_functions.R")
 source("code/display_functions.R")
