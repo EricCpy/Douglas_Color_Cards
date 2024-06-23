@@ -12,7 +12,12 @@ knitr::opts_chunk$set(echo = TRUE)
 options(scipen = 1, digits = 2)
 
 source("code/setup.R")
-full_refit = FALSE
+
+theme_update(
+  legend.position="bottom"
+)
+
+full_refit = F
 ```
 
 # Introduction
@@ -39,7 +44,7 @@ The inclusion of QR codes indicating the position on a sheet reduces the product
 
 ## Data description
 
-The data given consists of two files. One file holds the master color information given in the Lab color space as well as in the CMYKS color space.
+The data given consists of two files. One file holds the master color information given in the Lab color space as well as in the CMYKS color space. Following we sow a summary of the master color data sets columns that hold the color values. Columns holding positional information for the color fields were excluded because they are distributed uniformly.
 
 ```{r master_color_data_overview, echo=FALSE, cache=!full_refit}
 print(
@@ -52,7 +57,7 @@ print(
   method = 'render')
 ```
 
-The second file holds color information obtained from 13 printed sheets. Thus we find the Lab color information for all 64 squares for 42 color cards for 13 sheets resulting in `r format(64*42*13*3, scientific=FALSE)` numeric values. We transformed the data into long format so we can easily match the colors of each field with those of the master colors.
+The second file holds color information obtained from 13 printed sheets. Thus we find the Lab color information for all 64 squares for 42 color cards for 13 sheets resulting in `r format(64*42*13*3, scientific=FALSE)` numeric values. We transformed the data into long format so we can easily match the colors of each field with those of the master colors. Again columns holding positional information for the color fields or color card positions were excluded because they are distributed uniformly.
 
 ```{r lab_color_data_overview, echo=FALSE, cache=!full_refit}
 print(
@@ -65,7 +70,7 @@ print(
   method = 'render')
 ```
 
-## Color spaces (Pavlo)
+## Color spaces
 
 Today, there are many systems used to describe colors. Some of them are device-dependent, such as CMYK and RGB, which use predefined original colors (e.g. ink colors) to create a palette. Others, such as CIELAB, try to approximate human perception of color.
 
@@ -75,7 +80,9 @@ RGB is an additive color model that defines white as combination of its three co
 
 ### CMYK
 
-CMYK (cyan, magenta, yellow and key) is a subtractive color model where white is the absence of its components. It is widely used in printing and the word *key* refers to key plates, which is a type of device that prints small details.The key color is black and is used to achieve a richer black, more precise prints and to reduce the use of expensive inks. CMYK is also device-dependent, which means the output varies based on the specific inks used. Consequently, translating an image directly from RGB to CMYK can be challenging. As a solution, a 'middle ground' approach is often required. CMYK can struggle to accurately reproduce light and highly saturated colors. It employs a technique called halftoning for light colors, which reduces ink usage and often results in lower color saturation.
+CMYK (cyan, magenta, yellow and key) is a subtractive color model where white is the absence of its components. It is widely used in printing and the word *key* refers to key plates, which is a type of device that prints small details.The key color is black and is used to achieve a richer black, more precise prints and to reduce the use of expensive inks. CMYK is also device-dependent, which means the output varies based on the specific inks used. 
+
+Consequently, translating an image directly from RGB to CMYK can be challenging. As a solution, a 'middle ground' approach is often required. CMYK can struggle to accurately reproduce light and highly saturated colors. It employs a technique called halftoning for light colors, which reduces ink usage and often results in lower color saturation.
 
 Additionally, like any other additive or subtractive model, CMYK can be enhanced with additional components, such as new dyes. In the Douglas color system CMYKS (*S* means *special*), an extra dye S is used to improve the accuracy of skin tones. Chapter three will provide further insights into the *S* component.
 
@@ -126,7 +133,9 @@ One can analyse difference in color in at least three ways:
 ## Comparing color space dimension individually
 
 To compare the color spaces, we generated an average color card derived from all color cards in our *Lab_Measurement* dataset. 
-This average color card serves as a baseline against the reference data of the master. Below is a representation of the average color card. Since the Lab space was created in such a way that linear changes correspond with the changes humans perceive we can simply average colors in this space by averaging their three dimensions separately. (For RGB for example one gets a better result using a sum of squares approach.)
+This average color card serves as a baseline against the reference data of the master. Below is a representation of the average color card.
+
+Since the Lab space was created in such a way that linear changes correspond with the changes humans perceive we can simply average colors in this space by averaging their three dimensions separately. (For RGB for example one gets a better result using a sum of squares approach.)
 
 ```{r averageColorCard, echo=FALSE, warning=FALSE, cache=!full_refit, fig.cap="Average color card", fig.align='center'}
 display_color_card(mean_lab_color_card, "Row", "Col", "Lab", 2)
@@ -134,12 +143,11 @@ display_color_card(mean_lab_color_card, "Row", "Col", "Lab", 2)
 
 ### Analysis of field discrepancies
 
+Our examination reveals notable fluctuations across various fields. Particularly, the 18th field (3rd row, 2nd column) exhibits significant deviations from the master's data. Overall, it is evident that the mean of the color cards approximately matches the master in most other fields.
+
 ```{r colorCardMeanVsMaster, echo=FALSE, warning=FALSE, fig.width=8, fig.height=10, cache=!full_refit, fig.cap="Mean vs master color card dimensions", fig.align='center'}
 plot_card_vs_master(mean_lab_color_card, master_colors)
 ```
-
-Our examination reveals notable fluctuations across various fields. Particularly, the 18th field (3rd row, 2nd column) exhibits significant deviations from the master's data.
-Overall, it is evident that the mean of the color cards approximately matches the master in most other fields.
 
 ### Analysis of density distributions
 
@@ -152,7 +160,7 @@ grid.arrange(plots[["L"]], plots[["a"]], plots[["b"]], nrow = 3)
 
 The distributions reveal distinct characteristics across the channels: 
 
-- **L dimension:** Notably, there is a leftward shift in values compared to the master, indicating that the dataset tends to have higher lumination levels than the master reference. Additionally, the L channel shows significantly higher variability compared to the other dimensions, where variability is notably low.
+- **L dimension:** Notably, there is a leftward shift in values compared to the master, indicating that the dataset tends to have higher lumination levels than the master reference. Additionally, the L channel shows significantly higher variability compared to the other dimensions, where variability is (un)notably low.
 - **a dimension:** There is a noticeable deviation from the master particularly around 'a' values near zero, suggesting limitations in accurately representing subtle color variations within this range.
 - **b dimension:** Similar to 'a', deviations are observed especially around 'b' values between -10 and 40, indicating representations that differ from the master inside this range.
 
@@ -176,13 +184,13 @@ The aim of \( \Delta \)E is that the calculated distance value can be interprete
 
 ### Color difference on a single card
 
-Comparing the first color cards colors with the master colors shows that there is one color that is pretty far from the master color (3rd row, 2nd column). There are some more fields where we spotted a difference at first glimpse:
+The visualization used to compare the colors shows the 64 colors of the color cards according to their position on the color card. In each tile there are two colored circles which show the master color (left circle) and the sample color (right circle). The background color of the tiles corresponds to the \( \Delta \)E value. Light blue indicates a high and dark blue ones a low \( \Delta \)E value.
+
+Comparing the first color cards colors with the master colors shows that there is one color that is pretty far from the master color (color field 18; 3rd row, 2nd column). There are some more fields where we spotted a difference at first glimpse:
 
 * lilac: 8th row, 5th column
 * blue: 8th row, 7th column
 * dark grey: 7th row, 1st column
-
-The visualization used to compare the colors shows the 64 colors of the color cards according to their position on the color card. In each tile there are two colored circles which show the master color (left circle) and the sample color (right circle). The background color of the tiles corresponds to the \( \Delta \)E value. Light blue indicates a high and dark blue ones a low \( \Delta \)E value.
 
 ```{r, echo=FALSE, cache=!full_refit}
 color_compar_tiles <- function(spotsize, spotdistance, tilesize = 1, tilehighlightcolor = "#000000", lwd = 1) {
@@ -219,12 +227,11 @@ color_compar_tiles(spotsize = 11, spotdistance = 0.25)
 
 To spot the color difference it is very helpful to let the colors to compare overlap. Thus we can find more colors that are distinguishable by us on our screen. Most grey and brown colors are distinguishable from their respective master colors. Other colors generally appear similar, with the exception of red (3rd row, 8th column).
 
-
 ```{r deColorCardOverlap, echo=FALSE, fig.width=8, fig.height=8, cache=!full_refit, fig.cap="Master (left circle) compared to first color card (right circle) with overlap", fig.align='center'}
 color_compar_tiles(spotsize = 13, spotdistance = 0.175)
 ```
 
-To verify if the cutoff value of 2 holds for our example we show the same picture with highlighted colors that should be distinguishable in theory. According to this, we should be able to perceive differences in the following colors but we did not:
+To verify if the cutoff value of 2 holds for our example we show the same picture with highlighted colors that should be distinguishable in theory (dE > 2). According to this, we should be able to perceive differences in the following colors but we did not:
 
 * Magenta: 4th row, 8th column
 * Olive: 1st row, 2nd column
@@ -252,7 +259,7 @@ color_differences_sample_1_1 %>%
     )
 ```
 
-Finally we examine which color pairs should show no visible difference. Here we found no exception to the given rule of thumb.
+Finally we examine which color pairs should show no visible difference (dE < 1). Here we found no exception to the given rule of thumb.
 
 ```{r dEColorCardLt1, echo=FALSE, fig.width=8, fig.height=8, cache=!full_refit, fig.cap="Master (left circle) compared to first color card (right circle) with dE less than one", fig.align='center'}
 color_differences_sample_1_1 %>% 
@@ -276,23 +283,7 @@ color_differences_sample_1_1 %>%
     )
 ```
 
-### Correlation \( \Delta \)E with Lab Dimensions
-
-This section explores the influence of channels on \( \Delta \)E. For the following scatter plots we chose to exclude field 18 because its \( \Delta \)E value significantly deviates from the other fields, which would disproportionately influence the results.
-
-```{r LabCorrelationsWithDeltaE, echo=FALSE, warning=FALSE, message=FALSE, cache=!full_refit, fig.cap="Lab correlations with dE", fig.align='center'}
-mean_lab_color_differences_exlcude_18 <- mean_lab_color_differences %>% 
-                                          filter(!(Row == 3 & Col == 2))
-
-grid.arrange(plot_correlation(mean_lab_color_differences_exlcude_18, "L", "Difference"),
-             plot_correlation(mean_lab_color_differences_exlcude_18, "a", "Difference"),
-             plot_correlation(mean_lab_color_differences_exlcude_18, "b", "Difference"),
-             nrow = 3)
-```
-
-From the scatter plots it is evident that there is generally no or very weak linear correlation between \( \Delta \)E and the *a*, *b* dimensions. This suggests that the perception of color differences may not be solely tied to the individual color channels *a* and *b* in a linear manner. Interestingly, the coefficients highlight a notable correlation between L and \( \Delta \)E values, indicating that lumination differences appear to influence perception in a linear manner.
-
-### Color variance among cards
+### Color difference aggregated over multiple cards
 
 ```{r, echo=FALSE, cache=!full_refit}
 DeltaE_map_for_sheet <- function(data) {
@@ -308,9 +299,11 @@ DeltaE_map_for_sheet <- function(data) {
 }
 ```
 
-In order to get a feeling if the color difference compared to the masters colors varies more or less regarding to the color cards position on the sheet or among the sheets at the same position one can have a look at small multiples for both cases. Displaying all color cards of all sheets is possible on a huge screen but not in this report. Anyhow, as one can see, comparing the separated \( \Delta \)E tile maps visually is not easy. What we can do instead, is to look at the mean values of \( \Delta \)E of specific card position across all sheets.
+In order to get a feeling if the color difference compared to the masters colors varies more or less regarding to the color cards position on the sheet or among the sheets at the same position one can have a look at small multiples for both cases (see Figures \@ref(fig:dEColorcards1stSheet), \@ref(fig:dEColorcardsTopLeftAllSheets)). Displaying all color cards of all sheets is possible on a huge screen but not in this report. Anyhow, as one can see, comparing the separated \( \Delta \)E tile maps visually is not easy.
 
-First, it would be smart to check if there is any meaningful difference in mean \( \Delta \)E between different card positions on sheet. For that, we perform an ANOVA test.
+But as a first step towards this comparison, we have a look at the mean values of \( \Delta \)E of specific card position across all sheets. We will find 42 values that don't correspond to the 64 color fields but to the color cards positions. Thus they are aggregate one level higher. 
+
+First, we check numerically if there is any meaningful difference in mean \( \Delta \)E between different card positions on sheet. For that, we perform an ANOVA test. We assume that the color difference is higher for higher column values because ink might get low when the printer head goes from left to right. Thus we numerated the color fields positions by \(N_{card} = (N_{Column}-1) \cdot 7 + N_{Row}\) and are not using cardnumber as a factor.
 
 ```{r, echo=FALSE, cache=!full_refit}
 diff_by_card = color_differences %>%
@@ -323,20 +316,35 @@ anova_result <- aov(mean_diff ~ card_number, data = diff_by_card)
 summary(anova_result)
 ```
 
-As we can see, there is a significant evidence, that the mean \( \Delta \)E varies across different card positions. The following graphic visualizes this.
+As we can see, there is a significant evidence, that the mean \( \Delta \)E varies across different card positions (targets). The following graphic visualizes this.
 
-```{r, echo=FALSE, message=FALSE, cache=!full_refit, fig.cap="Mean dE across different card positions", fig.align='center'}
+```{r, echo=FALSE, message=FALSE, cache=!full_refit, fig.cap="Mean dE across different card positions", fig.align='center', fig.width=8, fig.height=8}
 diff_by_card %>% 
   group_by(Row, Column) %>%
   summarise(mean_diff = mean(mean_diff), .groups = "drop") %>%
   ggplot() +
   geom_tile(aes(fill = mean_diff, x = Column, y = Row),
-             width=1, height=1)
+             width=1, height=1) +
+  coord_fixed() +
+  theme(
+    legend.position="right"
+  ) +
+  xlab("Column on sheet") + ylab("Row on sheet")
 ```
 
-The exact meaning of the obtained information depends on the printing process involved. We can see, that \( \Delta \)E generally goes up the further down we go and that there are three columns of higher \( \Delta \)E values.
+We can see, that \( \Delta \)E generally goes up the further down we go and that there are three columns of higher \( \Delta \)E values. But those columns are not the high numbered but every second. Thus our hypothesis was not correct. But nevertheless: significant difference was found.
 
-Looking at all 42 color cards of a single sheet shows that there might be two slight patterns. One might find *a)* a light diagonal from bottom left to top right (see cards in first row) or *b)* a dark diagonal from top left to bottom right (see cards in last row). We will investigate this further with other visualization techniques.
+The exact meaning of the obtained information depends on the printing process involved. Even though the difference in the means is pretty low one has to keep in mind that this is already the mean of color difference. Thus we feel that a small difference in the mean could be a sign for a meaningful change.
+
+Looking at all the individual color fields of all 42 color cards aggregated over the sheet shows that there might be two slight patterns. One might find *a)* a light diagonal from bottom left to top right (see cards in first row) or *b)* a dark diagonal from top left to bottom right (see cards in last row). We will investigate this further with other visualization techniques.
+
+```{r dEColorcards1stSheet, echo=FALSE, fig.width=8, fig.height=8, cache=!full_refit, fig.cap="dE for all color cards of the first sheet", fig.align='center'}
+DeltaE_map_for_sheet(color_differences %>% filter(Sheet == 1)) +
+  facet_grid(Row ~ Column) +
+  xlab("Column on sheet") + ylab("Row on sheet")
+```
+
+In contrast, aggregating the color cards over the 13 sheets (regardless their position on the sheet) does not show distinguishable patterns. They all look alike.
 
 ```{r dEColorcardsTopLeftAllSheets, echo=FALSE, fig.width=8, fig.height=8, cache=!full_refit, fig.cap="dE for all color cards at the top left position of all sheets", fig.align='center'}
 DeltaE_map_for_sheet(color_differences %>% filter(Row == 1, Column == 1)) +
@@ -346,13 +354,13 @@ DeltaE_map_for_sheet(color_differences %>% filter(Row == 1, Column == 1)) +
   )
 ```
 
-```{r dEColorcards1stSheet, echo=FALSE, fig.width=8, fig.height=8, cache=!full_refit, fig.cap="dE for all color cards of the first sheet", fig.align='center'}
-DeltaE_map_for_sheet(color_differences %>% filter(Sheet == 1)) +
-  facet_grid(Row ~ Column) +
-  xlab("Column on sheet") + ylab("Row on sheet")
-```
+### Color variance among cards
 
-When we are looking at the \( \Delta \)E values for the color cards at target [1;1] ([Row;Column]) and sheet 1 we find that the color difference tends to be noticeably higher for the color fields at target 1-1 in 20 cases and lower in 10 cases. Especially for the grey fields. The height of the boxes in contrast seems to be lower which is cautiously interpreted as a lower color variance. One has to keep in mind that the boxplots of target [1;1] consist of 13 data points and those of the sheet 1 of 42 data points.
+When we are looking at the \( \Delta \)E values for the color cards at target [1;1] ([Row;Column]) compared to those on sheet 1 (these two sets have 1 color card in common) we find that the color difference tends to be noticeably higher for the color fields at target 1-1 in 20 cases and lower in 10 cases. Especially for the grey fields (Figure \@ref(fig:deTargetFirstSheet)). To remember the corresponding color for each field we added a circle in this color to the box plots.
+
+The height of the boxes in contrast seems to be lower which is cautiously interpreted as a lower color variance. One has to keep in mind that the boxplots of target [1;1] consist of 13 data points and those of the sheet 1 of 42 data points.
+
+It should be noticed that field 18 was excluded again. Its color difference is above 20 and does not fit on the common y scale without squeezing everything else too hard.
 
 ```{r deTargetFirstSheet, echo=FALSE, message=FALSE, fig.width=8, fig.height=12, cache=!full_refit, fig.cap="dE for target [1;1] of the first sheet", fig.align='center'}
 color_dispersion_on_sheet1 <- color_differences %>%
@@ -391,11 +399,13 @@ color_dispersion_compare <- color_dispersion_over_sheets %>% bind_rows(
 )
 ```
 
-In the following graph we show boxplots of the MAD value of color difference comparing the generalized color variance among sheets and targets. Thus we find 13 values for the sheet boxplot and 42 values for the target boxplot this time. We count 25 noticeably higher MAD values for sheets compared with targets MAD values. We find only three color fields where the opposite is the case. Thus we conclude that the color variance among the color cards on a sheet is higher than within color cards at the same target. It seems consequent to generate QR codes to inform the app which color card is scanned. This way the app can compare the detected color of the printed square with a target specific reference color (instead of the master color) for that field.
+In Figure \@ref(fig:MADdeAllSheets) we show boxplots of the MAD value of color difference comparing the generalized color variance among sheets and targets. Thus we find 13 values for the sheet box plot and 42 values for the target box plot this time.
+
+We count 25 noticeably higher MAD values for sheets compared with targets MAD values. We find only three color fields where the opposite is the case. Thus we conclude that the color variance among the color cards on a sheet is higher than within color cards at the same target. It seems consequent to generate QR codes to inform the app which color card is scanned. This way the app can compare the detected color of the printed square with a target specific reference color (instead of the master color) for that field.
 
 ```{r MADdeAllSheets, echo=FALSE, message=FALSE, message=FALSE, fig.width=8, fig.height=12, cache=!full_refit, fig.cap="MAD dE for all color cards across all sheets", fig.align='center'}
 color_dispersion_compare %>% left_join(
-  color_differences %>% select(Field, Crow, Ccol, Color) %>% unique(),
+  master_colors %>% select(Field, Crow, Ccol, Color) %>% unique(),
   by = join_by(Field)
 ) %>% #filter(Field != 18) %>% 
   ggplot() +
@@ -407,11 +417,11 @@ color_dispersion_compare %>% left_join(
   facet_grid(Crow ~ Ccol, as.table = FALSE, switch = "both")
 ```
 
-To complete the analysis we will have a look at the median color differences grouped by sheets and targets as well. Here we find no generalizable trends to report. The means of the median color difference is very close for all color fields. One might point out that median color distances are more spread for targets than for sheets. But this might be explained by the regression to the mean. For the target medians only 13 individual values are used whereas for the sheets 42 values are used. Thus it is less likely to find extreme differences for the sheet medians.
+To complete the analysis we will have a look at the median color differences grouped by sheets and targets as well. Here we find no generalizable trend to report. The means of the median color difference is very close for all color fields. One might point out that median color distances are more spread for targets than for sheets. But this might be explained by the regression to the mean. For the target medians only 13 individual values are used whereas for the sheets 42 values are used. Thus it is less likely to find extreme differences for the sheet medians.
 
 ```{r medianDeAllSheets, echo=FALSE, message=FALSE, fig.width=8, fig.height=12, cache=!full_refit, fig.cap="Median dE for all color cards of all sheets", fig.align='center'}
 color_dispersion_compare %>% left_join(
-  color_differences %>% select(Field, Crow, Ccol, Color) %>% unique(),
+  master_colors %>% select(Field, Crow, Ccol, Color) %>% unique(),
   by = join_by(Field)
 ) %>% filter(Field != 18) %>% 
   ggplot() +
@@ -423,51 +433,7 @@ color_dispersion_compare %>% left_join(
   facet_grid(Crow ~ Ccol, as.table = FALSE, switch = "both")
 ```
 
-We haven't found an optimal way to display both the median color difference and the MAD of color variance in a single plot. However, we believe these boxplots are a straightforward and an established visualization method for good reason.
-
-### Comparative analysis of \( \Delta \)E for skin- and non-skin tone
-
-The Douglas color card is divided into three distinct areas:
-
-1. Outer rows and columns (rows 1 and 8, columns 1 and 8), and specific cells ([2;2], [2;7], [3;5], and [6;5]) containing non-skin tone.
-2. Central four cells (intersection of rows 4 and 5 with columns 4 and 5) that are gray and would be removed in the final product.
-3. The remaining portion of the card, which contains actual skin tone.
-
-As part of the evaluation of the printing process, it may be interesting to compare the print results for skin versus non-skin tones, given that the Douglas printing process specializes in printing skin tones (additional *S* value in CMYK).
-
-```{r, echo=FALSE, message=FALSE, fig.width=8, fig.height=6, cache=!full_refit, fig.cap="Print results skin versus non-skin tones", fig.align='center'}
-color_diff = color_differences %>%
-  mutate(is_calibration = (Crow == 1 | Crow == 8 | Ccol == 1 | Ccol == 8) 
-         | (Crow == 2 & Ccol == 2) | (Crow == 2 & Ccol == 7) | (Crow == 3 & Ccol == 5) 
-         | (Crow == 6 & Ccol == 5) ) %>%
-  mutate(is_center = ((Crow == 4 | Crow == 5) & (Ccol == 4 | Ccol == 5))) %>%
-  mutate(is_outlier = (Crow == 3 & Ccol == 2))
-
-boxplot(Difference ~ is_calibration, color_diff %>%
-          filter(is_center == FALSE) %>%
-          select(Difference, is_calibration, Row, Column, Sheet),
-         names=c("Skin","Non-skin"),
-         xlab=''
-)
-```
-
-As we can see, there is a group of outlier cells that contain skin tones that have a much higher \( \Delta \)E. From our previous analysis, we know that cell [3;2] consistently performs poorly across cards. If we remove it, we get the following:
-
-```{r, echo=FALSE, message=FALSE, fig.width=8, fig.height=6, cache=!full_refit, fig.cap="Print results skin versus non-skin tones excluding outlier [3;2]", fig.align='center'}
-
-boxplot(Difference ~ is_calibration, color_diff %>%
-          filter(is_center == FALSE) %>%
-          filter(is_outlier == FALSE) %>%
-          select(Difference, is_calibration, Row, Column, Sheet),
-         names=c("Skin","Non-skin"),
-         xlab=''
-)
-```
-
-Our assumption was correct, it was the cell [3;2]. Here we can make following observations:
-
-1. \( \Delta \)E for skin tones is generally slightly lower, but has slightly higher variation than for non-skin tones. This is expected, as the Douglas printing process is specialized to produce skin tones.
-2. Cell [3;2] is a consistent outlier across multiple cards. This suggests a potential issue either with a printer or dataset itself, depending on the reliability of the latter.
+We haven't found an optimal way to display both the median color difference and the MAD of color variance in a single plot. However, we believe these box plots are a straightforward and an established visualization method for good reason.
 
 ### New Reference colors by targets
 
@@ -486,7 +452,7 @@ color_differences_from_average_card <- color_differences_sample_1_1 %>%
   mutate(Difference = generate_color_difference_df(average_color_card_target_1_1 %>% select(-Difference), .)$Difference)
 ```
 
-In the following three graphics we want to look at one example on how the average color cards colors differ from the master and from a sample card at the corresponding target position. We begin with the graphic where we compare the sample color card with the master color card.
+In the following three graphics we want to look at one example on how the average color cards colors differ from the master and from a sample card at the corresponding target position. The average color card is created by aggregating all colors from cards in one target position (here [1;1]) (see note at [Comparing color space dimension individually]). We begin with the graphic where we compare the sample color card with the master color card once again.
 
 We find `r sum(color_differences_sample_1_1$Difference > 2)` colors that should be different on first glimpse. The median color difference is `r median(color_differences_sample_1_1$Difference)` (MAD = `r mad(color_differences_sample_1_1$Difference)`).
 
@@ -558,6 +524,68 @@ color_differences_from_average_card %>%
     plot.caption = element_text(size=12, hjust = 0)
     )
 ```
+
+## Further color difference related analysis
+
+### Comparative analysis of \( \Delta \)E for skin- and non-skin tone
+
+The Douglas color card is divided into three distinct areas:
+
+1. Outer rows and columns (rows 1 and 8, columns 1 and 8), and specific cells ([2;2], [2;7], [3;5], and [6;5]) containing non-skin tone.
+2. Central four cells (intersection of rows 4 and 5 with columns 4 and 5) that are gray and would be removed in the final product.
+3. The remaining portion of the card, which contains actual skin tone.
+
+As part of the evaluation of the printing process, it may be interesting to compare the print results for skin versus non-skin tones, given that the Douglas printing process specializes in printing skin tones (additional *S* value in CMYK).
+
+```{r, echo=FALSE, message=FALSE, fig.width=8, fig.height=6, cache=!full_refit, fig.cap="Print results skin versus non-skin tones", fig.align='center'}
+color_diff = color_differences %>%
+  mutate(is_calibration = (Crow == 1 | Crow == 8 | Ccol == 1 | Ccol == 8) 
+         | (Crow == 2 & Ccol == 2) | (Crow == 2 & Ccol == 7) | (Crow == 3 & Ccol == 5) 
+         | (Crow == 6 & Ccol == 5) ) %>%
+  mutate(is_center = ((Crow == 4 | Crow == 5) & (Ccol == 4 | Ccol == 5))) %>%
+  mutate(is_outlier = (Crow == 3 & Ccol == 2))
+
+boxplot(Difference ~ is_calibration, color_diff %>%
+          filter(is_center == FALSE) %>%
+          select(Difference, is_calibration, Row, Column, Sheet),
+         names=c("Skin","Non-skin"),
+         xlab=''
+)
+```
+
+As we can see, there is a group of outlier cells that contain skin tones that have a much higher \( \Delta \)E. From our previous analysis, we know that cell [3;2] consistently performs poorly across cards. If we remove it, we get the following:
+
+```{r, echo=FALSE, message=FALSE, fig.width=8, fig.height=6, cache=!full_refit, fig.cap="Print results skin versus non-skin tones excluding outlier [3;2]", fig.align='center'}
+
+boxplot(Difference ~ is_calibration, color_diff %>%
+          filter(is_center == FALSE) %>%
+          filter(is_outlier == FALSE) %>%
+          select(Difference, is_calibration, Row, Column, Sheet),
+         names=c("Skin","Non-skin"),
+         xlab=''
+)
+```
+
+Our assumption was correct, it was the cell [3;2]. Here we can make following observations:
+
+1. \( \Delta \)E for skin tones is generally slightly lower, but has slightly higher variation than for non-skin tones. This is expected, as the Douglas printing process is specialized to produce skin tones.
+2. Cell [3;2] is a consistent outlier across multiple cards. This suggests a potential issue either with a printer or dataset itself, depending on the reliability of the latter.
+
+### Correlation \( \Delta \)E with Lab Dimensions
+
+This section explores the influence of channels on \( \Delta \)E. For the following scatter plots we chose to exclude field 18 because its \( \Delta \)E value significantly deviates from the other fields, which would disproportionately influence the results.
+
+```{r LabCorrelationsWithDeltaE, echo=FALSE, warning=FALSE, message=FALSE, cache=!full_refit, fig.cap="Lab correlations with dE", fig.align='center'}
+mean_lab_color_differences_exlcude_18 <- mean_lab_color_differences %>% 
+                                          filter(!(Row == 3 & Col == 2))
+
+grid.arrange(plot_correlation(mean_lab_color_differences_exlcude_18, "L", "Difference"),
+             plot_correlation(mean_lab_color_differences_exlcude_18, "a", "Difference"),
+             plot_correlation(mean_lab_color_differences_exlcude_18, "b", "Difference"),
+             nrow = 3)
+```
+
+From the scatter plots it is evident that there is generally no or very weak linear correlation between \( \Delta \)E and the *a*, *b* dimensions. This suggests that the perception of color differences may not be solely tied to the individual color channels *a* and *b* in a linear manner. Interestingly, the coefficients highlight a notable correlation between L and \( \Delta \)E values, indicating that lumination differences appear to influence perception in a linear manner.
 
 # Analysis of S in CMYKS
 
@@ -746,27 +774,25 @@ This result is not surprising. The 3rd order interaction model has 26 parameters
 
 If the aim is a function that predicts the Lab values from any CMYKS combination (and does not only replicate the known colors well) it is important to find a model that does not overfit on the training data. To check if the 3rd order interaction model tends to overfit we perform further tests. This time we split the 49 unique color fields of the master color card into a train and a test set. The training data keeps 33 rows and the test data consists of the remaining 16. We compare two different approaches:
 
-a) We perform a bootstrap analysis. Therefore we take a fixed set of test data and perform 10000 regressions with training data that is sampled with replacement from a common training data set. We calculate the median of the color difference for the 16 test colors every time. 
-b) We perform 10000 different train test splits and do the regression once each. We still calculate the median of the color difference between predicted and correct test colors.
+a) We perform an ordinary bootstrap analysis. Therefore we take a fixed test data set and perform 10000 regressions with a fixed training data set that is sampled from with replacement. We calculate the median of the color difference for the 16 test colors every time. 
+b) We perform 10000 different train test splits and do the regressions once each (calling it full resampling). Therefore we use permutative bootstrapping. We still calculate the median of the color difference between predicted and correct test colors.
 
-The results for the bootstrapped medians are higher than those of the full resampling. The confidence intervals for the bootstrapped values are wider but not always is the narrower fully included in the wider. The linear model has highest median of color difference medians and high CI limits. (A polynomial regression couldn't be fitted because of to few data points.)
+| Model | Method | t | Bias | 5%-Quantile | Median | 95%-Quantile |
+|-------|--------|--------|-------------|--------------|--|--|
+| Linear | Ordinary Bootstrap                        | 5.2 | 0.27 | 3.93 | 5.35 | 7.63 |
+| Linear | Full Resampling                  | 4.1 | 0.63 | 3.26 | 4.54 | 6.85 |
+| 2rd order interaction | Ordinary Bootstrap         | 1.4 | 1.63 | 1.45 | 2.62 | 5.11 |
+| 2rd order interaction | Full Resampling   | 2.9 | -0.43 | 1.43 | 2.06 | 4.43 |
+| 3rd order interaction | Ordinary Bootstrap         | 2.1 | 8.22 | 1.87 | 5.11 | 37.9 |
+| 3rd order interaction | Full Resampling   | 2.2 | -0.01 | 0.78 | 1.44 | 6.20 |
 
-The medians order for 2nd and 3rd order interaction model is dependent on the method used. The upper CI limits are lower for 2nd order regression models within one method. Thus we conclude that those are less likely to overfit. For the 3rd order interaction regression one can be pretty lucky and get a really good model but one can be very unlucky as well and end up with a median \(\Delta\)E of 62.7 which yields colors that are more the opposite than the same. With this limited data available we would suggest to go with the 2nd order interaction regression results.
+Comparing the results stated in the upper table for the ordinary bootstrapped t values (or alternatively medians) with those of the full permutative resampling t values yields no clear pattern. One is higher, one lower, one almoast equal. The confidence intervals for the ordinary bootstrapped values tend to be wider but not always is the narrower CI fully included in the wider. The linear model has highest t value for color difference medians and high CI limits. (A polynomial regression coudln't be fitted because of to few data points.)
 
-| Model | Method | t1* | 5%-Quantile | 95%-Quantile |
-|-------|--------|--------|-------------|--------------|
-| Linear | Bootstrap | 5.2 | 3.7 | 8.1 |
-| Linear | Full Resampling | 4.1 | 3.1 | 7.6 |
-| 2rd order interaction | Bootstrap | 1.4 | 1.3 | 6.9 |
-| 2rd order interaction | Full Resampling | 2.9 | 1.3 | 6.5 |
-| 3rd order interaction | Bootstrap | 2.1 | 1.6 | 58.2 |
-| 3rd order interaction | Full Resampling | 2.2 | 0.7 | 9.5 |
+The t values for 2nd and 3rd order interaction model are lower or almost equal with ordinary bootstrapping. In contrast one finds the CI limits to be lower for bootstrapping with permutation. The CIs for 2nd order interaction models are narrower and the upper CI limit is lower compared to 3rd order models.
 
-Comparing the results stated in the upper table for the ordinary bootstrapped t1* values with those of the full permutative resampling t1* values yields no pattern. One is higher one lower on almoast equal. The confidence intervals for the bootstrapped values tend to be wider but not always is the narrower fully included in the wider. The linear model has highest median of color difference medians and high CI limits. (A polynomial regression coudln't be fitted because of to few data points.)
+Thus one might conclude that 2nd order models are less likely to overfit. For the 3rd order interaction regression one can be pretty lucky and get a really good model but one can be very unlucky as well and end up with a median \(\Delta\)E of 37.9 which yields colors that are pretty different. At this stage of analysis we would suggest to go with the 2nd order interaction regression model instead of a 3rd order interaction model. But further analysis was carried out and we came to a different conclusion (see below).
 
-The t1* values for 2nd and 3rd order interaction model are lower or equal with ordinary bootstrapping (fixed test data and sampling with replacement). In contrast one finds the CI limits to be lower for bootstrapping with permutation. The CIs for 2nd order interaction models are narrower and the upper CI limit is lower compared to 3rd order models.
-
-Thus we conclude that 2nd order models are less likely to overfit. For the 3rd order interaction regression one can be pretty lucky and get a really good model but one can be very unlucky as well and end up with a median \(\Delta\)E of 62.7 which yields colors that are more the opposite than the same. With this limited data available we would suggest to go with the 2nd order interaction regression results.
+**One can visualize this with classical box plots or alternatively with the fancier violin plots. From box plots one would conclude to prefer a 2nd order interaction model ...**
 
 **Violins with fill to afterstat**
 
@@ -781,10 +807,18 @@ test_data <- unique_master_colors[test_indizes,]
 color_difference <- function(formula, data, indices)
 {
   train_data <- data[indices,]
-  fit <- lm(data = train_data %>% select(C, M, Y, K, S, L, a, b), formula)
+  fit1 <- lm(data = train_data %>% select(C, M, Y, K, S, L, a, b), formula[[1]])
+  fit2 <- lm(data = train_data %>% select(C, M, Y, K, S, L, a, b), formula[[2]])
+  fit3 <- lm(data = train_data %>% select(C, M, Y, K, S, L, a, b), formula[[3]])
   return(
-    dE(predict(fit, test_data), test_data %>% select("L", "a", "b")) %>% 
-      median()
+    c(
+      dE(predict(fit1, test_data), test_data %>% select("L", "a", "b")) %>% 
+        median(),
+      dE(predict(fit2, test_data), test_data %>% select("L", "a", "b")) %>% 
+        median(),
+      dE(predict(fit3, test_data), test_data %>% select("L", "a", "b")) %>% 
+        median() 
+    )
   )
 }
 
@@ -792,90 +826,75 @@ color_difference_perm <- function(formula, data, indices)
 {
   train_data <- data[indices[1:33],]
   test_data <- data[indices[34:49],]
-  fit <- lm(data = train_data %>% select(C, M, Y, K, S, L, a, b), formula)
+  fit1 <- lm(data = train_data %>% select(C, M, Y, K, S, L, a, b), formula[[1]])
+  fit2 <- lm(data = train_data %>% select(C, M, Y, K, S, L, a, b), formula[[2]])
+  fit3 <- lm(data = train_data %>% select(C, M, Y, K, S, L, a, b), formula[[3]])
   return(
-    dE(predict(fit, test_data), test_data %>% select("L", "a", "b")) %>% 
-      median()
+    c(
+      dE(predict(fit1, test_data), test_data %>% select("L", "a", "b")) %>% 
+        median(),
+      dE(predict(fit2, test_data), test_data %>% select("L", "a", "b")) %>% 
+        median(),
+      dE(predict(fit3, test_data), test_data %>% select("L", "a", "b")) %>% 
+        median() 
+    )
   )
 }
+
+results_all_bootstrap <- boot(data=train_data, statistic=color_difference,
+                                   R=10000, formula=list(cbind(L, a, b) ~ C + M + Y + K + S, cbind(L, a, b) ~ .^2, cbind(L, a, b) ~ .^3))
+
+results_all_bootstrap_perm <- boot(data=unique_master_colors, statistic=color_difference_perm, sim = "permutation",
+                                  R=10000, formula=list(cbind(L, a, b) ~ C + M + Y + K + S, cbind(L, a, b) ~ .^2, cbind(L, a, b) ~ .^3))
 
 show_bootstrap_results <- FALSE
 ```
 
 ```{r, echo=FALSE, cache=!full_refit, include=show_bootstrap_results}
-results_lm_bootstrap <- boot(data=train_data, statistic=color_difference,
-                R=10000, formula=cbind(L, a, b) ~ C + M + Y + K + S)
-print(results_lm_bootstrap)
-boot.ci(results_lm_bootstrap, type="perc")
+results_all_bootstrap
+quantile(results_all_bootstrap$t[,1], c(.05, .5, .95))
+quantile(results_all_bootstrap$t[,2], c(.05, .5, .95))
+quantile(results_all_bootstrap$t[,3], c(.05, .5, .95))
+
+results_all_bootstrap_differences <- results_all_bootstrap$t %>% as_tibble() %>% 
+  mutate("lm vs i2" = V1-V2, "lm vs i3" = V1-V3, "i2 vs i3" = V2-V3) %>%  select(-V1, -V2, -V3)
+results_all_bootstrap_differences_perc <- results_all_bootstrap_differences %>% summarise_all(~mean(.>0))
 ```
 
 ```{r, echo=FALSE, cache=!full_refit, include=show_bootstrap_results}
-results_i2_bootstrap <- boot(data=train_data, statistic=color_difference,
-                R=10000, formula=cbind(L, a, b) ~ .^2)
-print(results_i2_bootstrap)
-boot.ci(results_i2_bootstrap, type="perc")
-```
+results_all_bootstrap_perm
+quantile(results_all_bootstrap_perm$t[,1], c(.05, .5, .95))
+quantile(results_all_bootstrap_perm$t[,2], c(.05, .5, .95))
+quantile(results_all_bootstrap_perm$t[,3], c(.05, .5, .95))
 
-```{r, echo=FALSE, cache=!full_refit, include=show_bootstrap_results}
-results_i3_bootstrap <- boot(data=train_data, statistic=color_difference,
-                R=10000, formula=cbind(L, a, b) ~ .^3)
-print(results_i3_bootstrap)
-boot.ci(results_i3_bootstrap, type="perc")
-```
-
-```{r, echo=FALSE, cache=!full_refit, include=show_bootstrap_results}
-results_lm_bootstrap_perm <- boot(data=unique_master_colors, statistic=color_difference_perm, sim = "permutation",
-                                  R=10000, formula=cbind(L, a, b) ~ C + M + Y + K + S)
-print(results_lm_bootstrap_perm)
-boot.ci(results_lm_bootstrap_perm, type="perc")
-```
-
-```{r, echo=FALSE, cache=!full_refit, include=show_bootstrap_results}
-results_i2_bootstrap_perm <- boot(data=unique_master_colors, statistic=color_difference_perm, sim = "permutation",
-                                  R=10000, formula=cbind(L, a, b) ~ .^2)
-print(results_i2_bootstrap_perm)
-boot.ci(results_i2_bootstrap_perm, type="perc")
-```
-
-```{r, echo=FALSE, cache=!full_refit, include=show_bootstrap_results}
-results_i3_bootstrap_perm <- boot(data=unique_master_colors, statistic=color_difference_perm, sim = "permutation",
-                                  R=10000, formula=cbind(L, a, b) ~ .^3)
-print(results_i3_bootstrap_perm)
-boot.ci(results_i3_bootstrap_perm, type="perc")
+results_all_bootstrap_perm_differences <- results_all_bootstrap_perm$t %>% as_tibble() %>% 
+  mutate("lm vs i2" = V1-V2, "lm vs i3" = V1-V3, "i2 vs i3" = V2-V3) %>%  select(-V1, -V2, -V3)
+results_all_bootstrap_perm_differences_perc <- results_all_bootstrap_perm_differences %>% summarise_all(~mean(.>0))
 ```
 
 ```{r, echo=FALSE, fig.width=8, fig.height=12, cache=!full_refit, warning=FALSE}
-bootstrap_results <- results_lm_bootstrap$t %>% as_tibble() %>% mutate(method = "ordinary", formula = "linear") %>% 
+bootstrap_results <- results_all_bootstrap_perm$t %>% as_tibble() %>% 
+  rename(linear = V1, "interaction 2nd order" = V2, "interaction 3nd order" = V3) %>% 
+  pivot_longer(cols = everything(), names_to = "formula") %>% mutate(method = "permutation") %>% 
   bind_rows(
-    results_i2_bootstrap$t %>% as_tibble() %>% mutate(method = "ordinary", formula = "interaction 2nd order")
+    results_all_bootstrap$t %>% as_tibble() %>% 
+      rename(linear = V1, "interaction 2nd order" = V2, "interaction 3nd order" = V3) %>% 
+      pivot_longer(cols = everything(), names_to = "formula") %>% mutate(method = "ordinary")
   ) %>% 
-  bind_rows(
-    results_i3_bootstrap$t %>% as_tibble() %>% mutate(method = "ordinary", formula = "interaction 3nd order") 
-  ) %>% 
-  bind_rows(
-    results_lm_bootstrap_perm$t %>% as_tibble() %>% mutate(method = "permutation", formula = "linear")
-  ) %>% 
-  bind_rows(
-    results_i2_bootstrap_perm$t %>% as_tibble() %>% mutate(method = "permutation", formula = "interaction 2nd order") 
-  ) %>% 
-  bind_rows(
-    results_i3_bootstrap_perm$t %>% as_tibble() %>% mutate(method = "permutation", formula = "interaction 3nd order") 
-  ) %>% mutate(
-    formula = factor(formula, levels=c("linear", "interaction 2nd order", "interaction 3nd order"))
-    )
+  mutate(formula = factor(formula, levels = c("linear", "interaction 2nd order", "interaction 3nd order")))
 
 v1 <- bootstrap_results %>% ggplot() +
-  geom_violin(aes(x = formula, y = V1, fill = method), draw_quantiles = c(0.5))
+  geom_violin(aes(x = formula, y = value, fill = method), draw_quantiles = c(0.5))
 
-v2 <- bootstrap_results %>% ggplot(aes(x = formula, y = V1, fill = method)) +
+v2 <- bootstrap_results %>% ggplot(aes(x = formula, y = value, fill = method)) +
   geom_violin(draw_quantiles = c(0.25, 0.5, 0.75)) +
   coord_cartesian(ylim = c(0, 10))
 
 b1 <- bootstrap_results %>% ggplot() +
-  geom_boxplot(aes(x = formula, y = V1, fill = method))
+  geom_boxplot(aes(x = formula, y = value, fill = method))
 
 b2 <- bootstrap_results %>% ggplot() +
-  geom_boxplot(aes(x = formula, y = V1, fill = method)) +
+  geom_boxplot(aes(x = formula, y = value, fill = method)) +
   coord_cartesian(ylim = c(0, 10))
 
 ggpubr::ggarrange(
@@ -887,52 +906,75 @@ ggpubr::ggarrange(
 )
 ```
 
-```{r, echo=FALSE, cache=!full_refit}
-library(ggridges)
+But how high is the chance that one gets better results with a 2nd order interaction model than with a competing model? Since we did the regression for all three models with the same train test split in each bootstrap step we can directly compare the color difference median values from the bootstrap t data set. If the difference for two models medians is positive the better model is the one thats median was subtracted from the other one.
 
-lm_vs_i2 <- ((results_lm_bootstrap$t %>% sample(100000, replace = TRUE)) - (results_i2_bootstrap$t %>% sample(100000, replace = TRUE))) %>% as_tibble() %>% mutate(compare = "lm vs i2")
-lm_vs_i3 <- ((results_lm_bootstrap$t %>% sample(100000, replace = TRUE)) - (results_i3_bootstrap$t %>% sample(100000, replace = TRUE))) %>% as_tibble() %>% mutate(compare = "lm vs i3")
-i2_vs_i3 <- ((results_i2_bootstrap$t %>% sample(100000, replace = TRUE)) - (results_i3_bootstrap$t %>% sample(100000, replace = TRUE))) %>% as_tibble() %>% mutate(compare = "i2 vs i3")
+(If the models were evaluated in independent bootstrap evaluations one will find that the train test data split was different for two models that lead to the result in the same row of the bootstrap data. One can still get a approximation for the statistic by randomly selecting two models and compare their color difference repeatedly with replacement.)
 
-bootstrap_comparison <- lm_vs_i2 %>% bind_rows(lm_vs_i3) %>% bind_rows(i2_vs_i3)
-```
+We found from the ordinary bootstrap data:
 
-But how high is the chance that one gets better results with a 2nd order interaction model than with a competing model? One can get a feeling for this by randomly selecting two models and compare their color difference. Sampling 100000 model pairs with replacements from the ordinary bootstrap results yields the following results:
+* In `r results_all_bootstrap_differences_perc[1]*100` % of the cases the 2nd order interaction model yields a better result than the linear model.
+* In `r 100-results_all_bootstrap_differences_perc[3]*100` % of the cases the 2nd order interaction model yields a better result than the 3rd order interaction model.
+* In `r results_all_bootstrap_differences_perc[2]*100` % of the cases the 3nd order interaction model yields a better result than the linear model.
 
-* In `r mean(lm_vs_i2$value > 0)*100` % of the cases the 2nd order interaction model yields a better result than the linear model.
-* In `r mean(i2_vs_i3$value < 0)*100` % of the cases the 2nd order interaction model yields a better result than the 3rd order interaction model.
-* In `r mean(lm_vs_i3$value > 0)*100` % of the cases the 3nd order interaction model yields a better result than the linear model.
+This suggests that one should pick the 2nd order interaction model if one wants to get better results compared to the simple linear model with a high chance. The 2nd order interaction model seems to bet better than the 3rd order interaction model in majority of the cases as well.
 
-This shows that one should pick the 2nd order interaction model if one wants to get better results compared to the simple linear model with a high chance. The 2nd order interaction model seems to bet better than the 3rd order interaction model in most cases as well.
+In the following graphic one can see additionally that the densities for the color difference median has really thick tails to the negative side if the 3rd order interaction model is part of the comparison. This shows that the difference between the performance of the models can be really huge. One might not only get a over parameterized model that gets a little bit worse suggestions. It is possible to get a model that predicts realy weird colors.
 
 ```{r, echo=FALSE, fig.width=8, fig.height=8, cache=!full_refit, warning=FALSE, message=FALSE}
-bootstrap_comparison %>% ggplot(aes(x = value, y = compare, fill = factor(after_stat(x) > 0))) +
-  geom_density_ridges_gradient(scale = 0.9) +
-  coord_cartesian(xlim=c(-20,10))
-```
-
-```{r, echo=FALSE, cache=!full_refit}
 library(ggridges)
 
-lm_vs_i2 <- ((results_lm_bootstrap_perm$t %>% sample(100000, replace = TRUE)) - (results_i2_bootstrap_perm$t %>% sample(100000, replace = TRUE))) %>% as_tibble() %>% mutate(compare = "lm vs i2")
-lm_vs_i3 <- ((results_lm_bootstrap_perm$t %>% sample(100000, replace = TRUE)) - (results_i3_bootstrap_perm$t %>% sample(100000, replace = TRUE))) %>% as_tibble() %>% mutate(compare = "lm vs i3")
-i2_vs_i3 <- ((results_i2_bootstrap_perm$t %>% sample(100000, replace = TRUE)) - (results_i3_bootstrap_perm$t %>% sample(100000, replace = TRUE))) %>% as_tibble() %>% mutate(compare = "i2 vs i3")
-
-bootstrap_comparison <- lm_vs_i2 %>% bind_rows(lm_vs_i3) %>% bind_rows(i2_vs_i3)
+results_all_bootstrap_differences %>% 
+  pivot_longer(names_to = "compare", cols = everything()) %>% 
+  ggplot(aes(x = value, y = compare, fill = factor(after_stat(x) > 0))) +
+  geom_density_ridges_gradient(scale = 0.9) +
+  coord_cartesian(xlim=c(-10,10)) +
+  geom_text(
+    data=tribble(
+      ~x, ~y, ~label, ~compare,
+      -2.5, 0.2, str_c(100-results_all_bootstrap_differences_perc[[1]]*100, " %"), "lm vs i2",
+      2.5, 0.2, str_c(results_all_bootstrap_differences_perc[[1]]*100, " %"), "lm vs i2",
+      -2.5, 0.2, str_c(100-results_all_bootstrap_differences_perc[[2]]*100, " %"), "lm vs i3",
+      2.5, 0.2, str_c(results_all_bootstrap_differences_perc[[2]]*100, " %"), "lm vs i3",
+      -2.5, 0.2, str_c(100-results_all_bootstrap_differences_perc[[3]]*100, " %"), "i2 vs i3",
+      2.5, 0.2, str_c(results_all_bootstrap_differences_perc[[3]]*100, " %"), "i2 vs i3",
+    ), aes(
+      x = x, y = compare, label = label
+    ), vjust = 1.5, hjust=.5
+    )
 ```
 
 Repeating the process with the results from the full permutative bootstrapping where we change the train test split we find somewhat different results:
 
-* In `r mean(lm_vs_i2$value > 0)*100` % of the cases the 2nd order interaction model yields a better result than the linear model.
-* In `r mean(i2_vs_i3$value < 0)*100` % of the cases the 2nd order interaction model yields a better result than the 3rd order interaction model.
-* In `r mean(lm_vs_i3$value > 0)*100` % of the cases the 3nd order interaction model yields a better result than the linear model.
+* In `r results_all_bootstrap_perm_differences_perc[1]*100` % of the cases the 2nd order interaction model yields a better result than the linear model.
+* In only `r 100-results_all_bootstrap_perm_differences_perc[3]*100` % of the cases the 2nd order interaction model yields a better result than the 3rd order interaction model.
+* In `r results_all_bootstrap_perm_differences_perc[2]*100` % of the cases the 3nd order interaction model yields a better result than the linear model.
 
-Choosing a 3rd oder interaction model yields better results compared to the simple linear model with a comparable high chance as with a 2nd order inteaction model. Both options seem to be pretty safe. But in this analysis one gets better results with the 3rd order interaction model with a chance of `r mean(i2_vs_i3$value > 0)*100` %. From this results we would recommend to go with a 3rd order interaction model.
+Choosing a 2nd or 3rd oder interaction model yields better results compared to the simple linear model with a comparable in most of the cases. Both options seem to be pretty safe. But in this analysis one gets better results with the 3rd order interaction model compared to the 2nd order interaction model with a chance of `r results_all_bootstrap_perm_differences_perc[3]*100` %. From this results we would recommend to go with a 3rd order interaction model. Since there are no fat tails in the corresponding density plot the thread to get a weird 3rd order interaction model seems lower than the possible benefit of a model that performs significantly better.
 
 ```{r, echo=FALSE, fig.width=8, fig.height=8, cache=!full_refit, warning=FALSE, message=FALSE}
-bootstrap_comparison %>% ggplot(aes(x = value, y = compare, fill = factor(after_stat(x) > 0))) +
+results_all_bootstrap_perm_differences %>% 
+  pivot_longer(names_to = "compare", cols = everything()) %>% 
+  ggplot(aes(x = value, y = compare, fill = factor(after_stat(x) > 0))) +
   geom_density_ridges_gradient(scale = 0.9) +
-  coord_cartesian(xlim=c(-20,10))
+  coord_cartesian(xlim=c(-10,10)) +
+  geom_text(
+    data=tribble(
+      ~x, ~y, ~label, ~compare,
+      -2.5, 0.2, str_c(100-results_all_bootstrap_perm_differences_perc[[1]]*100, " %"), "lm vs i2",
+      2.5, 0.2, str_c(results_all_bootstrap_perm_differences_perc[[1]]*100, " %"), "lm vs i2",
+      -2.5, 0.2, str_c(round(100-results_all_bootstrap_perm_differences_perc[[2]]*100, 2), " %"), "lm vs i3",
+      2.5, 0.2, str_c(results_all_bootstrap_perm_differences_perc[[2]]*100, " %"), "lm vs i3",
+      -2.5, 0.2, str_c(100-results_all_bootstrap_perm_differences_perc[[3]]*100, " %"), "i2 vs i3",
+      2.5, 0.2, str_c(results_all_bootstrap_perm_differences_perc[[3]]*100, " %"), "i2 vs i3",
+    ), aes(
+      x = x, y = compare, label = label
+    ), vjust = 1.5, hjust=.5
+    )
+  
 ```
 
-One possible explanation for these very different results could be that the chose train test split for the ordinary bootstraping was unlucky and non preservative.
+One possible explanation for these very different results could be that the chose train test split for the ordinary bootstraping was unlucky and non representative. It is also possible that resampling with replacement is a severe problem in this case because we have only few training data and it could happen very fast that all colors of one chroma segment of the color wheel are missing completely. Repeating the ordinary bootstrapping approach with four different seeds lead to one better, one similar and two worse result for the 3rd order interaction model. But we are not totally sure if there is a methodical flaw with the full resampling approach either.
+
+In general for a case like this we would suggest to get more data and repeat the analysis again. Or to perform a sensitivity analysis with simulated data. If both is not possible one should inspect the predictions from a 3rd order interaction model before deployment. If this is not possible as well (e. g. because one redeploys often) it depends on how sensible the case of usage for this model might be.
+
+One should take the safer option (2nd order interaction model) if the colors should be used in a traffic light and wrong colors could lead to traffic accidents, injuries and death. If its just the color of an add in a video game it does not matter. But even here one would be totally fine with the 2nd order interaction model and it would be computative less costly as well. I challange the reader to come up with a use case where the small advantage of a good 3rd order interaction model could be crucial.

@@ -285,7 +285,7 @@ mad(results)
 
 
 set.seed(123)
-set.seed(124)
+set.seed(17242)
 library(boot)
 
 test_indizes <- sample(1:49, 16)
@@ -295,10 +295,18 @@ test_data <- unique_master_colors[test_indizes,]
 color_difference <- function(formula, data, indices)
 {
   train_data <- data[indices,]
-  fit <- lm(data = train_data %>% select(C, M, Y, K, S, L, a, b), formula)
+  fit1 <- lm(data = train_data %>% select(C, M, Y, K, S, L, a, b), formula[[1]])
+  fit2 <- lm(data = train_data %>% select(C, M, Y, K, S, L, a, b), formula[[2]])
+  fit3 <- lm(data = train_data %>% select(C, M, Y, K, S, L, a, b), formula[[3]])
   return(
-    dE(predict(fit, test_data), test_data %>% select("L", "a", "b")) %>% 
-      median()
+    c(
+      dE(predict(fit1, test_data), test_data %>% select("L", "a", "b")) %>% 
+        median(),
+      dE(predict(fit2, test_data), test_data %>% select("L", "a", "b")) %>% 
+        median(),
+      dE(predict(fit3, test_data), test_data %>% select("L", "a", "b")) %>% 
+        median() 
+    )
   )
 }
 
@@ -306,89 +314,53 @@ color_difference_perm <- function(formula, data, indices)
 {
   train_data <- data[indices[1:33],]
   test_data <- data[indices[34:49],]
-  fit <- lm(data = train_data %>% select(C, M, Y, K, S, L, a, b), formula)
+  fit1 <- lm(data = train_data %>% select(C, M, Y, K, S, L, a, b), formula[[1]])
+  fit2 <- lm(data = train_data %>% select(C, M, Y, K, S, L, a, b), formula[[2]])
+  fit3 <- lm(data = train_data %>% select(C, M, Y, K, S, L, a, b), formula[[3]])
   return(
-    dE(predict(fit, test_data), test_data %>% select("L", "a", "b")) %>% 
-      median()
+    c(
+      dE(predict(fit1, test_data), test_data %>% select("L", "a", "b")) %>% 
+        median(),
+      dE(predict(fit2, test_data), test_data %>% select("L", "a", "b")) %>% 
+        median(),
+      dE(predict(fit3, test_data), test_data %>% select("L", "a", "b")) %>% 
+        median() 
+    )
   )
 }
 
-custom_boot <- function(formula, R = 10000) {
-  results <- c()
-  for (i in 1:R) {
-    test_indizes <- sample(1:49, 16)
-    train_data <- unique_master_colors[-test_indizes,]
-    test_data <- unique_master_colors[test_indizes,]
-    
-    fit <- lm(data = train_data %>% select(C, M, Y, K, S, L, a, b), formula)
-    results[i] <- dE(predict(fit, test_data), test_data %>% select("L", "a", "b")) %>% 
-      median()
-  }  
-  
-  return(results)
-}
+results_all_bootstrap <- boot(data=train_data, statistic=color_difference,
+                                   R=1000, formula=list(cbind(L, a, b) ~ C + M + Y + K + S, cbind(L, a, b) ~ .^2, cbind(L, a, b) ~ .^3))
+results_all_bootstrap
+quantile(results_all_bootstrap$t[,1], c(.05, .5, .95))
+quantile(results_all_bootstrap$t[,2], c(.05, .5, .95))
+quantile(results_all_bootstrap$t[,3], c(.05, .5, .95))
+results_all_bootstrap$t %>% as_tibble() %>% summarise_all(~quantile(., c(.05, .5, .95)))
+results_all_bootstrap_differences <- results_all_bootstrap$t %>% as_tibble() %>% 
+  mutate(lm_vs_i2 = V1-V2, lm_vs_i3 = V1-V3, i2_vs_i3 = V2-V3)  %>%  select(-V1, -V2, -V3)
+results_all_bootstrap_differences %>% summarise_all(~mean(.>0))
 
+results_all_bootstrap_perm <- boot(data=unique_master_colors, statistic=color_difference_perm, sim = "permutation",
+                                  R=1000, formula=list(cbind(L, a, b) ~ C + M + Y + K + S, cbind(L, a, b) ~ .^2, cbind(L, a, b) ~ .^3))
+results_all_bootstrap_perm
+quantile(results_all_bootstrap_perm$t[,1], c(.05, .5, .95))
+quantile(results_all_bootstrap_perm$t[,2], c(.05, .5, .95))
+quantile(results_all_bootstrap_perm$t[,3], c(.05, .5, .95))
+results_all_bootstrap_perm_differences <- results_all_bootstrap_perm$t %>% as_tibble() %>% 
+  mutate(lm_vs_i2 = V1-V2, lm_vs_i3 = V1-V3, i2_vs_i3 = V2-V3) %>%  select(-V1, -V2, -V3)
+results_all_bootstrap_perm_differences %>% summarise_all(~mean(.>0))
 
-results_lm_bootstrap <- boot(data=train_data, statistic=color_difference,
-                             R=10000, formula=cbind(L, a, b) ~ C + M + Y + K + S)
-median(results_lm_bootstrap$t)
-boot.ci(results_lm_bootstrap, type="perc")
-
-results_i2_bootstrap <- boot(data=train_data, statistic=color_difference,
-                             R=10000, formula=cbind(L, a, b) ~ .^2)
-median(results_i2_bootstrap$t)
-boot.ci(results_i2_bootstrap, type="perc")
-
-results_i3_bootstrap <- boot(data=train_data, statistic=color_difference,
-                             R=10000, formula=cbind(L, a, b) ~ .^3)
-median(results_i3_bootstrap$t)
-boot.ci(results_i3_bootstrap, type="perc")
-
-results_lm_bootstrap_perm <- boot(data=unique_master_colors, statistic=color_difference_perm, sim = "permutation",
-                                  R=10000, formula=cbind(L, a, b) ~ C + M + Y + K + S)
-median(results_lm_bootstrap_perm$t)
-boot.ci(results_lm_bootstrap_perm, type="perc")
-
-results_i2_bootstrap_perm <- boot(data=unique_master_colors, statistic=color_difference_perm, sim = "permutation",
-                                  R=10000, formula=cbind(L, a, b) ~ .^2)
-median(results_i2_bootstrap_perm$t)
-boot.ci(results_i2_bootstrap_perm, type="perc")
-
-results_i3_bootstrap_perm <- boot(data=unique_master_colors, statistic=color_difference_perm, sim = "permutation",
-                                  R=10000, formula=cbind(L, a, b) ~ .^3)
-median(results_i3_bootstrap_perm$t)
-boot.ci(results_i3_bootstrap_perm, type="perc")
-
-results_lm_fullrepetition <- custom_boot(cbind(L, a, b) ~ C + M + Y + K + S)
-quantile(results_lm_fullrepetition, c(.05, .5, .95))
-
-results_i2_fullrepetition <- custom_boot(cbind(L, a, b) ~ .^2)
-quantile(results_i2_fullrepetition, c(.05, .5, .95))
-
-results_i3_fullrepetition <- custom_boot(cbind(L, a, b) ~ .^3)
-quantile(results_i2_fullrepetition, c(.05, .5, .95))
-
-bootstrap_results <- results_lm_bootstrap$t %>% as_tibble() %>% mutate(method = "ordinary", formula = "linear") %>% 
+bootstrap_results <- results_all_bootstrap_perm$t %>% as_tibble() %>% 
+  rename(linear = V1, "interaction 2nd order" = V2, "interaction 3nd order" = V3) %>% 
+  pivot_longer(cols = everything(), names_to = "formula") %>% mutate(method = "permutation") %>% 
   bind_rows(
-    results_i2_bootstrap$t %>% as_tibble() %>% mutate(method = "ordinary", formula = "interaction 2nd order")
-  ) %>% 
-  bind_rows(
-    results_i3_bootstrap$t %>% as_tibble() %>% mutate(method = "ordinary", formula = "interaction 3nd order") 
-  ) %>% 
-  bind_rows(
-    results_lm_bootstrap_perm$t %>% as_tibble() %>% mutate(method = "permutation", formula = "linear")
-  ) %>% 
-  bind_rows(
-    results_i2_bootstrap_perm$t %>% as_tibble() %>% mutate(method = "permutation", formula = "interaction 2nd order") 
-  ) %>% 
-  bind_rows(
-    results_i3_bootstrap_perm$t %>% as_tibble() %>% mutate(method = "permutation", formula = "interaction 3nd order") 
-  ) %>% mutate(
-    formula = factor(formula, levels=c("linear", "interaction 2nd order", "interaction 3nd order"))
-    )
+    results_all_bootstrap$t %>% as_tibble() %>% 
+      rename(linear = V1, "interaction 2nd order" = V2, "interaction 3nd order" = V3) %>% 
+      pivot_longer(cols = everything(), names_to = "formula") %>% mutate(method = "ordinary")
+  )
 
 v1 <- bootstrap_results %>% ggplot() +
-  geom_violin(aes(x = formula, y = V1, fill = method), draw_quantiles = c(0.5))
+  geom_violin(aes(x = formula, y = value, fill = method), draw_quantiles = c(0.5))
 
 # ggpubr::ggviolin(bootstrap_results, x = "formula", y = "V1", fill = "method", add = "jitter")
 
@@ -421,26 +393,14 @@ ggplot() +
 
 library(ggridges)
 
-lm_vs_i2 <- ((results_lm_bootstrap$t %>% sample(100000, replace = TRUE)) - (results_i2_bootstrap$t %>% sample(100000, replace = TRUE))) %>% as_tibble() %>% mutate(compare = "lm vs i2")
-
-sum(lm_vs_i2$value > 0)/nrow(lm_vs_i2)
-
-mean((results_lm_bootstrap$t %>% sample(100000, replace = TRUE)) - (results_i2_bootstrap$t %>% sample(100000, replace = TRUE)) < 0)
-((results_lm_bootstrap$t %>% sample(100000, replace = TRUE)) - (results_i2_bootstrap$t %>% sample(100000, replace = TRUE))) %>% 
-  as_tibble() %>% ggplot(aes((x = value))) +
-  geom_density()
-
-mean((results_lm_bootstrap$t %>% sample(100000, replace = TRUE)) - (results_i3_bootstrap$t %>% sample(100000, replace = TRUE)) < 0)
-((results_lm_bootstrap$t %>% sample(100000, replace = TRUE)) - (results_i3_bootstrap$t %>% sample(100000, replace = TRUE))) %>% 
-  as_tibble() %>% ggplot(aes((x = value))) +
-  geom_density()
-
-((results_lm_bootstrap$t %>% sample(100000, replace = TRUE)) - (results_i2_bootstrap$t %>% sample(100000, replace = TRUE))) %>% 
-  as_tibble() %>% mutate(compare = "lm vs i2") %>% bind_rows(
-    ((results_lm_bootstrap$t %>% sample(100000, replace = TRUE)) - (results_i3_bootstrap$t %>% sample(100000, replace = TRUE))) %>% 
-    as_tibble() %>% mutate(compare = "lm vs i3")
-  ) %>% ggplot(aes(x = value, y = compare, fill = factor(after_stat(x) > 0))) +
+results_all_bootstrap_differences %>%
+  pivot_longer(names_to = "compare", cols = everything()) %>% 
+  ggplot(aes(x = value, y = compare, fill = factor(after_stat(x) > 0))) +
   geom_density_ridges_gradient(scale = 0.9) +
-  coord_cartesian(xlim=c(-20,10))
+  coord_cartesian(xlim=c(-10,10))
 
-mean((results_i2_bootstrap$t %>% sample(100000, replace = TRUE)) - (results_i3_bootstrap$t %>% sample(100000, replace = TRUE)) < 0)
+results_all_bootstrap_perm_differences %>%
+  pivot_longer(names_to = "compare", cols = everything()) %>% 
+  ggplot(aes(x = value, y = compare, fill = factor(after_stat(x) > 0))) +
+  geom_density_ridges_gradient(scale = 0.9) +
+  coord_cartesian(xlim=c(-10,10))
