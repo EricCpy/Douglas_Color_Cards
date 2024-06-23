@@ -1182,3 +1182,27 @@ One possible explanation for these very different results could be that the chos
 In general for a case like this we would suggest to get more data and repeat the analysis again. Or to perform a sensitivity analysis with simulated data. If both is not possible one should inspect the predictions from a 3rd order interaction model before deployment. If this is not possible as well (e. g. because one redeploys often) it depends on how sensible the case of usage for this model might be.
 
 One should take the safer option (2nd order interaction model) if the colors should be used in a traffic light and wrong colors could lead to traffic accidents, injuries and death. If its just the color of an add in a video game it does not matter. But even here one would be totally fine with the 2nd order interaction model and it would be computative less costly as well. I challenge the reader to come up with a use case where the small advantage of a good 3rd order interaction model could be crucial.
+
+# Conclusion
+
+The objectives of our report had been:
+
+a) Analyse where variance or difference in color is noteworthy high / low
+b) Visualize variance and differences in colors
+c) Use the CMYKS color information to match the Lab color values
+
+**a)**
+
+## Additional notes
+
+* During our group work we all found some new details in the others R code. For example: I used the *ungroup* command after *summarise* but I learn from Pavlo that there is a *.groups = "drop"* parameter within the *summarise* command for this task. 
+* We found out how to display uncertainty areas with a ribbon instead of two CI lines. 
+* We used *grid.arrange* and facets a lot to create small multiples that really help comparing multiple related plots.
+* We discussed about how to best specify out hypotheses as a model. For example regarding the question if we should use cardnumber as a factor or as numeric.
+* We have concentrated to establish common color scales for similar visualisation and using other ones for differing scales. It seems really hard to have a set of distinguishable colors when each color should be linked to something all over the report.
+* It can also be helpful to scale the color scale not only the x or y axis to show differences over large value ranges.
+* Showing the development of our thoughts incorporates a lot of similar figures. In a report for a CEO we probably pick just one from each series. But to foster understanding a stepwise evolution seems to be pretty helpful.
+* When talking about colors it is handy to present the color that is talked about along with other statistics (like box plots).
+* New and fancy visualisations are not always better. We found violin plots to have some problems and tackeled one of those.
+* The heavy package is archived. To perform a outlier resistent regression (with T distributed errors) one could user bayesian regression with *brms*. But we didn't perform this analysis here. The trend spotted with ones eye can get disturbed realy quick by some off values.
+* We are not sure if our ordinary bootstrap approach is faulty or if the 3rd order interaction model does really overfit very strongly and the perumtative bootstrapping approch is wrong. We should contact an expert about this instead of hoping that the answer we like more is true or being too defensive with our decision.
