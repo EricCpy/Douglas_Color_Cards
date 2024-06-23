@@ -278,7 +278,7 @@ color_differences_sample_1_1 %>%
 
 ### Correlation \( \Delta \)E with Lab Dimensions
 
-This section explores the influence of channels on \( \Delta \)E. For the following scatter plots we chose to exclude field 18 because its \( \Delta \)E value significantly deviates from the other fields, which would disproportionately influence the results.
+This section explores the influence of channels on \( \Delta \)E of the printing results. For the following scatter plots we chose to exclude field 18 because its \( \Delta \)E value significantly deviates from the other fields, which would disproportionately influence the results.
 
 ```{r LabCorrelationsWithDeltaE, echo=FALSE, warning=FALSE, message=FALSE, cache=!full_refit, fig.cap="Lab correlations with dE", fig.align='center'}
 mean_lab_color_differences_exlcude_18 <- mean_lab_color_differences %>% 
