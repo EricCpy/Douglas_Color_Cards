@@ -317,7 +317,7 @@ anova_result <- aov(mean_diff ~ card_number, data = diff_by_card)
 summary(anova_result)
 ```
 
-As we can see, there is a significant evidence, that the mean \( \Delta \)E varies across different card positions (targets). The following graphic visualizes this.
+As we can see, there is a significant evidence, that the mean \( \Delta \)E varies across different card positions (targets). The following graphic visualizes this. The color scale used differs from the color scale before to make clear that the values range is very different.
 
 ```{r, echo=FALSE, message=FALSE, cache=!full_refit, fig.cap="Mean dE across different card positions", fig.align='center', fig.width=8, fig.height=8}
 diff_by_card %>% 
@@ -330,7 +330,8 @@ diff_by_card %>%
   theme(
     legend.position="right"
   ) +
-  xlab("Column on sheet") + ylab("Row on sheet")
+  xlab("Column on sheet") + ylab("Row on sheet") +
+  scale_fill_gradientn(colours = rainbow(3))
 ```
 
 We can see, that \( \Delta \)E generally goes up the further down we go and that there are three columns of higher \( \Delta \)E values. But those columns are not the high numbered but every second. Thus our hypothesis was not correct. But nevertheless: significant difference was found.
@@ -453,7 +454,9 @@ color_differences_from_average_card <- color_differences_sample_1_1 %>%
   mutate(Difference = generate_color_difference_df(average_color_card_target_1_1 %>% select(-Difference), .)$Difference)
 ```
 
-In the following three graphics we want to look at one example on how the average color cards colors differ from the master and from a sample card at the corresponding target position. The average color card is created by aggregating all colors from cards in one target position (here [1;1]) (see note at [Comparing color space dimension individually]). We begin with the graphic where we compare the sample color card with the master color card once again.
+In the following three graphics we want to look at one example on how the average color cards colors differ from the master and from a sample card at the corresponding target position. The average color card is created by aggregating all colors from cards in one target position (here [1;1]) (see note at [Comparing color space dimension individually]).
+
+We begin with the graphic where we compare the sample color card with the master color card once again. This time we are using a color scale with a log2 scaling and a neutral center for filling of the tiles. Thus the comparison with the third color comparison should be more meaningful.
 
 We find `r sum(color_differences_sample_1_1$Difference > 2)` colors that should be different on first glimpse. The median color difference is `r median(color_differences_sample_1_1$Difference)` (MAD = `r mad(color_differences_sample_1_1$Difference)`).
 
@@ -476,7 +479,15 @@ color_differences_sample_1_1 %>%
     axis.text=element_text(size=12),
     axis.title=element_text(size=14,face="bold"),
     plot.caption = element_text(size=12, hjust = 0)
-    )
+    ) +
+  scale_fill_gradient2(
+    low = "#88CC00",
+    mid = "white",
+    high = "#CC3333",
+    midpoint = 2,
+    transform = "log2",
+    limits = c(2^-5, 2^5)
+  )
 ```
 
 When comparing the master cards and the average cards color we find pretty similar results, even a bit higher values. `r sum(average_color_card_target_1_1$Difference > 2)` colors should be different on first glimpse. The median color difference is `r median(average_color_card_target_1_1$Difference)` (MAD = `r mad(average_color_card_target_1_1$Difference)`).
@@ -499,6 +510,14 @@ average_color_card_target_1_1 %>%
     axis.text=element_text(size=12),
     axis.title=element_text(size=14,face="bold"),
     plot.caption = element_text(size=12, hjust = 0)
+  ) +
+  scale_fill_gradient2(
+    low = "#88CC00",
+    mid = "white",
+    high = "#CC3333",
+    midpoint = 2,
+    transform = "log2",
+    limits = c(2^-5, 2^5)
   )
 ```
 
@@ -523,7 +542,15 @@ color_differences_from_average_card %>%
     axis.text=element_text(size=12),
     axis.title=element_text(size=14,face="bold"),
     plot.caption = element_text(size=12, hjust = 0)
-    )
+    ) +
+  scale_fill_gradient2(
+    low = "#88CC00",
+    mid = "white",
+    high = "#CC3333",
+    midpoint = 2,
+    transform = "log2",
+    limits = c(2^-5, 2^5)
+  )
 ```
 
 ## Further color difference related analysis

@@ -236,7 +236,7 @@ p_fill <- ggplot() +
   geom_polygon(data = p_build,
                aes(x = x,y = y,group = group1,fill = fill_group))+
   ggnewscale::new_scale_fill() +
-  geom_violin(data = dat, aes(x = as.integer(formula), y = y, fill = group), show.legend = F, alpha=0, draw_quantiles = c(0.25, 0.5, 0.75)) +
+  geom_violin(data = dat, aes(x = as.integer(formula), y = y, fill = group), show.legend = F, color="black", alpha=1, draw_quantiles = c(0.25, 0.5, 0.75)) +
   coord_cartesian(ylim = c(0,10))
 p_fill
 
@@ -264,3 +264,4 @@ ggplot(pdat, aes(dens, loc, fill = m, group = interaction(m, x))) +
   ylab('density') +
   theme_minimal() +
   theme(axis.title.x = element_blank())
+
