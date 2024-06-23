@@ -330,7 +330,7 @@ diff_by_card %>%
     legend.position="right"
   ) +
   xlab("Column on sheet") + ylab("Row on sheet") +
-  scale_fill_gradientn(colours = rainbow(3))
+  scale_fill_gradientn(colours = rainbow(2)[2:1])
 ```
 
 We can see, that \( \Delta \)E generally goes up the further down we go and that there are three columns of higher \( \Delta \)E values. But those columns are not the high numbered but every second. Thus our hypothesis was not correct. Nevertheless a significant difference was found.
