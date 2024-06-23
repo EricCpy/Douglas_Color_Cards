@@ -673,23 +673,27 @@ Is this result surprising. The 3rd order interaction model has 26 parameters to 
 
 ## Analysis of relationship with machine learning models
 
-To check if the 3rd order interaction model tends to overfit we perform further tests. This time we split the 49 unique color fields of the master color card into a train and a test set. The training data keeps 33 rows and the test data consists of the remaining 16. We compare two different approaches:
+If the aim is a function that predicts the Lab values from any CMYKS combination (and does not only replicate the known colors well) it is important to find a model that does not overfit on the training data. To check if the 3rd order interaction model tends to overfit we perform further tests. This time we split the 49 unique color fields of the master color card into a train and a test set. The training data keeps 33 rows and the test data consists of the remaining 16. We compare two different approaches:
 
 a) We perform a bootstrap analysis. Therefor we take a fixed set of test data and perform 10000 regression with training data that is sampled with replacement from a common training data set. We calculate the median of the color difference for the 16 test colors every time. 
-b) We perform 10000 different train test splits and do the regression once each. We still calculate the median of the color difference between predicted and correct test colors.
+b) We perform 10000 different train test splits and do the regression once each (full permutative resampling). We still calculate the median of the color difference between predicted and correct test colors.
 
-The results for the bootstrapped medians are higher than those of the full resampling. The confidence intervals for the bootstrapped values are wider but not always is the narrower fully included in the wider. The linear model has highest median of color difference medians and high CI limits. (A polynomial regression coudln't be fitted because of to few data points.)
-
-The medians order for 2nd and 3rd order interaction model is dependent on the method used. The upper CI limits are lower for 2nd order regression models within one method. Thus we conclude that those are less likely to overfit. For the 3rd order interaction regression one can be pretty lucky and get a really good model but one can be very unlucky as well and end up with a median \(\Delta\)E of 62.7 which yields colors that are more the opposite than the same. With this limited data available we would suggest to go with the 2nd order interaction regression results.
-
-| Model | Method | Median | 5%-Quantile | 95%-Quantile |
+| Model | Method | t1* | 5%-Quantile | 95%-Quantile |
 |-------|--------|--------|-------------|--------------|
-| Linear | Bootstrap | 5.4 | 3.7 | 8.1 |
-| Linear | Full Resampling | 4.6 | 3.3 | 6.9 |
-| 2rd order interaction | Bootstrap | 2.6 | 1.3 | 6.9 |
-| 2rd order interaction | Full Resampling | 2.0 | 1.4 | 4.5 |
-| 3rd order interaction | Bootstrap | 5.2 | 1.6 | 62.7 |
-| 3rd order interaction | Full Resampling | 1.47 | 0.78 | 6.26 |
+| Linear | Bootstrap | 5.2 | 3.7 | 8.1 |
+| Linear | Full Resampling | 4.1 | 3.1 | 7.6 |
+| 2rd order interaction | Bootstrap | 1.4 | 1.3 | 6.9 |
+| 2rd order interaction | Full Resampling | 2.9 | 1.3 | 6.5 |
+| 3rd order interaction | Bootstrap | 2.1 | 1.6 | 58.2 |
+| 3rd order interaction | Full Resampling | 2.2 | 0.7 | 9.5 |
+
+Comparing the results stated in the upper table for the ordinary bootstrapped t1* values with those of the full permutative resampling t1* values yields no pattern. One is higher one lower on almoast equal. The confidence intervals for the bootstrapped values tend to be wider but not always is the narrower fully included in the wider. The linear model has highest median of color difference medians and high CI limits. (A polynomial regression coudln't be fitted because of to few data points.)
+
+The t1* values for 2nd and 3rd order interaction model are lower or equal with ordinary bootstrapping (fixed test data and sampling with replacement). In contrast one finds the CI limits to be lower for bootstrapping with permutation. The CIs for 2nd order interaction models are narrower and the upper CI limit is lower compared to 3rd order models.
+
+Thus we conclude that 2nd order models are less likely to overfit. For the 3rd order interaction regression one can be pretty lucky and get a really good model but one can be very unlucky as well and end up with a median \(\Delta\)E of 62.7 which yields colors that are more the opposite than the same. With this limited data available we would suggest to go with the 2nd order interaction regression results.
+
+**Violins with fill to afterstat**
 
 ```{r, echo=FALSE, cache=!full_refit}
 set.seed(123)
@@ -709,54 +713,151 @@ color_difference <- function(formula, data, indices)
   )
 }
 
-custom_boot <- function(formula, R = 10000) {
-  results <- c()
-  for (i in 1:R) {
-    test_indizes <- sample(1:49, 16)
-    train_data <- unique_master_colors[-test_indizes,]
-    test_data <- unique_master_colors[test_indizes,]
-    
-    fit <- lm(data = train_data %>% select(C, M, Y, K, S, L, a, b), formula)
-    results[i] <- dE(predict(fit, test_data), test_data %>% select("L", "a", "b")) %>% 
+color_difference_perm <- function(formula, data, indices)
+{
+  train_data <- data[indices[1:33],]
+  test_data <- data[indices[34:49],]
+  fit <- lm(data = train_data %>% select(C, M, Y, K, S, L, a, b), formula)
+  return(
+    dE(predict(fit, test_data), test_data %>% select("L", "a", "b")) %>% 
       median()
-  }  
-  
-  return(results)
+  )
 }
+
+show_bootstrap_results <- FALSE
 ```
 
-```{r, include=FALSE, cache=!full_refit}
+```{r, echo=FALSE, cache=!full_refit, include=show_bootstrap_results}
 results_lm_bootstrap <- boot(data=train_data, statistic=color_difference,
                 R=10000, formula=cbind(L, a, b) ~ C + M + Y + K + S)
-median(results_lm_bootstrap$t)
+print(results_lm_bootstrap)
 boot.ci(results_lm_bootstrap, type="perc")
 ```
 
-```{r, include=FALSE, cache=!full_refit}
+```{r, echo=FALSE, cache=!full_refit, include=show_bootstrap_results}
 results_i2_bootstrap <- boot(data=train_data, statistic=color_difference,
                 R=10000, formula=cbind(L, a, b) ~ .^2)
-median(results_i2_bootstrap$t)
+print(results_i2_bootstrap)
 boot.ci(results_i2_bootstrap, type="perc")
 ```
 
-```{r, include=FALSE, cache=!full_refit}
+```{r, echo=FALSE, cache=!full_refit, include=show_bootstrap_results}
 results_i3_bootstrap <- boot(data=train_data, statistic=color_difference,
                 R=10000, formula=cbind(L, a, b) ~ .^3)
-median(results_i3_bootstrap$t)
+print(results_i3_bootstrap)
 boot.ci(results_i3_bootstrap, type="perc")
 ```
 
-```{r, include=FALSE, cache=!full_refit}
-results_lm_fullrepetition <- custom_boot(cbind(L, a, b) ~ C + M + Y + K + S)
-quantile(results_lm_fullrepetition, c(.05, .5, .95))
+```{r, echo=FALSE, cache=!full_refit, include=show_bootstrap_results}
+results_lm_bootstrap_perm <- boot(data=unique_master_colors, statistic=color_difference_perm, sim = "permutation",
+                                  R=10000, formula=cbind(L, a, b) ~ C + M + Y + K + S)
+print(results_lm_bootstrap_perm)
+boot.ci(results_lm_bootstrap_perm, type="perc")
 ```
 
-```{r, include=FALSE, cache=!full_refit}
-results_i2_fullrepetition <- custom_boot(cbind(L, a, b) ~ .^2)
-quantile(results_i2_fullrepetition, c(.05, .5, .95))
+```{r, echo=FALSE, cache=!full_refit, include=show_bootstrap_results}
+results_i2_bootstrap_perm <- boot(data=unique_master_colors, statistic=color_difference_perm, sim = "permutation",
+                                  R=10000, formula=cbind(L, a, b) ~ .^2)
+print(results_i2_bootstrap_perm)
+boot.ci(results_i2_bootstrap_perm, type="perc")
 ```
 
-```{r, include=FALSE, cache=!full_refit}
-results_i2_fullrepetition <- custom_boot(cbind(L, a, b) ~ .^3)
-quantile(results_i2_fullrepetition, c(.05, .5, .95))
+```{r, echo=FALSE, cache=!full_refit, include=show_bootstrap_results}
+results_i3_bootstrap_perm <- boot(data=unique_master_colors, statistic=color_difference_perm, sim = "permutation",
+                                  R=10000, formula=cbind(L, a, b) ~ .^3)
+print(results_i3_bootstrap_perm)
+boot.ci(results_i3_bootstrap_perm, type="perc")
 ```
+
+```{r, echo=FALSE, fig.width=8, fig.height=12, cache=!full_refit, warning=FALSE}
+bootstrap_results <- results_lm_bootstrap$t %>% as_tibble() %>% mutate(method = "ordinary", formula = "linear") %>% 
+  bind_rows(
+    results_i2_bootstrap$t %>% as_tibble() %>% mutate(method = "ordinary", formula = "interaction 2nd order")
+  ) %>% 
+  bind_rows(
+    results_i3_bootstrap$t %>% as_tibble() %>% mutate(method = "ordinary", formula = "interaction 3nd order") 
+  ) %>% 
+  bind_rows(
+    results_lm_bootstrap_perm$t %>% as_tibble() %>% mutate(method = "permutation", formula = "linear")
+  ) %>% 
+  bind_rows(
+    results_i2_bootstrap_perm$t %>% as_tibble() %>% mutate(method = "permutation", formula = "interaction 2nd order") 
+  ) %>% 
+  bind_rows(
+    results_i3_bootstrap_perm$t %>% as_tibble() %>% mutate(method = "permutation", formula = "interaction 3nd order") 
+  ) %>% mutate(
+    formula = factor(formula, levels=c("linear", "interaction 2nd order", "interaction 3nd order"))
+    )
+
+v1 <- bootstrap_results %>% ggplot() +
+  geom_violin(aes(x = formula, y = V1, fill = method), draw_quantiles = c(0.5))
+
+v2 <- bootstrap_results %>% ggplot(aes(x = formula, y = V1, fill = method)) +
+  geom_violin(draw_quantiles = c(0.25, 0.5, 0.75)) +
+  coord_cartesian(ylim = c(0, 10))
+
+b1 <- bootstrap_results %>% ggplot() +
+  geom_boxplot(aes(x = formula, y = V1, fill = method))
+
+b2 <- bootstrap_results %>% ggplot() +
+  geom_boxplot(aes(x = formula, y = V1, fill = method)) +
+  coord_cartesian(ylim = c(0, 10))
+
+ggpubr::ggarrange(
+  v2, b2, v1, b1,
+  ncol = 2, nrow = 2,
+  common.legend = TRUE,
+  legend="bottom",
+  heights = c(2,3)
+)
+```
+
+```{r, echo=FALSE, cache=!full_refit}
+library(ggridges)
+
+lm_vs_i2 <- ((results_lm_bootstrap$t %>% sample(100000, replace = TRUE)) - (results_i2_bootstrap$t %>% sample(100000, replace = TRUE))) %>% as_tibble() %>% mutate(compare = "lm vs i2")
+lm_vs_i3 <- ((results_lm_bootstrap$t %>% sample(100000, replace = TRUE)) - (results_i3_bootstrap$t %>% sample(100000, replace = TRUE))) %>% as_tibble() %>% mutate(compare = "lm vs i3")
+i2_vs_i3 <- ((results_i2_bootstrap$t %>% sample(100000, replace = TRUE)) - (results_i3_bootstrap$t %>% sample(100000, replace = TRUE))) %>% as_tibble() %>% mutate(compare = "i2 vs i3")
+
+bootstrap_comparison <- lm_vs_i2 %>% bind_rows(lm_vs_i3) %>% bind_rows(i2_vs_i3)
+```
+
+But how high is the chance that one gets better results with a 2nd order interaction model than with a competing model? One can get a feeling for this by randomly selecting two models and compare their color difference. Sampling 100000 model pairs with replacements from the ordinary bootstrap results yields the following results:
+
+* In `r mean(lm_vs_i2$value > 0)*100` % of the cases the 2nd order interaction model yields a better result than the linear model.
+* In `r mean(i2_vs_i3$value < 0)*100` % of the cases the 2nd order interaction model yields a better result than the 3rd order interaction model.
+* In `r mean(lm_vs_i3$value > 0)*100` % of the cases the 3nd order interaction model yields a better result than the linear model.
+
+This shows that one should pick the 2nd order interaction model if one wants to get better results compared to the simple linear model with a high chance. The 2nd order interaction model seems to bet better than the 3rd order interaction model in most cases as well.
+
+```{r, echo=FALSE, fig.width=8, fig.height=8, cache=!full_refit, warning=FALSE, message=FALSE}
+bootstrap_comparison %>% ggplot(aes(x = value, y = compare, fill = factor(after_stat(x) > 0))) +
+  geom_density_ridges_gradient(scale = 0.9) +
+  coord_cartesian(xlim=c(-20,10))
+```
+
+```{r, echo=FALSE, cache=!full_refit}
+library(ggridges)
+
+lm_vs_i2 <- ((results_lm_bootstrap_perm$t %>% sample(100000, replace = TRUE)) - (results_i2_bootstrap_perm$t %>% sample(100000, replace = TRUE))) %>% as_tibble() %>% mutate(compare = "lm vs i2")
+lm_vs_i3 <- ((results_lm_bootstrap_perm$t %>% sample(100000, replace = TRUE)) - (results_i3_bootstrap_perm$t %>% sample(100000, replace = TRUE))) %>% as_tibble() %>% mutate(compare = "lm vs i3")
+i2_vs_i3 <- ((results_i2_bootstrap_perm$t %>% sample(100000, replace = TRUE)) - (results_i3_bootstrap_perm$t %>% sample(100000, replace = TRUE))) %>% as_tibble() %>% mutate(compare = "i2 vs i3")
+
+bootstrap_comparison <- lm_vs_i2 %>% bind_rows(lm_vs_i3) %>% bind_rows(i2_vs_i3)
+```
+
+Repeating the process with the results from the full permutative bootstrapping where we change the train test split we find somewhat different results:
+
+* In `r mean(lm_vs_i2$value > 0)*100` % of the cases the 2nd order interaction model yields a better result than the linear model.
+* In `r mean(i2_vs_i3$value < 0)*100` % of the cases the 2nd order interaction model yields a better result than the 3rd order interaction model.
+* In `r mean(lm_vs_i3$value > 0)*100` % of the cases the 3nd order interaction model yields a better result than the linear model.
+
+Choosing a 3rd oder interaction model yields better results compared to the simple linear model with a comparable high chance as with a 2nd order inteaction model. Both options seem to be pretty safe. But in this analysis one gets better results with the 3rd order interaction model with a chance of `r mean(i2_vs_i3$value > 0)*100` %. From this results we would recommend to go with a 3rd order interaction model.
+
+```{r, echo=FALSE, fig.width=8, fig.height=8, cache=!full_refit, warning=FALSE, message=FALSE}
+bootstrap_comparison %>% ggplot(aes(x = value, y = compare, fill = factor(after_stat(x) > 0))) +
+  geom_density_ridges_gradient(scale = 0.9) +
+  coord_cartesian(xlim=c(-20,10))
+```
+
+One possible explanation for these very different results could be that the chose train test split for the ordinary bootstraping was unlucky and non preservative.

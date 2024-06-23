@@ -248,10 +248,13 @@ color_difference <- function(formula, data, indices)
   )
 }
 
-results <- boot(data=train_data, statistic=color_difference,
+results1 <- boot(data=train_data, statistic=color_difference,
                 R=1000, formula=cbind(L, a, b) ~ C + M + Y + K + S)
-median(results$t)
-boot.ci(results, type="perc")
+median(results1$t)
+boot.ci(results1, type="perc")
+
+results1$t %>% as_tibble() %>% ggplot() +
+  geom_violin(aes(x= 1, y = V1))
 
 results <- boot(data=train_data, statistic=color_difference,
                 R=1000, formula=cbind(L, a, b) ~ .^3)
@@ -279,3 +282,165 @@ mad(results)
 results <- custom_boot(cbind(L, a, b) ~ .^3)
 quantile(results, c(.05, .5, .95))
 mad(results)
+
+
+set.seed(123)
+set.seed(124)
+library(boot)
+
+test_indizes <- sample(1:49, 16)
+train_data <- unique_master_colors[-test_indizes,]
+test_data <- unique_master_colors[test_indizes,]
+
+color_difference <- function(formula, data, indices)
+{
+  train_data <- data[indices,]
+  fit <- lm(data = train_data %>% select(C, M, Y, K, S, L, a, b), formula)
+  return(
+    dE(predict(fit, test_data), test_data %>% select("L", "a", "b")) %>% 
+      median()
+  )
+}
+
+color_difference_perm <- function(formula, data, indices)
+{
+  train_data <- data[indices[1:33],]
+  test_data <- data[indices[34:49],]
+  fit <- lm(data = train_data %>% select(C, M, Y, K, S, L, a, b), formula)
+  return(
+    dE(predict(fit, test_data), test_data %>% select("L", "a", "b")) %>% 
+      median()
+  )
+}
+
+custom_boot <- function(formula, R = 10000) {
+  results <- c()
+  for (i in 1:R) {
+    test_indizes <- sample(1:49, 16)
+    train_data <- unique_master_colors[-test_indizes,]
+    test_data <- unique_master_colors[test_indizes,]
+    
+    fit <- lm(data = train_data %>% select(C, M, Y, K, S, L, a, b), formula)
+    results[i] <- dE(predict(fit, test_data), test_data %>% select("L", "a", "b")) %>% 
+      median()
+  }  
+  
+  return(results)
+}
+
+
+results_lm_bootstrap <- boot(data=train_data, statistic=color_difference,
+                             R=10000, formula=cbind(L, a, b) ~ C + M + Y + K + S)
+median(results_lm_bootstrap$t)
+boot.ci(results_lm_bootstrap, type="perc")
+
+results_i2_bootstrap <- boot(data=train_data, statistic=color_difference,
+                             R=10000, formula=cbind(L, a, b) ~ .^2)
+median(results_i2_bootstrap$t)
+boot.ci(results_i2_bootstrap, type="perc")
+
+results_i3_bootstrap <- boot(data=train_data, statistic=color_difference,
+                             R=10000, formula=cbind(L, a, b) ~ .^3)
+median(results_i3_bootstrap$t)
+boot.ci(results_i3_bootstrap, type="perc")
+
+results_lm_bootstrap_perm <- boot(data=unique_master_colors, statistic=color_difference_perm, sim = "permutation",
+                                  R=10000, formula=cbind(L, a, b) ~ C + M + Y + K + S)
+median(results_lm_bootstrap_perm$t)
+boot.ci(results_lm_bootstrap_perm, type="perc")
+
+results_i2_bootstrap_perm <- boot(data=unique_master_colors, statistic=color_difference_perm, sim = "permutation",
+                                  R=10000, formula=cbind(L, a, b) ~ .^2)
+median(results_i2_bootstrap_perm$t)
+boot.ci(results_i2_bootstrap_perm, type="perc")
+
+results_i3_bootstrap_perm <- boot(data=unique_master_colors, statistic=color_difference_perm, sim = "permutation",
+                                  R=10000, formula=cbind(L, a, b) ~ .^3)
+median(results_i3_bootstrap_perm$t)
+boot.ci(results_i3_bootstrap_perm, type="perc")
+
+results_lm_fullrepetition <- custom_boot(cbind(L, a, b) ~ C + M + Y + K + S)
+quantile(results_lm_fullrepetition, c(.05, .5, .95))
+
+results_i2_fullrepetition <- custom_boot(cbind(L, a, b) ~ .^2)
+quantile(results_i2_fullrepetition, c(.05, .5, .95))
+
+results_i3_fullrepetition <- custom_boot(cbind(L, a, b) ~ .^3)
+quantile(results_i2_fullrepetition, c(.05, .5, .95))
+
+bootstrap_results <- results_lm_bootstrap$t %>% as_tibble() %>% mutate(method = "ordinary", formula = "linear") %>% 
+  bind_rows(
+    results_i2_bootstrap$t %>% as_tibble() %>% mutate(method = "ordinary", formula = "interaction 2nd order")
+  ) %>% 
+  bind_rows(
+    results_i3_bootstrap$t %>% as_tibble() %>% mutate(method = "ordinary", formula = "interaction 3nd order") 
+  ) %>% 
+  bind_rows(
+    results_lm_bootstrap_perm$t %>% as_tibble() %>% mutate(method = "permutation", formula = "linear")
+  ) %>% 
+  bind_rows(
+    results_i2_bootstrap_perm$t %>% as_tibble() %>% mutate(method = "permutation", formula = "interaction 2nd order") 
+  ) %>% 
+  bind_rows(
+    results_i3_bootstrap_perm$t %>% as_tibble() %>% mutate(method = "permutation", formula = "interaction 3nd order") 
+  ) %>% mutate(
+    formula = factor(formula, levels=c("linear", "interaction 2nd order", "interaction 3nd order"))
+    )
+
+v1 <- bootstrap_results %>% ggplot() +
+  geom_violin(aes(x = formula, y = V1, fill = method), draw_quantiles = c(0.5))
+
+# ggpubr::ggviolin(bootstrap_results, x = "formula", y = "V1", fill = "method", add = "jitter")
+
+v2 <- bootstrap_results %>% ggplot(aes(x = formula, y = V1, fill = method)) +
+  geom_violin(draw_quantiles = c(0.5)) +
+  coord_cartesian(ylim = c(0, 10))
+
+b1 <- bootstrap_results %>% ggplot() +
+  geom_boxplot(aes(x = formula, y = V1, fill = method)) # +
+  # geom_jitter(aes(x = formula, y = V1), alpha = .1)
+
+b2 <- bootstrap_results %>% ggplot() +
+  geom_boxplot(aes(x = formula, y = V1, fill = method)) +
+  coord_cartesian(ylim = c(0, 10))
+
+grid.arrange(v1, v2, b1, b2,
+  ncol = 2, nrow = 2
+  )
+
+ggpubr::ggarrange(
+  v1, v2, b1, b2,
+  ncol = 2, nrow = 2,
+  common.legend = TRUE,
+  legend="bottom"
+)
+
+(results_lm_bootstrap$t %>% sort()) - (results_i2_bootstrap$t %>% sort())
+ggplot() +
+  geom_density(aes(x = V1))
+
+library(ggridges)
+
+lm_vs_i2 <- ((results_lm_bootstrap$t %>% sample(100000, replace = TRUE)) - (results_i2_bootstrap$t %>% sample(100000, replace = TRUE))) %>% as_tibble() %>% mutate(compare = "lm vs i2")
+
+sum(lm_vs_i2$value > 0)/nrow(lm_vs_i2)
+
+mean((results_lm_bootstrap$t %>% sample(100000, replace = TRUE)) - (results_i2_bootstrap$t %>% sample(100000, replace = TRUE)) < 0)
+((results_lm_bootstrap$t %>% sample(100000, replace = TRUE)) - (results_i2_bootstrap$t %>% sample(100000, replace = TRUE))) %>% 
+  as_tibble() %>% ggplot(aes((x = value))) +
+  geom_density()
+
+mean((results_lm_bootstrap$t %>% sample(100000, replace = TRUE)) - (results_i3_bootstrap$t %>% sample(100000, replace = TRUE)) < 0)
+((results_lm_bootstrap$t %>% sample(100000, replace = TRUE)) - (results_i3_bootstrap$t %>% sample(100000, replace = TRUE))) %>% 
+  as_tibble() %>% ggplot(aes((x = value))) +
+  geom_density()
+
+((results_lm_bootstrap$t %>% sample(100000, replace = TRUE)) - (results_i2_bootstrap$t %>% sample(100000, replace = TRUE))) %>% 
+  as_tibble() %>% mutate(compare = "lm vs i2") %>% bind_rows(
+    ((results_lm_bootstrap$t %>% sample(100000, replace = TRUE)) - (results_i3_bootstrap$t %>% sample(100000, replace = TRUE))) %>% 
+    as_tibble() %>% mutate(compare = "lm vs i3")
+  ) %>% ggplot(aes(x = value, y = compare, fill = factor(after_stat(x) > 0))) +
+  geom_density_ridges_gradient(scale = 0.9) +
+  coord_cartesian(xlim=c(-20,10))
+
+mean((results_i2_bootstrap$t %>% sample(100000, replace = TRUE)) - (results_i3_bootstrap$t %>% sample(100000, replace = TRUE)) < 0)
